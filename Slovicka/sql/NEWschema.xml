@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "http://db.apache.org/torque/dtd/database">
+  <database name="LanguageDB">
+    <table name="ASSOC_ORDER">
+      <column name="ID" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="true"/>
+      <column name="SRC_ASSOC" primaryKey="false" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="TGT_ASSOC" primaryKey="false" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <foreign-key foreignTable="ASSOCIATIONS" name="ASSOC_ORDER_ASSOC_FK2">
+        <reference local="TGT_ASSOC" foreign="ID"/>
+      </foreign-key>
+      <foreign-key foreignTable="ASSOCIATIONS" name="ASSOC_ORDER_ASSOC_FK1">
+        <reference local="SRC_ASSOC" foreign="ID"/>
+      </foreign-key>
+    </table>
+    <table name="ASSOCIATIONS">
+      <column name="SRC_ID" primaryKey="false" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="SRC_TBL" primaryKey="false" required="true" type="SMALLINT" size="5" autoIncrement="false"/>
+      <column name="TGT_ID" primaryKey="false" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="TGT_TBL" primaryKey="false" required="true" type="SMALLINT" size="5" autoIncrement="false"/>
+      <column name="COST" primaryKey="false" required="true" type="SMALLINT" size="5" autoIncrement="false"/>
+      <column name="ID" primaryKey="true" required="true" type="INTEGER" size="10" default="0" autoIncrement="false"/>
+      <foreign-key foreignTable="OBJECTS" name="ASSOC_OBJECTS_FK_MAIN">
+        <reference local="ID" foreign="ID"/>
+      </foreign-key>
+      <foreign-key foreignTable="OBJECTS" name="ASSOC_OBJECTS_FK2">
+        <reference local="TGT_ID" foreign="ID"/>
+      </foreign-key>
+      <foreign-key foreignTable="OBJECTS" name="ASSOC_OBJECTS_FK">
+        <reference local="SRC_ID" foreign="ID"/>
+      </foreign-key>
+      <foreign-key foreignTable="TABLES" name="ASSOC_TABLES_FK2">
+        <reference local="TGT_TBL" foreign="ID"/>
+      </foreign-key>
+      <foreign-key foreignTable="TABLES" name="ASSOC_TABLES_FK">
+        <reference local="SRC_TBL" foreign="ID"/>
+      </foreign-key>
+    </table>
+    <table name="OBJECTS">
+      <column name="ID" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="true"/>
+      <column name="SRC" primaryKey="false" required="false" type="VARCHAR" size="30" autoIncrement="false"/>
+      <column name="TYPE" primaryKey="false" required="false" type="SMALLINT" size="5" autoIncrement="false"/>
+      <index name="OBJECTS_SRC_IDX">
+        <index-column name="SRC"/>
+      </index>
+    </table>
+    <table name="TABLES">
+      <column name="ID" primaryKey="true" required="true" type="SMALLINT" size="5" autoIncrement="true"/>
+      <column name="CONNECTION_STRING" primaryKey="false" required="true" type="VARCHAR" size="225" autoIncrement="false"/>
+    </table>
+  </database>

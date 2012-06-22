@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<dbCon>
+		<dbURL>jdbc:derby://localhost:1527/c:\\Users\\k\\Prace\\Projects\\Slovicka\\temp\\LanguageDB2;user=k;password=k</dbURL>
+		<derbyJarServerStart>java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server start</derbyJarServerStart>
+		<derbyJarServerStop>java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server shutdown</derbyJarServerStop>
+	</dbCon>
+	<dataProvider>
+		<!-- Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani -->
+		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- 512 - 1 sek., 4 - 26 sek. --> 
+	</dataProvider>
+	<fastMemory>
+		<!-- Velikost tabulky Tables v cashe FastMemory -->
+		<tablesTableSize>400</tablesTableSize>
+		<!-- Velikost tabulek Objects v cashe FastMemory -->
+		<tablesObjectsSize>400</tablesObjectsSize>
+		<!-- Velikost tabulek Associations v cashe FastMemory -->
+		<tablesAssociationsSize>400</tablesAssociationsSize>
+		<!--
+		* Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani,
+		* Melke - hledat jen ve FastMemory.
+		* 	uspokojit se, kdyz ve FastMemory nalezena aspon jedna Association,
+		* 	kdyz aspon jedna chybi - 
+		* 		dohledat associations u vsech prvku,
+		* 		nebo
+		* 		dohledat associations jen u chybejicich prvku.
+		* Hluboke - dohledat vzdy v SlowlyMemory.  -->
+		<alwaysSearchToAssociationsDeepInTheMemory>true</alwaysSearchToAssociationsDeepInTheMemory>
+		<!-- Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam.
+		viz. alwaysSearchToAssociationsDeepInTheMemory -->
+		<searchToAssociationsAtAllElements>true</searchToAssociationsAtAllElements>
+	</fastMemory>
+	<knowledge>
+		<!-- Maximalni pocet objektu, ktere aware zdruzuje do obecnejsi formy -->
+		<objectsCreationDepth>68</objectsCreationDepth>
+		<!-- Maximalni velikost aware - delka vektoru myslenek -->
+		<knowledgeSize>100</knowledgeSize>
+
+		<!-- Zda maji byt spojovany jen objekty stejneho typu. Jestli true,
+		parametr decideToRelateByObjectTypeOrAssocCost musi byt false. -->
+		<relateOnlyObjectsOfSameTypes>true</relateOnlyObjectsOfSameTypes>
+		<!-- Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
+		true - Budou spojeny dle velikosti type objektu,
+		false - budou spojeny dle velikosti cost associaci -->
+		<decideToRelateByObjectTypeOrAssocCost>false</decideToRelateByObjectTypeOrAssocCost>
+		<!-- Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
+		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
+		je nastaven na true, nebo bc kdyz parameter je nastaven na false  -->
+		<decideToRelateObjectsByHigherObjectType>true</decideToRelateObjectsByHigherObjectType>
+		<!-- Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,
+		potom budou spojovany objekty dle velikosti hodnot asociaci.
+		true - budou spojovany objekty s vyssi hodnotou asociaci
+		false - budou spojovany objekty s nizsi hodnotou asociaci -->
+		<decideToRelateObjectsByHigherAssocCost>true</decideToRelateObjectsByHigherAssocCost>
+		<!-- Ukladat do souboru pospojovane objekty behem cteni nebo ne -->
+		<saveThoughtsToFile>true</saveThoughtsToFile>
+	</knowledge>
+	<objectsCreationDecider>
+		<!-- Vytvaret nove objekty pro veskere nove nactene Thought nebo ne. Mozna se to 
+		vyplati na zacatecnych fazich zaskoleni systemu. -->
+		<createNewObjectsToAllPairs>true</createNewObjectsToAllPairs>
+		<!-- Jak hluboko vytvaret nove objekty pro nove nactene Thought. To znamena
+		pro objekty jakeho Type jeste provadet vytvareni spoju. -->
+		<createNewObjectsToAllPairsDepth>1</createNewObjectsToAllPairsDepth>
+	</objectsCreationDecider>
+	<thoughtsSaver>
+		<!-- Cesta a nazev souboru pro ulozeni idecek spojenzch objektu behem cteni vstupniho souboru -->
+		<filePathToSaveThoughts>
+			C:\Users\k\Prace\Projects\Slovicka\slovickaWorkspace\Slovicka\Data-out\ulozenaIdeckaBehemZpracovani.txt
+		</filePathToSaveThoughts>
+	</thoughtsSaver>
+	<memoryCleaner>
+		<!-- Behem vycisteni pameti (spanku) budou odstraneny asociace a jejich objekty, ktere maji 
+		nizsi COST -->
+		<lowestCostForLeaving>2</lowestCostForLeaving>
+	</memoryCleaner>
+	<!-- Known classes: JdbcDBViewer and HibernateDBViewer -->
+	<dbviewer>
+		<dbViewerClassName>
+			cz.semenko.word.database.JdbcDBViewer
+		</dbViewerClassName>
+	</dbviewer>
+</config>

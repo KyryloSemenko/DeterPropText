@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <session-factory name="">
+  <!-- <property name="hibernate.connection.provider_class">org.hibernate.connection.DBCPConnectionProvider</property> -->
+  <property name="hibernate.connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
+  <property name="hibernate.connection.url">jdbc:derby://localhost:1527/c:\\Users\\k\\Prace\\Projects\\Slovicka\\LanguageDB2;create=false</property>
+  <property name="hibernate.connection.username">k</property>
+  <property name="hibernate.connection.password">k</property>
+  <property name="hibernate.connection.pool_size">1</property>
+  <property name="dialect">org.hibernate.dialect.DerbyDialect</property>
+  <property name="hibernate.c3p0.min_size">5</property>
+  <property name="hibernate.c3p0.max_size">20</property>
+  <property name="hibernate.c3p0.timeout">300</property>
+  <property name="hibernate.c3p0.max_statements">50</property>
+  <property name="hibernate.c3p0.idle_test_period">3000</property>
+  <mapping class="cz.semenko.word.persistent.Associations" resource="cz/semenko/word/persistent/hibernate/Associations.hbm.xml"/>
+  <mapping class="cz.semenko.word.persistent.Objects" resource="cz/semenko/word/persistent/hibernate/Objects.hbm.xml"/>
+  <mapping class="cz.semenko.word.persistent.Tables" resource="cz/semenko/word/persistent/hibernate/Tables.hbm.xml"/>
+ </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+<type-mapping>
+	<sql-type jdbc-type="INTEGER" hibernate-type="Long"
+		not-null="true">
+	</sql-type>
+	<sql-type jdbc-type="VARCHAR" hibernate-type="string" length="30"
+		not-null="false">
+	</sql-type>
+	<sql-type jdbc-type="SMALLINT" hibernate-type="Long"
+		not-null="false">
+	</sql-type>
+	<sql-type jdbc-type="VARCHAR" hibernate-type="string" length="225"
+		not-null="true">
+	</sql-type>
+</type-mapping>
+<table-filter match-schema="K" match-name="ASSOCIATIONS"/>
+  <table-filter match-schema="K" match-name="OBJECTS"/>
+  <table-filter match-schema="K" match-name="TABLES"/>
+</hibernate-reverse-engineering>
