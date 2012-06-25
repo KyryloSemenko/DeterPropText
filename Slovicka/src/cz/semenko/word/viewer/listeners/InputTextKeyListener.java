@@ -10,23 +10,28 @@ import cz.semenko.word.viewer.ViewerGUI;
 
 
 public class InputTextKeyListener extends KeyAdapter {
-	private static InputTextKeyListener instance = null;
 	public static Logger logger = Logger.getRootLogger();
+	// Model dodava Spring FW
+	private Model model;
+	// viewerGUI dodava Spring FW
+	private ViewerGUI viewerGUI;
 	
-	private InputTextKeyListener() {}
-
-	public static InputTextKeyListener getInstance() {
-		if (instance == null) {
-			synchronized(InputTextKeyListener.class) {
-				InputTextKeyListener inst = instance;
-				if (inst == null) {
-					instance = new InputTextKeyListener();
-				}
-			}
-		}
-		return instance;
+	/**
+	 * @param model the model to set
+	 */
+	public void setModel(Model model) {
+		this.model = model;
 	}
+
+	public InputTextKeyListener() {}
 	
+	/**
+	 * @param viewerGUI the viewerGUI to set
+	 */
+	public void setViewerGUI(ViewerGUI viewerGUI) {
+		this.viewerGUI = viewerGUI;
+	}
+
 	/**
 	 * Spusti getSourceToObjectId
 	 * TODO dodelat dalsi moznosti, napriklad getTargetObjects...
@@ -42,9 +47,9 @@ public class InputTextKeyListener extends KeyAdapter {
 		// ENTER
 		if (e.character == '\r' || e.character == '\n') {
 			StyledText inputText = (StyledText)e.getSource();
-			StyledText outputText = ViewerGUI.getInstance().getOutputText();
+			StyledText outputText = viewerGUI.getOutputText();
 			try {
-				String text = Model.getInstance().getSourceToObjectsId(inputText);
+				String text = model.getSourceToObjectsId(inputText);
 				outputText.append(text + System.getProperty("line.separator"));
 				outputText.setTopIndex(outputText.getLineCount());
 			} catch (Exception ex) {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- Hlavni objekt pro cteni textu -->
+    <bean id="textReader"
+          class="cz.semenko.word.technology.memory.completion.TextReader">
+          	<property name="fastMemory" ref="fastMemory" />
+          	<property name="knowledge" ref="knowledge" />
+          	<property name="thoughtsSaver" ref="thoughtSaver" />
+    </bean>
+
+	<!-- Spusteni databaze Derby -->
+	<bean id="dbConnector" class="cz.semenko.word.database.DBconnector" />
+	
+	<!-- DAO -->
+	<bean id="dbViewer" class="cz.semenko.word.database.JdbcDBViewer"  >
+		<constructor-arg ref="dbConnector" />
+	</bean>
+	
+	<!-- DAO -->
+	<bean id="slowlyMemory" 
+		class="cz.semenko.word.technology.memory.slowly.SlowlyMemory" 
+		depends-on="dbViewer">
+			<constructor-arg ref="dbViewer" />
+	</bean>
+	<!-- Cashovaci pamet -->
+	<bean id="fastMemory"
+		class="cz.semenko.word.technology.memory.fast.FastMemory" depends-on="slowlyMemory">
+			<constructor-arg ref="slowlyMemory" />
+	</bean>
+	
+	<bean id="thoughtSaver" class="cz.semenko.word.aware.ThoughtsSaver" />
+	
+	<!-- Procesor pro myslenky -->
+	<bean id="knowledge" class="cz.semenko.word.aware.Knowledge" depends-on="thoughtUnionDecider">
+		<property name="fastMemory" ref="fastMemory" />
+		<property name="associations" ref="associations" />
+		<property name="thoughtUnionDecider" ref="thoughtUnionDecider" />
+		<property name="thoughtsSaver" ref="thoughtSaver" />
+		<property name="objectsCreationDecider" ref="ObjectsCreationDecider" />
+	</bean>
+	
+	<!-- Rozhodovaci componenta -->
+	<bean id="thoughtUnionDecider" class="cz.semenko.word.aware.policy.ThoughtUnionDecider" depends-on="fastMemory">
+		<property name="fastMemory" ref="fastMemory" />
+		<property name="associations" ref="associations" />
+	</bean>
+	
+	<bean id="associations" class="cz.semenko.word.persistent.Associations">
+		<property name="fastMemory" ref="fastMemory" />
+	</bean>
+	
+	<bean id="ObjectsCreationDecider" class="cz.semenko.word.aware.policy.ObjectsCreationDecider">
+		<property name="fastMemory" ref="fastMemory" />
+	</bean>
+	
+	
+	<!-- SWT GUI -->
+	<bean id="viewerGUI" class="cz.semenko.word.viewer.ViewerGUI">
+		<property name="inputTextKeyListener" ref="inputTextKeyListener" />
+	</bean>
+	
+	<!-- Model pro tlusteho klienta -->
+	<bean id="model" class="cz.semenko.word.viewer.Model">
+		<constructor-arg ref="dbViewer" />
+	</bean>
+	
+	<bean id="inputTextKeyListener" 
+		class="cz.semenko.word.viewer.listeners.InputTextKeyListener" depends-on="viewerGUI">
+		<property name="model" ref="model" />
+		<property name="viewerGUI" ref="viewerGUI" />
+	</bean>
+</beans>

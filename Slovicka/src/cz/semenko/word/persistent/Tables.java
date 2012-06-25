@@ -1,10 +1,5 @@
 package cz.semenko.word.persistent;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import cz.semenko.word.Config;
-import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
 
 /** Tables table **/
 public class Tables {

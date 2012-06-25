@@ -1,18 +1,16 @@
 package cz.semenko.word.viewer;
 
 import org.apache.log4j.Logger;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.layout.grouplayout.GroupLayout;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.layout.grouplayout.LayoutStyle;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.custom.StyledText;
-
-import cz.semenko.word.viewer.listeners.InputTextKeyListener;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.layout.grouplayout.GroupLayout;
+import org.eclipse.swt.layout.grouplayout.LayoutStyle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * SWT user interface
@@ -23,39 +21,19 @@ public class ViewerGUI {
 
 	protected Shell shell;
 	public static Logger logger = Logger.getRootLogger();
-	private static ViewerGUI instance = null;
 	private StyledText outputText = null;
+	// Spring komponenta
+	private KeyListener inputTextKeyListener;
 
-	private ViewerGUI() {}
-
-	/**
-	 * 
-	 * @return Singleton
-	 */
-	public static ViewerGUI getInstance() {
-		if (instance == null) {
-			synchronized(ViewerGUI.class) {
-				ViewerGUI inst = instance;
-				if (inst == null) {
-					instance = new ViewerGUI();
-				}
-			}
-		}
-		return instance;
+	public ViewerGUI() {
+		
 	}
-	
+
 	/**
-	 * Launch the application.
-	 * @param args
+	 * @param inputTextKeyListener the inputTextKeyListener to set
 	 */
-	public static void main(String[] args) {
-		try {
-			ViewerGUI window = ViewerGUI.getInstance();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage(), e);
-		}
+	public void setInputTextKeyListener(KeyListener inputTextKeyListener) {
+		this.inputTextKeyListener = inputTextKeyListener;
 	}
 
 	/**
@@ -168,7 +146,7 @@ public class ViewerGUI {
 		shell.setLayout(gl_shell);
 
 		// Listeners
-		inputText.addKeyListener(InputTextKeyListener.getInstance());
+		inputText.addKeyListener(inputTextKeyListener);
 	}
 
 	public StyledText getOutputText() {

@@ -30,7 +30,6 @@ public class Config {
 	private boolean knowledge_saveThoughtsToFile = false;
 	private String thoughtsSaver_filePathToSaveThoughts;
 	private int memoryCleaner_lowestCostForLeaving;
-	private String dbviewer_dbViewerClassName;
 	
 	private static Config instance;
 	private static XMLConfiguration conf;
@@ -65,7 +64,6 @@ public class Config {
 			setKnowledge_saveThoughtsToFile(conf.getBoolean("knowledge.saveThoughtsToFile"));
 			setThoughtsSaver_filePathToSaveThoughts(conf.getString("thoughtsSaver.filePathToSaveThoughts"));
 			setMemoryCleaner_lowestCostForLeaving(conf.getInt("memoryCleaner.lowestCostForLeaving"));
-			setDBViewerClassName(conf.getString("dbviewer.dbViewerClassName"));
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -260,12 +258,5 @@ public class Config {
 	}
 	public void setMemoryCleaner_lowestCostForLeaving(int memoryCleaner_lowestCostForLeaving) {
 		this.memoryCleaner_lowestCostForLeaving = memoryCleaner_lowestCostForLeaving;
-	}
-
-	public String getDBViewerClassName() {
-		return dbviewer_dbViewerClassName;
-	}
-	public void setDBViewerClassName(String param) {
-		this.dbviewer_dbViewerClassName = param;
 	}
 }

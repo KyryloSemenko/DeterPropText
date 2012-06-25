@@ -17,21 +17,8 @@ public class DBconnector {
 	static Logger logger = Logger.getLogger(DBconnector.class);
 	private static String dbURL;
 	private static Connection derbyConnection = null;
-	private static DBconnector instance = null;
 	
-	public static DBconnector getInstance() {
-		if (instance == null) {
-			synchronized(DBconnector.class) {
-				DBconnector inst = instance;
-				if (inst == null) {
-					instance = new DBconnector();
-				}
-			}
-		}
-		return instance;
-	}
-	
-	private DBconnector() {
+	public DBconnector() {
 		;
 	}
 	

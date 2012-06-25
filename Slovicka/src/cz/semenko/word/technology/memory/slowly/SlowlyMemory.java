@@ -9,11 +9,10 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import cz.semenko.word.aware.Thought;
-import cz.semenko.word.database.AbstractDBViewer;
+import cz.semenko.word.database.DBViewer;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Objects;
 import cz.semenko.word.persistent.Tables;
-import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
  * Třida reprezentuje pomalou paměť, která se nachází v DB.
@@ -22,29 +21,13 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
  *
  */
 public class SlowlyMemory {
-	private static SlowlyMemory instance;
-	/*private Set<Tables> t;
-	private Set<Objects> o;
-	private Set<Associations> a;*/
-	
-	public static SlowlyMemory getInstance() {
-		if (instance == null) {
-			synchronized(SlowlyMemory.class) {
-				SlowlyMemory inst = instance;
-				if (inst == null) {
-					instance = new SlowlyMemory();
-				}
-			}
-		}
-		return instance;
+	/** Objekt pod spravou Spring FW */
+	private DBViewer dbViewer;
+
+	public SlowlyMemory(DBViewer dbViewer) {
+		this.dbViewer = dbViewer;
 	}
-	
-	private SlowlyMemory() {
-		/*t = new Tables();
-		o = new Objects();
-		a = new Associations();*/
-	}
-	
+
 	/**
 	 * get Associations tables
 	 * @return
@@ -80,8 +63,7 @@ public class SlowlyMemory {
 	 */
 	public Long[] getCharsId(Vector<Character> missingChars) throws Exception {
 		Long[] result = new Long[missingChars.size()];
-		AbstractDBViewer db = AbstractDBViewer.getInstance();
-		List<Objects> primiteveObjects = db.getPrimitiveObjects((List<Character>)missingChars);
+		List<Objects> primiteveObjects = dbViewer.getPrimitiveObjects((List<Character>)missingChars);
 		Map<String, Objects> primObjectsMap = new TreeMap<String, Objects>();
 		for (Objects ob : primiteveObjects) {
 			primObjectsMap.put(ob.getSrc(), ob);
@@ -96,7 +78,7 @@ public class SlowlyMemory {
 		if (nonExistent.size() > 0) {
 			// Doplni objekty ktere jeste nejsou v DB
 			// Ziskame klice vlozenych znaku
-			Vector<Objects> newObjects = AbstractDBViewer.getInstance().getNewPrimitiveObjects(nonExistent);
+			Vector<Objects> newObjects = dbViewer.getNewPrimitiveObjects(nonExistent);
 			for (Objects ob : newObjects) {
 				primObjectsMap.put(ob.getSrc(), ob);
 			}
@@ -117,7 +99,6 @@ public class SlowlyMemory {
 	public Vector<Objects> getObjects(Vector<Long> missingObjectsId) throws Exception {
 		Vector<Objects> result = new Vector<Objects>();
 		result.setSize(missingObjectsId.size());
-		AbstractDBViewer dbViewer = AbstractDBViewer.getInstance();
 		StringBuffer sql = new StringBuffer("SELECT * FROM objects WHERE id IN (");
 		for (int i = 0; i < missingObjectsId.size(); i++) {
 			sql.append(missingObjectsId.get(i) + ", ");
@@ -153,45 +134,10 @@ public class SlowlyMemory {
 		Vector<Thought> thoughtPairsToUnion = new Vector<Thought>();
 		thoughtPairsToUnion.add(srcThought);
 		thoughtPairsToUnion.add(tgtThought);
-		Vector<Objects> objects = AbstractDBViewer.getInstance().getNewObjects(thoughtPairsToUnion);
+		Vector<Objects> objects = getNewObjects(thoughtPairsToUnion);
 		result = objects.firstElement();
 		return result;
 	}
-
-	/**
-	 * Vytvori nove Associations.
-	 * @param sql
-	 * @param numItems
-	 * @param tableName
-	 * @param idColumnName
-	 * @return
-	 * @throws Exception
-	 
-	public Vector<Associations> getNewAssociations(String sql, int numItems,
-			String tableName, String idColumnName) throws Exception {
-		DBViewer dbViewer = DBViewer.getInstance();
-		Vector<Long> idVector = dbViewer.executeUpdate(sql, numItems, tableName, idColumnName);
-		Vector<Associations> result = new Vector<Associations>();
-		StringBuffer select = new StringBuffer("SELECT * FROM associations WHERE id IN (");
-		for (int i = 0; i < idVector.size(); i++) {
-			select.append(idVector.get(i) + ", ");
-		}
-		select.delete(select.length()-2, select.length());
-		select.append(")");
-		ResultSet rs = dbViewer.executeQuery(select.toString());
-		while(rs.next()) {
-			long id = rs.getLong("id");
-			long srcId = rs.getLong("src_id");
-			long srcTable = rs.getLong("src_tbl");
-			long tgtId = rs.getLong("tgt_id");
-			long tgtTable = rs.getLong("tgt_tbl");
-			long cost = rs.getLong("cost");
-			Long objId = rs.getLong("obj_id");
-			result.add(new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost));
-		}
-		
-		return result;
-	}*/
 
 	/**
 	 * Dohleda v DB Associations. Jestli nenajde, vrati null
@@ -201,7 +147,6 @@ public class SlowlyMemory {
 	 * @throws Exception
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
-		AbstractDBViewer dbViewer = AbstractDBViewer.getInstance();
 		Associations result = null;
 		String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveObject().getId()
 			+ " AND tgt_id = " + tgtThought.getActiveObject().getId();
@@ -230,7 +175,7 @@ public class SlowlyMemory {
 	 * @throws Exception 
 	 */
 	public void increaseAssociationsCost(Vector<Long> associationsId) throws Exception {
-		AbstractDBViewer.getInstance().increaseAssociationsCost(associationsId);
+		dbViewer.increaseAssociationsCost(associationsId);
 	}
 
 	/**
@@ -239,7 +184,7 @@ public class SlowlyMemory {
 	 * @throws SQLException 
 	 */
 	public void increaseAssociationsCostToObjectsId(Long[] obIdArray) throws SQLException {
-		AbstractDBViewer.getInstance().increaseAssociationsCostToObjectsId(obIdArray);
+		dbViewer.increaseAssociationsCostToObjectsId(obIdArray);
 		
 	}
 
@@ -267,7 +212,7 @@ public class SlowlyMemory {
 		if (buff.length() > 0) {
 			buff.delete(buff.length() - 4, buff.length());
 			String sql = "SELECT * FROM associations WHERE " + buff.toString();
-			ResultSet rs = AbstractDBViewer.getInstance().executeQuery(sql);
+			ResultSet rs = dbViewer.executeQuery(sql);
 			while (rs.next()) {
 				Long id = rs.getLong("id");
 				Long objId = rs.getLong("obj_id");
@@ -295,34 +240,20 @@ public class SlowlyMemory {
 		return result;
 	}
 
-	/**
-	 * Vytvori nove Objects, nove Associations a z Objects - nove Thoughts.
-	 * Objects a associations prida do cashe FastMemory.
-	 * @param thoughtPairsToUnion - pary Thought, 
-	 * ktere zarucene nemaji Associations ani spolecny Objects.
-	 * @return
-	 * @throws Exception 
-	 */
-	public Vector<Thought> createNewThoughtsFromPairs(
-			Vector<Thought> thoughtPairsToUnion) throws Exception {
-		Vector<Thought> result = new Vector<Thought>();
-		/** Vytvori nove objects */
-		Vector<Objects> newObjects = AbstractDBViewer.getInstance().getNewObjects(thoughtPairsToUnion);
-		/** Prida nove objects do FastMemory */
-		FastMemory.getInstance().addObjects(newObjects);
-		/** Vytvori Thoughts z objektu */
-		for (int i = 0; i < newObjects.size(); i++) {
-			Objects nextOb = newObjects.get(i);
-			Thought th = new Thought(nextOb, new Vector<Associations>());
-			result.add(th);
-		}
+	public Vector<Associations> insertAssociations(
+			Vector<Thought> thoughtPairsToUnion, Vector<Objects> newObjects)
+			throws SQLException {
 		/** Vytvori nove associations */
 		Vector<Associations> newAssociations = 
-			AbstractDBViewer.getInstance().insertAssociations(thoughtPairsToUnion, newObjects);
-		/** Prida nove associations do FastMemory */
-		FastMemory.getInstance().addAssociations(newAssociations);
+			dbViewer.insertAssociations(thoughtPairsToUnion, newObjects);
+		return newAssociations;
+	}
 
-		return result;
+	public Vector<Objects> getNewObjects(Vector<Thought> thoughtPairsToUnion)
+			throws Exception {
+		/** Vytvori nove objects */
+		Vector<Objects> newObjects = dbViewer.getNewObjects(thoughtPairsToUnion);
+		return newObjects;
 	}
 
 	/**
@@ -332,7 +263,7 @@ public class SlowlyMemory {
 	 * @throws Exception 
 	 */
 	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
-		Vector<Associations> result = AbstractDBViewer.getInstance().getAllAssociations(objectsId);		
+		Vector<Associations> result = dbViewer.getAllAssociations(objectsId);		
 		return result;
 	}
 
@@ -362,7 +293,7 @@ public class SlowlyMemory {
 			}
 		}
 		// get Superior objects from DB
-		Vector<Long> superiorObjectsId = AbstractDBViewer.getInstance().getSuperiorObjectsId(pairsToFind);
+		Vector<Long> superiorObjectsId = dbViewer.getSuperiorObjectsId(pairsToFind);
 		// doplnit null hodnoty pro zachovani struktury vysledku
 		for (int i = 0; i < positionsOfNull.size(); i++) {
 			superiorObjectsId.add(positionsOfNull.get(i), null);

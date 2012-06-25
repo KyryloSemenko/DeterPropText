@@ -1,14 +1,10 @@
 package cz.semenko.word.aware;
 
 import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.PriorityQueue;
 import java.util.Vector;
 
-import cz.semenko.word.model.memory.Memory;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Objects;
-import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
  * Tato trida ma reprezentovat myslenku. Myslenky jsou v mysleni - Knowledge.

@@ -74,10 +74,11 @@
 		nizsi COST -->
 		<lowestCostForLeaving>2</lowestCostForLeaving>
 	</memoryCleaner>
-	<!-- Known classes: JdbcDBViewer and HibernateDBViewer -->
+	<!-- Known classes: JdbcDBViewer and HibernateDBViewer 
+	Deprecated. Misto teto konfigurace bude pouzita konfigurace Springu
 	<dbviewer>
 		<dbViewerClassName>
 			cz.semenko.word.database.JdbcDBViewer
 		</dbViewerClassName>
-	</dbviewer>
+	</dbviewer>-->
 </config>

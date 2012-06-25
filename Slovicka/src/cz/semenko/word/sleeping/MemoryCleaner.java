@@ -1,18 +1,20 @@
 package cz.semenko.word.sleeping;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
-import cz.semenko.word.database.AbstractDBViewer;
+import cz.semenko.word.database.DBViewer;
 import cz.semenko.word.persistent.Associations;
 
 
 public class MemoryCleaner {
 	private static MemoryCleaner instance = null;
+	
+	// Pod spravou Spring FW
+	DBViewer dbViewer;
 	
 	public static MemoryCleaner getInstance() {
 		if (instance == null) {
@@ -42,14 +44,13 @@ public class MemoryCleaner {
 	private void cleanMemoryFromRedundantAssociations (int lowestCostForLeaving) throws SQLException {
 		// Zacina z posledniho objektu
 		int numOfAssoc = 200; //TODO add to config file
-		AbstractDBViewer viewer = AbstractDBViewer.getInstance();
-		Long lastIdAssociationsTable = viewer.getLastIdAssociationsTable();
+		Long lastIdAssociationsTable = dbViewer.getLastIdAssociationsTable();
 		for (long i = lastIdAssociationsTable; i > 0; i = i - numOfAssoc) {
 			System.out.println(i);
 			if (i < 200) {
 				System.out.println(200);
 			}
-			List associations = viewer.getAssotiations(
+			List associations = dbViewer.getAssotiations(
 					i-numOfAssoc, 
 					i, 
 					lowestCostForLeaving);		
@@ -69,7 +70,7 @@ public class MemoryCleaner {
 					objectsId.add(nextAssoc.getSrcId());
 					objectsId.add(nextAssoc.getTgtId());
 				}
-				List<Associations> nextLevel = viewer.getAllAssociationsUpToCost(objectsId, lowestCostForLeaving);
+				List<Associations> nextLevel = dbViewer.getAllAssociationsUpToCost(objectsId, lowestCostForLeaving);
 				if (nextLevel.size() == 0) {
 					break;
 				}
@@ -87,7 +88,7 @@ public class MemoryCleaner {
 					assocIdToDelete.add(nextLevel.get(n).getId());
 				}
 			}
-			viewer.deleteAssociations(assocIdToDelete);
+			dbViewer.deleteAssociations(assocIdToDelete);
 		}
 	}
 

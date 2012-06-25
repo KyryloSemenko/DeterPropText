@@ -2,11 +2,6 @@ package cz.semenko.word.technology.memory.fast;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -52,33 +47,18 @@ public class FastMemory {
 	 * new elements are added to the beginning of the collection.
 	 */
 	private Collection<Associations> associationsCollection;
-	
-	/**
-	 * 
-	 * @return singleton
-	 * @throws SQLException
-	 */
-	public static FastMemory getInstance() throws SQLException {
-		if (instance == null) {
-			synchronized(FastMemory.class) {
-				FastMemory inst = instance;
-				if (inst == null) {
-					instance = new FastMemory();
-				}
-			}
-		}
-		return instance;
-	}
+	/** Objekt pod spravou Spring kontejneru */
+	private SlowlyMemory slowlyMemory;
 	
 	/**
 	 * Constucor
 	 * @throws SQLException
 	 */
-	private FastMemory() throws SQLException {
-		SlowlyMemory sm = SlowlyMemory.getInstance();
-		associationsCollection = sm.getAssociations();
-		objectsCollection = sm.getObjects();
-		tablesCollection = sm.getTables();
+	public FastMemory(SlowlyMemory slowlyMemory) throws SQLException {
+		this.slowlyMemory = slowlyMemory;
+		associationsCollection = slowlyMemory.getAssociations();
+		objectsCollection = slowlyMemory.getObjects();
+		tablesCollection = slowlyMemory.getTables();
 	}
 
 	/**
@@ -124,7 +104,7 @@ public class FastMemory {
 			}
 		}
 		if (missingChars.size() > 0) {
-			Long[] findingChars = SlowlyMemory.getInstance().getCharsId(missingChars);			
+			Long[] findingChars = slowlyMemory.getCharsId(missingChars);			
 			// doplni chybejici znaky v result z findingChars
 			int pos = 0;
 			int tableObjectsSize = Config.getInstance().getFastMemory_tablesObjectsSize();
@@ -195,7 +175,7 @@ public class FastMemory {
 			missingObjectsId.add(objectsId.get(i));
 		}
 		if (missingObjectsId.size() > 0) { // dohlesat objekty v DB
-			Vector<Objects> objectsFromSlowlyMemory = SlowlyMemory.getInstance().getObjects(missingObjectsId);
+			Vector<Objects> objectsFromSlowlyMemory = slowlyMemory.getObjects(missingObjectsId);
 			// Vyplnit chybejici objekty v result, doplnit objectsTableCollection
 			int pos = 0;
 			for (int i = 0; i < result.size(); i++) {
@@ -215,7 +195,7 @@ public class FastMemory {
 
 	/* Viz. Memory getNewObject(...) */
 	public Objects getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
-		Objects result = SlowlyMemory.getInstance().getNewObject(srcThought, tgtThought);
+		Objects result = slowlyMemory.getNewObject(srcThought, tgtThought);
 		// pridat object na konec kolekce
 		Vector<Objects> vector = new Vector<Objects>();
 		vector.add(result);
@@ -249,7 +229,7 @@ public class FastMemory {
 			}
 		}
 		// Nenalezeno. Zkusit najit v SlowlyMemory
-		Associations result = SlowlyMemory.getInstance().getAssociation(srcThought, tgtThought);
+		Associations result = slowlyMemory.getAssociation(srcThought, tgtThought);
 		if (result == null) {
 			return null;
 		}
@@ -280,7 +260,7 @@ public class FastMemory {
 				}
 			}
 		}
-		SlowlyMemory.getInstance().increaseAssociationsCostToObjectsId(obIdArray);
+		slowlyMemory.increaseAssociationsCostToObjectsId(obIdArray);
 	}
 
 	/**
@@ -292,7 +272,7 @@ public class FastMemory {
 	 * @throws Exception 
 	 */
 	public void increaseAssociationsCost(Vector<Long> associationsId) throws Exception {
-		SlowlyMemory.getInstance().increaseAssociationsCost(associationsId);
+		slowlyMemory.increaseAssociationsCost(associationsId);
 		Vector<Associations> localAssocTable = (Vector<Associations>)associationsCollection;
 		for (int i = 0; i < localAssocTable.size(); i++) {
 			Associations nextAssoc = localAssocTable.get(i);
@@ -320,7 +300,7 @@ public class FastMemory {
 	 * Zvedne nahoru nalezene.
 	 * Nenalezene dohleda v SlowlyMemory a prida k FastMemory cashe.
 	 * 
-	 * Supervision associations. Does not create new.
+	 * Find associations. Does not create new.
 	 * He picks up finding.
 	 * Found in the supervisors and adding SlowlyMemory FastMemory Cash.
 	 * 
@@ -360,7 +340,7 @@ public class FastMemory {
 		}
 		// dohledat associations v SlowlyMemory
 		Vector<Associations> assocFromSlowlyMemory = 
-			SlowlyMemory.getInstance().getAssociations(thoughtsPairToUnion, notFoundPositions);
+			slowlyMemory.getAssociations(thoughtsPairToUnion, notFoundPositions);
 		// Pripojit doledane assocFromSlowlyMemory k resultu
 		for (int i = 0; i < assocFromSlowlyMemory.size(); i++) {
 			Associations nextAssoc = assocFromSlowlyMemory.get(i);
@@ -385,16 +365,42 @@ public class FastMemory {
 	 */
 	public void createNewAssociationsAndObjects(
 			Vector<Thought> thoughtPairsToUnion) throws Exception {
-		Vector<Thought> newThoughts = SlowlyMemory.getInstance().createNewThoughtsFromPairs(thoughtPairsToUnion);
-		Vector<Objects> newObjects = new Vector<Objects>();
+
+		Vector<Objects> newObjects = slowlyMemory.getNewObjects(thoughtPairsToUnion);
+		Vector<Thought> newThoughts = new Vector<Thought>();
+		
+		/** Prida nove objects do FastMemory */
+		addObjects(newObjects);
+		
+		/** Vytvori Thoughts z objektu */
+		for (int i = 0; i < newObjects.size(); i++) {
+			Objects nextOb = newObjects.get(i);
+			Thought th = new Thought(nextOb, new Vector<Associations>());
+			newThoughts.add(th);
+		}
+		
+		Vector<Associations> newAssociations = slowlyMemory.insertAssociations(
+				thoughtPairsToUnion, newObjects);
+		// Prida nove associations k FastMemory cashe
+		getAssociations(thoughtPairsToUnion);
+		
+		// Prida nove associations do FastMemory
+		addAssociations(newAssociations);
+		
+		// Prida aktivni objekty do FastMemory cashe
+		addObjects(newThoughts);
+		
+		// TODO vymyslit test
+	}
+
+	public void addObjects(Vector<Thought> newThoughts) {
+		Vector<Objects> activeObjects = new Vector<Objects>();
 		for (int i = 0; i < newThoughts.size(); i++) {
 			Thought nextThought = newThoughts.get(i);
-			newObjects.add(nextThought.getActiveObject());
+			activeObjects.add(nextThought.getActiveObject());
 		}
 		// Prida nove Objects do FastMemory
-		addObjects(newObjects);
-		// Prida nove associations k FastMemory cashe
-		Vector<Associations> newAssociations = getAssociations(thoughtPairsToUnion);
+		addObjects(activeObjects);
 	}
 
 	/**
@@ -417,7 +423,7 @@ public class FastMemory {
 		Vector<Associations> tempAssociations = (Vector<Associations>)associationsCollection;
 		Vector<Associations> result = new Vector<Associations>();
 		if (deepSearch) { // TODO porovnat s Melkym vyhledavanim v ruznych rezimech.
-			result = SlowlyMemory.getInstance().getAllAssociations(objectsId);
+			result = slowlyMemory.getAllAssociations(objectsId);
 		} else {
 			boolean searchAtAllElements = Config.getInstance().isFastMemory_searchToAssociationsAtAllElements();
 			Vector<Long> notFoundObjectsId = (Vector<Long>)objectsId.clone();
@@ -441,13 +447,13 @@ public class FastMemory {
 					 * 		dohledat associations jen u chybejicich prvku.*/
 					if (searchAtAllElements) {
 						// Zahodit nalezene a vyhledat vse v SlowlyMemory
-						result = SlowlyMemory.getInstance().getAllAssociations(objectsId);
+						result = slowlyMemory.getAllAssociations(objectsId);
 					} else {
 						// Pokracovat ve filtrovani notFoundObjectsId, dohledat jen chybejici a pridat k resultu
 						continue;
 					}
 				}
-				Vector<Associations> missingAssociations = SlowlyMemory.getInstance().getAllAssociations(notFoundObjectsId);
+				Vector<Associations> missingAssociations = slowlyMemory.getAllAssociations(notFoundObjectsId);
 				result.addAll(missingAssociations);
 			}
 		}
@@ -461,7 +467,7 @@ public class FastMemory {
 	 * Jestli assocoation existuje - zvedne ji o jednu pozici nahoru.
 	 * @param newAssociations
 	 */
-	public void addAssociations(Vector<Associations> newAssociations) {
+	public void addAssociations(Collection<Associations> newAssociations) {
 		/** Odstrani null hodnoty z parametru */
 		while (newAssociations.contains(null)) {
 			newAssociations.remove(null);
@@ -470,8 +476,7 @@ public class FastMemory {
 			return;
 		}
 		Vector<Associations> tempAssociations = (Vector<Associations>)associationsCollection;
-		for (int i = 0; i < newAssociations.size(); i++) {
-			Associations ass = newAssociations.get(i);
+		for (Associations ass : newAssociations) {
 			int pos = tempAssociations.indexOf(ass);
 			if (pos == -1) { // associace nenalezena. Pridat na zacatek.
 				tempAssociations.add(0, ass);
@@ -496,10 +501,9 @@ public class FastMemory {
 	 * Jestli objects existuje - zvedne ho o jednu pozici nahoru.
 	 * @param newObjects
 	 */
-	public void addObjects(Vector<Objects> newObjects) {
+	public void addObjects(Collection<Objects> newObjects) {
 		Vector<Objects> tempObjects = (Vector<Objects>)objectsCollection;
-		for (int i = 0; i < newObjects.size(); i++) {
-			Objects ob = newObjects.get(i);
+		for (Objects ob : newObjects) {
 			int pos = tempObjects.indexOf(ob);
 			if (pos == -1) { // associace nenalezena. Pridat na zacatek.
 				tempObjects.add(0, ob);
@@ -538,5 +542,64 @@ public class FastMemory {
 		Vector<Associations> consequenceAssociations = getAllAssociations(vector);
 		return new Thought(activeObject, consequenceAssociations);
 	}
+	
+	/**
+	 * Dohleda vsechny objekty. Nevytvari nove. Zvedne pozici objektu v cashe jestli existuje.
+	 * Prida object do cashe jestli neexistuje.
+	 * @param inputObjects
+	 * @return
+	 * @throws Exception
+	 */
+	public Vector<Objects> getObjects(Long[] inputObjects) throws Exception {
+		Vector<Long> unitedObjectsId = new Vector<Long>();
+		for (int i = 0; i < inputObjects.length; i++) {
+			unitedObjectsId.add(inputObjects[i]);
+		}
+		Vector<Objects> result = getObjects(unitedObjectsId);
+		return result;
+	}
 
+	/**
+	 * Vytvori nove Associations pro pary Thought.
+	 * @param nonExistsPairs - pary Thought pro spojeni, ktere zarucene
+	 * nemaji Objects ani Associations.
+	 * @return Vector<Associations> serazeny stejne jako vstupni data.
+	 * @throws Exception 
+	 * @throws SQLException 
+	 */
+	public Vector<Associations> getNewAssociations(
+			Vector<Thought> nonExistsPairs) throws SQLException, Exception {
+		createNewAssociationsAndObjects(nonExistsPairs);
+		Vector<Associations> result = getAssociations(nonExistsPairs);
+		return result;
+	}
+	
+	/**
+	 * Dohleda vsechny asociace. Nevytvari nove. Zvedne pozici asociace v cashe jestli existuje.
+	 * Prida asociaci do cashe jestli neexistuje.
+	 * @param objects
+	 * @return
+	 * @throws Exception 
+	 */
+	public Vector<Associations> getAssociationsToObjects(Vector<Objects> objects) throws Exception {
+		Vector<Long> objectsId = new Vector<Long>();
+		for (int i = 0; i < objects.size(); i++) {
+			objectsId.add(objects.get(i).getId());
+		}
+		Vector<Associations> result = getAllAssociations(objectsId);		
+		return result;
+	}
+	
+	/**
+	 * Vyhleda id znaku ve FastMemory, kdyz nenajde tak v SlowlyMemory,
+	 * kdyz nenajde tak zalozi novy znak ve SlowlyMemory.
+	 */
+	public Long[] getObjects(char[] inputChars) throws Exception {
+		Long[] result = getCharsId(inputChars);
+		return result;
+	}
+	
+	public Vector<Long> getSuperiorObjectsId(Vector<Long> layer, int constant) throws SQLException {
+		return slowlyMemory.getSuperiorObjectsId(layer, constant);
+	}
 }

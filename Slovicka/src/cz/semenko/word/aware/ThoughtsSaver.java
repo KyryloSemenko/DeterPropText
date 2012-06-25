@@ -9,12 +9,19 @@ import java.util.Vector;
 import cz.semenko.word.Config;
 
 public class ThoughtsSaver {
-	private static ThoughtsSaver instance = null;
 	private BufferedWriter bw = null;
 	
-	private ThoughtsSaver() throws IOException {
+	public ThoughtsSaver() throws IOException {
 		String filePath = Config.getInstance().getThoughtsSaver_filePathToSaveThoughts();
-		bw = new BufferedWriter(new FileWriter(new File(filePath)));
+		File fileToSaveThoughts = new File(filePath);
+		if (!fileToSaveThoughts.exists()) {
+			File folder = new File(fileToSaveThoughts.getParent());
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			fileToSaveThoughts.createNewFile();
+		}
+		bw = new BufferedWriter(new FileWriter(fileToSaveThoughts));
 	}
 	
 	@Override
@@ -27,19 +34,6 @@ public class ThoughtsSaver {
 	    } finally {
 	        super.finalize();
 	    }		
-	}
-	
-	public static ThoughtsSaver getInstance() throws IOException {
-		if (instance == null) {
-			synchronized(Config.class) {
-				ThoughtsSaver inst = instance;
-				if (inst == null) {
-					instance = new ThoughtsSaver();
-					// conf je vytvoren
-				}
-			}
-		}
-		return instance;
 	}
 
 	/**

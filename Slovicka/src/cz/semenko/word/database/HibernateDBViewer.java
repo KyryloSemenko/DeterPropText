@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.hibernate.Query;
@@ -14,7 +13,7 @@ import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Objects;
 
-public class HibernateDBViewer extends AbstractDBViewer {
+public class HibernateDBViewer implements DBViewer {
 
 
 	/* (non-Javadoc)
@@ -105,7 +104,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#cleanMemoryFromRedundantObjects()
 	 */
 	@Override
-	protected void cleanMemoryFromRedundantObjects() throws SQLException {
+	public void cleanMemoryFromRedundantObjects() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -114,7 +113,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#resetAssociationCost()
 	 */
 	@Override
-	protected void resetAssociationCost() throws SQLException {
+	public void resetAssociationCost() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -123,7 +122,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#removeEmptyRowsFromTable(int, long, java.lang.String, java.lang.String, java.util.Vector)
 	 */
 	@Override
-	protected long removeEmptyRowsFromTable(int rowsToStatement,
+	public long removeEmptyRowsFromTable(int rowsToStatement,
 			long lastExistsId, String tableName, String idRowName,
 			Vector<String> preparedStatementStrings) throws SQLException {
 		// TODO Auto-generated method stub
@@ -134,7 +133,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#removeEmptyRows()
 	 */
 	@Override
-	protected void removeEmptyRows() throws SQLException {
+	public void removeEmptyRows() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -143,7 +142,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#finalize()
 	 */
 	@Override
-	protected void finalize() throws Throwable {
+	public void finalize() throws Throwable {
 		// TODO Auto-generated method stub
 		
 	}
@@ -187,15 +186,6 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getRightNeighbours(java.lang.String)
-	 */
-	@Override
-	public Vector<String> getRightNeighbours(String src) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see cz.semenko.word.database.AbstractDBViewer#getSrcAndTgt(java.lang.Long, java.lang.Long)
 	 */
 	@Override
@@ -218,7 +208,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#getStringVectorFromPools(java.util.Map, java.util.Vector, java.util.Map, java.util.Map)
 	 */
 	@Override
-	protected Vector<String> getStringVectorFromPools(
+	public Vector<String> getStringVectorFromPools(
 			Map<Long, String> paramStringsMap,
 			Vector<Associations> associations, Map<Long, Objects> objectsPool,
 			Map<Long, Associations> associationsPool) {
@@ -230,7 +220,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#getAssociationsFromPool(java.util.Vector, java.util.Map, java.lang.StringBuffer)
 	 */
 	@Override
-	protected Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
+	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
 			Map<Long, Associations> associationsPool,
 			StringBuffer selectAssocBuff) throws SQLException {
 		// TODO Auto-generated method stub
@@ -241,7 +231,7 @@ public class HibernateDBViewer extends AbstractDBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.util.Map, java.util.Map)
 	 */
 	@Override
-	protected Vector<String> getSrc(Map<Long, String> paramStringsMap,
+	public Vector<String> getSrc(Map<Long, String> paramStringsMap,
 			Map<Long, Associations> targetAssociations) throws Exception {
 		// TODO Auto-generated method stub
 		return null;

@@ -1,35 +1,36 @@
 package cz.semenko.word.aware.policy;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.Layers;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
 import cz.semenko.word.technology.memory.fast.FastMemory;
-import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
 
 public class ThoughtUnionDecider {
 	
-	private static ThoughtUnionDecider instance = null;
-	
-	private ThoughtUnionDecider() {
-		;
+	// fastMemory slowlyMemory a associations doda Spring FW
+	private FastMemory fastMemory;
+	private Associations associations;
+
+
+	/**
+	 * @param fastMemory the fastMemory to set
+	 */
+	public void setFastMemory(FastMemory fastMemory) {
+		this.fastMemory = fastMemory;
+	}
+
+	public ThoughtUnionDecider() {
+
 	}
 	
-	public static ThoughtUnionDecider getInstance() {
-		if (instance == null) {
-			synchronized(ThoughtUnionDecider.class) {
-				ThoughtUnionDecider inst = instance;
-				if (inst == null) {
-					instance = new ThoughtUnionDecider();
-				}
-			}
-		}
-		return instance;
+	/**
+	 * @param associations the associations to set
+	 */
+	public void setAssociations(Associations associations) {
+		this.associations = associations;
 	}
 
 	/**
@@ -155,9 +156,9 @@ public class ThoughtUnionDecider {
 					}
 				} else {
 					// rozhodovat dle cost asociace. Jestli obe associace maji stejnou Cost, spoji dva prvni objekty.
-					Associations assFirst = Associations.getAssociation(th1, th2);
+					Associations assFirst = associations.getAssociation(th1, th2);
 					long firstAssocCost = (assFirst == null ? 0 : assFirst.getCost());
-					Associations assSecond = Associations.getAssociation(th2, th3);
+					Associations assSecond = associations.getAssociation(th2, th3);
 					long secondAssocCost = (assSecond == null ? 0 : assSecond.getCost());
 					if (secondAssocCost == firstAssocCost) {
 						doNotRelate.add(nextThoughtFollowingKey); 
@@ -207,13 +208,12 @@ public class ThoughtUnionDecider {
 		while (layers.hasLastLayerPairs()) {
 			int constant = layers.getCurrentConstant();
 			Vector<Long> layer = layers.getCurrentLayer();
-			Vector<Long> superiorLayer = SlowlyMemory.getInstance().
-				getSuperiorObjectsId(layer, constant);
+			Vector<Long> superiorLayer = fastMemory.getSuperiorObjectsId(layer, constant);
 			layers.setLastLayer(superiorLayer);
 		}
 		// Sestavime objekty od spicek dolu
 		Long[] result = layers.getHighlyObjects();
-		FastMemory.getInstance().increaseAssociationsCostToObjectsId(result);
+		fastMemory.increaseAssociationsCostToObjectsId(result);
 		return result;
 	}
 

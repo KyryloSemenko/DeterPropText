@@ -1,19 +1,18 @@
 package cz.semenko.word.persistent;
 
-import java.sql.SQLException;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
-import cz.semenko.word.model.memory.Memory;
-import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
+import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /** Associations table **/
 public class Associations {
+	// Objekt doda Spring
+	private FastMemory fastMemory;
 	private Long id;
 	private Long objId; // reference na vytvoreny objekt
 	private Long srcId;
@@ -24,6 +23,13 @@ public class Associations {
 	Logger logger = Logger.getLogger(Associations.class);
 	
 	public Associations() {}
+
+	/**
+	 * @param memory the memory to set
+	 */
+	public void setFastMemory(FastMemory memory) {
+		this.fastMemory = memory;
+	}
 
 	public Associations(Long id, Long objId, Long srcId, Long srcTable, Long tgtId,
 			Long tgtTable, Long cost) {
@@ -47,36 +53,6 @@ public class Associations {
 			return true;
 		}
 		return false;
-		/** Muze dochazet k ruznym chybam. Associace se stejnym ID bude mit jine hodnoty,
-		 * nebo Associace s ruznymi ID budou mit stejne hodnoty.
-		 * Overim oba pripady, ale nevim jak rychle bude fungovat tato metoda.
-		 * TODO overit rychlost metody.
-		 * TODO az bude odladen beh, odstranit overovani duplicit pro vetsi rychlost.
-		 
-		if (this.getId().compareTo(that.getId()) == 0) {
-			if (this.getCost().compareTo(that.getCost()) != 0 
-					|| this.getObjId().compareTo(that.getObjId()) != 0
-					|| this.getSrcId().compareTo(that.getSrcId()) != 0
-					|| this.getTgtId().compareTo(that.getTgtId()) != 0) {
-				String error = ("Associace maji stejne ID, ale ruzny obsah. ID:" + this.getId());
-				logger.error(error);
-				System.out.println(error);
-				System.exit(1);
-			}
-			return true;
-		} else {
-			if (this.getCost().compareTo(that.getCost()) == 0 
-					&& this.getObjId().compareTo(that.getObjId()) == 0
-					&& this.getSrcId().compareTo(that.getSrcId()) == 0
-					&& this.getTgtId().compareTo(that.getTgtId()) == 0) {
-				String error = ("Associace maji ruzne ID, ale stejny obsah. ID1: " + this.getId()
-						+ ", ID2: " + that.getId());
-				logger.error(error);
-				System.out.println(error);
-				System.exit(1);
-			}
-		}
-		return false;*/
 	}
 	
 	@Override
@@ -153,7 +129,7 @@ public class Associations {
 	 * @return Associations
 	 * @throws Exception 
 	 */
-	public static Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
+	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
 		Vector<Associations> assocVector = srcThought.getConsequenceAssociations();
 		Associations result = null;
 		for (int i = 0; i < assocVector.size(); i++) {
@@ -163,7 +139,7 @@ public class Associations {
 			}
 		}
 		// Dohledat Association v Memory
-		result = Memory.getInstance().getAssociation(srcThought, tgtThought);
+		result = fastMemory.getAssociation(srcThought, tgtThought);
 		return result;
 	}
 

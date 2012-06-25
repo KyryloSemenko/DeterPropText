@@ -12,7 +12,7 @@
 	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.asm-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.aspects-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.beans-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.context-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.context-3.0.5.RELEASE.jar" sourcepath="lib/Spring Framework 3.0/sources/org.springframework.context-sources-3.0.5.RELEASE.zip"/>
 	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.context.support-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.core-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/Spring Framework 3.0/org.springframework.expression-3.0.5.RELEASE.jar"/>
@@ -52,12 +52,11 @@
 	<classpathentry kind="lib" path="lib/all/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/all/slf4j-ext-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/all/slf4j-jcl-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/all/slovicka.jar"/>
-	<classpathentry kind="lib" path="lib/all/slovickaViewer.jar"/>
 	<classpathentry kind="lib" path="lib/all/swing2swt.jar"/>
 	<classpathentry kind="lib" path="lib/all/swt-debug.jar"/>
 	<classpathentry kind="lib" path="lib/all/swt-doc.jar"/>
 	<classpathentry kind="lib" path="lib/all/swt-grouplayout.jar"/>
 	<classpathentry kind="lib" path="lib/all/swt.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-4.11-SNAPSHOT-20120416-1530.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

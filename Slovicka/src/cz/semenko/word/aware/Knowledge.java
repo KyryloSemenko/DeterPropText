@@ -1,25 +1,16 @@
 package cz.semenko.word.aware;
 
-import java.beans.DesignMode;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
-
-//import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.policy.ObjectsCreationDecider;
 import cz.semenko.word.aware.policy.ThoughtUnionDecider;
-import cz.semenko.word.model.memory.Memory;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Objects;
-import cz.semenko.word.technology.memory.completion.TextReader;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
@@ -30,25 +21,54 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
  *
  */
 public class Knowledge {
-	private static Knowledge instance = null;
 	private Vector<Thought> thoughts = new Vector<Thought>();
+	// Objekt nasetuje Spring
+	private FastMemory fastMemory;
+	// Objekt nasetuje Spring
+	private Associations associations;
+	// Objekt nasetuje Spring
+	private ThoughtUnionDecider thoughtUnionDecider;
+	// Object nasetuje Spring
+	private ThoughtsSaver thoughtsSaver;
+	// Object nasetuje Spring
+	private ObjectsCreationDecider objectsCreationDecider;
 	
-	private Knowledge() {}	
+	/**
+	 * @param fastMemory the fastMemory to set
+	 */
+	public void setFastMemory(FastMemory fastMemory) {
+		this.fastMemory = fastMemory;
+	}
+
+	public Knowledge() {}	
 
 	/**
-	 * 
-	 * @return singleton of <code>Knovledge</code> object
+	 * @param objectsCreationDecider the objectsCreationDecider to set
 	 */
-	public static Knowledge getInstance() {
-		if (instance == null) {
-			synchronized(Knowledge.class) {
-				Knowledge inst = instance;
-				if (inst == null) {
-					instance = new Knowledge();
-				}
-			}
-		}
-		return instance;
+	public void setObjectsCreationDecider(
+			ObjectsCreationDecider objectsCreationDecider) {
+		this.objectsCreationDecider = objectsCreationDecider;
+	}
+
+	/**
+	 * @param thoughtsSaver the thoughtsSaver to set
+	 */
+	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {
+		this.thoughtsSaver = thoughtsSaver;
+	}
+
+	/**
+	 * @param thoughtUnionDecider the thoughtUnionDecider to set
+	 */
+	public void setThoughtUnionDecider(ThoughtUnionDecider thoughtUnionDecider) {
+		this.thoughtUnionDecider = thoughtUnionDecider;
+	}
+
+	/**
+	 * @param associations the associations to set
+	 */
+	public void setAssociations(Associations associations) {
+		this.associations = associations;
 	}
 	
 	/**
@@ -102,7 +122,7 @@ public class Knowledge {
 			int tailLenght) throws Exception {
 		while (true) {
 			/** Ziskame seznam pozici prvku v thoughts2 pro spojeni.*/
-			Vector<Integer> positionsToRelation = ThoughtUnionDecider.getInstance().getPositionsToRelation(thoughts2);
+			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(thoughts2);
 			if (positionsToRelation.isEmpty()) {
 				return thoughts2;
 			}
@@ -120,9 +140,9 @@ public class Knowledge {
 				throw new Exception("Zde nemaji co delat prazdne objekty. " + unitedObjectsId);
 			}
 			/** Ziskame vsechny asociace novych objektu. Nevytvarime nove. */
-			Vector<Associations> allAssociations = Memory.getInstance().getAllAssociations(unitedObjectsId);
+			Vector<Associations> allAssociations = fastMemory.getAllAssociations(unitedObjectsId);
 			/** Ziskame vsechny nove objekty. Nevytvarime nove. */
-			Vector<Objects> newObjects = Memory.getInstance().getObjects(unitedObjectsId);
+			Vector<Objects> newObjects = fastMemory.getObjects(unitedObjectsId);
 			/** sestavime Thoughts. */
 			Vector<Thought> newThoughts = new Vector<Thought>();
 			for (int n = 0; n < newObjects.size(); n++) {
@@ -161,7 +181,7 @@ public class Knowledge {
 		for (int k = 0; k < positionsToRelation.size(); k++) {
 			Thought srcThought = thoughts2.get(positionsToRelation.get(k));
 			Thought tgtThought = thoughts2.get(positionsToRelation.get(k)+1);
-			Associations assoc = Associations.getAssociation(srcThought, tgtThought);
+			Associations assoc = associations.getAssociation(srcThought, tgtThought);
 			if (assoc == null) {
 				unitedObjectsId.add(null);
 			} else {
@@ -188,14 +208,14 @@ public class Knowledge {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
-			Associations assoc = Associations.getAssociation(srcThought, tgtThought);
+			Associations assoc = associations.getAssociation(srcThought, tgtThought);
 			if (assoc == null) {
 				nonExistsPairs.add(srcThought);
 				nonExistsPairs.add(tgtThought);
 			}
 		}
 		if (nonExistsPairs.size() > 0) {
-			result = Memory.getInstance().getNewAssociations(nonExistsPairs);
+			result = fastMemory.getNewAssociations(nonExistsPairs);
 		}		
 		// zvysit cost associations ktere jiz existovaly v DB
 		Vector<Long> associationsToIncrease = new Vector<Long>();
@@ -203,13 +223,13 @@ public class Knowledge {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
-			Associations assoc = Associations.getAssociation(srcThought, tgtThought);
+			Associations assoc = associations.getAssociation(srcThought, tgtThought);
 			if (assoc != null) {
 				associationsToIncrease.add(assoc.getId());
 			}
 		}
 		if (associationsToIncrease.size() > 0) {
-			Memory.getInstance().increaseAssociationsCost(associationsToIncrease);
+			fastMemory.increaseAssociationsCost(associationsToIncrease);
 		}
 		return result;
 	}
@@ -224,7 +244,7 @@ public class Knowledge {
 		/* Nejdriv dohledat spicky pro rozhodovani, jake objekty spojovat 
 		 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 		 * ktere vytvareji tyto spickove objekty */
-		inputObjects = ThoughtUnionDecider.getInstance().getTipsAndJoin(inputObjects);
+		inputObjects = thoughtUnionDecider.getTipsAndJoin(inputObjects);
 		// Vytvorit vektor Thoughts
 		Vector<Thought> newThoughts = new Vector<Thought>();
 		newThoughts = getExistsThoughts(inputObjects);
@@ -237,7 +257,7 @@ public class Knowledge {
 		thoughts2.addAll(newThoughts);
 		// Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
 		Vector<Integer> positionsToCreateNewObjects = 
-			ObjectsCreationDecider.getInstance().getPositionsToCreateNewObjects(thoughts2);
+			objectsCreationDecider.getPositionsToCreateNewObjects(thoughts2);
 		// Vytvorime nove objects a associations
 		Vector<Thought> thoughtPairsToMerge = new Vector<Thought>();
 		for (int i = 0; i < positionsToCreateNewObjects.size(); i++) {
@@ -245,12 +265,11 @@ public class Knowledge {
 			thoughtPairsToMerge.add(thoughts2.get(i+1));
 		}
 		if (thoughtPairsToMerge.size() > 0) {
-			Memory.getInstance().createNewAssociationsAndObjects(thoughtPairsToMerge);
+			fastMemory.createNewAssociationsAndObjects(thoughtPairsToMerge);
 		}
 		// Orezat thoughts2 na pozadovanou velikost
 		int maxKnowledgeSize = Config.getInstance().getKnowledge_knowledgeSize();
 		boolean saveThoughtsToFile = Config.getInstance().isKnowledge_saveThoughtsToFile();
-		ThoughtsSaver thoughtsSaver = ThoughtsSaver.getInstance();
 		if (maxKnowledgeSize < thoughts2.size()) {
 			int num = thoughts2.size() - maxKnowledgeSize;
 			for (int i = 0; i < num; i++) {
@@ -271,12 +290,10 @@ public class Knowledge {
 	 * @throws Exception 
 	 */
 	private Vector<Thought> recognizeKnownThoughts(Vector<Thought> newThoughts) throws Exception {
-		// TODO vypada ze je zbytecna metoda, ktera spojuje jen ocasek
-		FastMemory fm = FastMemory.getInstance();
 		// Associations pro zvyseni COST
 		Vector<Long> assocVector = new Vector<Long>();
 		// Nejdriv dostneme doporuceni ke spojeni
-		ThoughtUnionDecider desider = ThoughtUnionDecider.getInstance();
+		ThoughtUnionDecider desider = thoughtUnionDecider;
 		while(true) {
 			Vector<Integer> positionsToRelation = desider.getPositionsToRelation(newThoughts);
 			// Pak zjistime ktere thoughts jiz maji spolecnou asociaci a zaroven doporucene ke spojeni z predchoziho filtru	
@@ -288,7 +305,7 @@ public class Knowledge {
 					Associations assoc = nextTh.getAssociation(nextFollowingTh);
 					if (assoc != null) {
 						assocVector.add(assoc.getId());
-						existsMergedThoughts.put(i, fm.getThought(nextTh, nextFollowingTh));
+						existsMergedThoughts.put(i, fastMemory.getThought(nextTh, nextFollowingTh));
 					}
 				}
 			}
@@ -310,7 +327,7 @@ public class Knowledge {
 			}
 		}		
 		// Zvysime COST asociaci jak puvodnich, tak i spojenych Thoughts
-		fm.increaseAssociationsCost(assocVector);
+		fastMemory.increaseAssociationsCost(assocVector);
 		return newThoughts;
 	}
 
@@ -323,9 +340,9 @@ public class Knowledge {
 	 */
 	private Vector<Thought> getExistsThoughts(Long[] inputObjects) throws Exception {
 		// Get objects
-		Vector<Objects> objects = Memory.getInstance().getObjects(inputObjects);
+		Vector<Objects> objects = fastMemory.getObjects(inputObjects);
 		// Get associations
-		Vector<Associations> associations = Memory.getInstance().getAssociationsToObjects(objects);
+		Vector<Associations> associations = fastMemory.getAssociationsToObjects(objects);
 		// Create thought
 		Vector<Thought> result = new Vector<Thought>();
 		for (int i = 0; i < objects.size(); i++) {

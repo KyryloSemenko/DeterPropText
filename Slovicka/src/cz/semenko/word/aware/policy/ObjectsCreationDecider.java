@@ -1,32 +1,26 @@
 package cz.semenko.word.aware.policy;
 
-import java.sql.SQLException;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
-import cz.semenko.word.model.memory.Memory;
 import cz.semenko.word.persistent.Associations;
+import cz.semenko.word.technology.memory.fast.FastMemory;
 
 public class ObjectsCreationDecider {
-private static ObjectsCreationDecider instance = null;
+// fastMemory doda Spring
+private FastMemory fastMemory;
 	
-	private ObjectsCreationDecider() {
+	public ObjectsCreationDecider() {
 		;
 	}
-	
-	public static ObjectsCreationDecider getInstance() {
-		if (instance == null) {
-			synchronized(ObjectsCreationDecider.class) {
-				ObjectsCreationDecider inst = instance;
-				if (inst == null) {
-					instance = new ObjectsCreationDecider();
-				}
-			}
-		}
-		return instance;
-	}
 
+	/**
+	 * @param fastMemory the fastMemory to set
+	 */
+	public void setFastMemory(FastMemory fastMemory) {
+		this.fastMemory = fastMemory;
+	}
 	/**
 	 * Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
 	 * @param thoughts2 - Jiz spojene a nove Thoughts.
@@ -58,7 +52,7 @@ private static ObjectsCreationDecider instance = null;
 		}
 		if (thoughtsPairToUnion.size() > 0) {
 			/** Dohledat existujici asociace */
-			Vector<Associations> associations = Memory.getInstance().getAssociations(thoughtsPairToUnion);
+			Vector<Associations> associations = fastMemory.getAssociations(thoughtsPairToUnion);
 			if (associations.contains(null)) {
 				for (int i = 0; i < associations.size(); i++) { // najde aspon jednou null? TODO zdokumentovat
 					if (associations.get(i) == null) {
