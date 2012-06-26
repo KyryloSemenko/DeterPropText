@@ -31,11 +31,10 @@ public class Config {
 	private String thoughtsSaver_filePathToSaveThoughts;
 	private int memoryCleaner_lowestCostForLeaving;
 	
-	private static Config instance;
 	private static XMLConfiguration conf;
 	public static Logger logger = Logger.getRootLogger();
 	
-	private Config() {
+	public Config() {
 		try {
 			conf = new XMLConfiguration("config.xml");
 			// Naplnit privatni promenne
@@ -67,23 +66,6 @@ public class Config {
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * Create or find out instance of this class
-	 * @return Config object
-	 */
-	public static Config getInstance() {
-		if (instance == null) {
-			synchronized(Config.class) {
-				Config inst = instance;
-				if (inst == null) {
-					instance = new Config();
-					// conf je vytvoren
-				}
-			}
-		}
-		return instance;
 	}
 
 	public int getDataProvider_numCharsReadsFromInput() {

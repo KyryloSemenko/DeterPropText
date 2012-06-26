@@ -8,11 +8,19 @@ import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 public class ObjectsCreationDecider {
-// fastMemory doda Spring
+// Komponenty doda Spring FW
 private FastMemory fastMemory;
+private Config config;
 	
 	public ObjectsCreationDecider() {
 		;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
 	}
 
 	/**
@@ -31,9 +39,9 @@ private FastMemory fastMemory;
 			Vector<Thought> thoughts2) throws Exception {
 		Vector<Integer> result = new Vector<Integer>();
 		boolean isCreateNewObjectsToAllPairs = 
-			Config.getInstance().isObjectsCreationDecider_createNewObjectsToAllPairs();
+			config.isObjectsCreationDecider_createNewObjectsToAllPairs();
 		int createNewObjectsToAllPairsDepth =
-			Config.getInstance().getObjectsCreationDecider_createNewObjectsToAllPairsDepth();
+			config.getObjectsCreationDecider_createNewObjectsToAllPairsDepth();
 		if (isCreateNewObjectsToAllPairs == false) {
 			return result;
 		}

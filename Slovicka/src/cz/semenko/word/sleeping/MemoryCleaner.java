@@ -11,33 +11,35 @@ import cz.semenko.word.persistent.Associations;
 
 
 public class MemoryCleaner {
-	private static MemoryCleaner instance = null;
 	
 	// Pod spravou Spring FW
-	DBViewer dbViewer;
+	private DBViewer dbViewer;
+	private Config config;
 	
-	public static MemoryCleaner getInstance() {
-		if (instance == null) {
-			synchronized(MemoryCleaner.class) {
-				MemoryCleaner inst = instance;
-				if (inst == null) {
-					instance = new MemoryCleaner();
-				}
-			}
-		}
-		return instance;
-	}
-	
-	private MemoryCleaner() {
+	public MemoryCleaner() {
 		;
 	}
 	
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
+	/**
+	 * @param dbViewer the dbViewer to set
+	 */
+	public void setDbViewer(DBViewer dbViewer) {
+		this.dbViewer = dbViewer;
+	}
+
 	/**
 	 * Odstrani asociace, ktere maji nizkou cost, a jejich objekty.
 	 * @throws SQLException 
 	 */
 	public void cleanMemoryFromRedundantObjects() throws SQLException {
-		int lowestCostForLeaving = Config.getInstance().getMemoryCleaner_lowestCostForLeaving();
+		int lowestCostForLeaving = config.getMemoryCleaner_lowestCostForLeaving();
 		cleanMemoryFromRedundantAssociations(lowestCostForLeaving);		
 	}
 	
@@ -50,7 +52,7 @@ public class MemoryCleaner {
 			if (i < 200) {
 				System.out.println(200);
 			}
-			List associations = dbViewer.getAssotiations(
+			List<Associations> associations = dbViewer.getAssociations(
 					i-numOfAssoc, 
 					i, 
 					lowestCostForLeaving);		

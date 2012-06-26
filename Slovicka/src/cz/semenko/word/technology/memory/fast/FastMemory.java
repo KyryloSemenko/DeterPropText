@@ -24,9 +24,8 @@ import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
  *
  */
 public class FastMemory {
-	private static FastMemory instance = null;	
 	private Collection<Tables> tablesCollection;
-	Logger logger = Logger.getLogger(FastMemory.class);
+	public static Logger logger = Logger.getLogger(FastMemory.class);
 	/**
 	 * Bude naplnovana a doplnovana dle nasledujicich pravidel:
 	 * 	vector ma zacatek nahore - vector.get(0) je nahore;
@@ -49,6 +48,7 @@ public class FastMemory {
 	private Collection<Associations> associationsCollection;
 	/** Objekt pod spravou Spring kontejneru */
 	private SlowlyMemory slowlyMemory;
+	private Config config;
 	
 	/**
 	 * Constucor
@@ -59,6 +59,13 @@ public class FastMemory {
 		associationsCollection = slowlyMemory.getAssociations();
 		objectsCollection = slowlyMemory.getObjects();
 		tablesCollection = slowlyMemory.getTables();
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
 	}
 
 	/**
@@ -97,7 +104,7 @@ public class FastMemory {
 			}
 		}
 		// jestli nejake ze znaku nebyly nalezeny, dohleda je v databazi.
-		Vector<Character> missingChars = new Vector();
+		Vector<Character> missingChars = new Vector<Character>();
 		for (int i = 0; i < result.length; i++) {
 			if (result[i] == null) {
 				missingChars.add(chars[i]);
@@ -107,7 +114,7 @@ public class FastMemory {
 			Long[] findingChars = slowlyMemory.getCharsId(missingChars);			
 			// doplni chybejici znaky v result z findingChars
 			int pos = 0;
-			int tableObjectsSize = Config.getInstance().getFastMemory_tablesObjectsSize();
+			int tableObjectsSize = config.getFastMemory_tablesObjectsSize();
 			for (int i = 0; i < result.length; i++) {
 				if (result[i] == null) {
 					result[i] = findingChars[pos];
@@ -122,7 +129,7 @@ public class FastMemory {
 					} else {
 						// vlozi na zacatek vektora sadu z posledniho cteni, napriklad osum poslednich misto starych zaznamu
 						localObjectsTable.add(0, newObject);
-						localObjectsTable.setSize(Config.getInstance().getFastMemory_tablesObjectsSize());
+						localObjectsTable.setSize(config.getFastMemory_tablesObjectsSize());
 					}
 					pos++;
 				}
@@ -314,7 +321,7 @@ public class FastMemory {
 		result.setSize(thoughtsPairToUnion.size() / 2);
 		Vector<Associations> tempAssocTable = (Vector<Associations>)associationsCollection;
 		Vector<Integer> notFoundPositions = new Vector<Integer>();
-		int elevate = Config.getInstance().getDataProvider_numCharsReadsFromInput();
+		int elevate = config.getDataProvider_numCharsReadsFromInput();
 		lab:
 		// Dohledat associations zde
 		for (int i = 0; i < thoughtsPairToUnion.size()-1; i = i+2) {
@@ -419,13 +426,13 @@ public class FastMemory {
 	 * @throws Exception 
 	 */
 	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
-		boolean deepSearch = Config.getInstance().isFastMemory_alwaysSearchToAssociationsDeepInTheMemory();
+		boolean deepSearch = config.isFastMemory_alwaysSearchToAssociationsDeepInTheMemory();
 		Vector<Associations> tempAssociations = (Vector<Associations>)associationsCollection;
 		Vector<Associations> result = new Vector<Associations>();
 		if (deepSearch) { // TODO porovnat s Melkym vyhledavanim v ruznych rezimech.
 			result = slowlyMemory.getAllAssociations(objectsId);
 		} else {
-			boolean searchAtAllElements = Config.getInstance().isFastMemory_searchToAssociationsAtAllElements();
+			boolean searchAtAllElements = config.isFastMemory_searchToAssociationsAtAllElements();
 			Vector<Long> notFoundObjectsId = (Vector<Long>)objectsId.clone();
 			for(int i = 0; i < objectsId.size(); i++) {
 				Long nextId = objectsId.get(i);
@@ -490,7 +497,7 @@ public class FastMemory {
 				;
 			}
 		}
-		int maxAssociationsSize = Config.getInstance().getFastMemory_tablesAssociationsSize();
+		int maxAssociationsSize = config.getFastMemory_tablesAssociationsSize();
 		if (tempAssociations.size() > maxAssociationsSize) {
 			tempAssociations.setSize(maxAssociationsSize);
 		}
@@ -516,7 +523,7 @@ public class FastMemory {
 				;
 			}
 		}
-		int maxObjectsSize = Config.getInstance().getFastMemory_tablesObjectsSize();
+		int maxObjectsSize = config.getFastMemory_tablesObjectsSize();
 		if (tempObjects.size() > maxObjectsSize) {
 			tempObjects.setSize(maxObjectsSize);
 		}

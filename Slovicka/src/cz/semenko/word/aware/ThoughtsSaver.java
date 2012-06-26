@@ -10,9 +10,12 @@ import cz.semenko.word.Config;
 
 public class ThoughtsSaver {
 	private BufferedWriter bw = null;
+	// Componeneta pod spravou Spring FW
+	private Config config;
 	
-	public ThoughtsSaver() throws IOException {
-		String filePath = Config.getInstance().getThoughtsSaver_filePathToSaveThoughts();
+	public ThoughtsSaver(Config config) throws IOException {
+		this.config = config;
+		String filePath = config.getThoughtsSaver_filePathToSaveThoughts();
 		File fileToSaveThoughts = new File(filePath);
 		if (!fileToSaveThoughts.exists()) {
 			File folder = new File(fileToSaveThoughts.getParent());
@@ -23,7 +26,7 @@ public class ThoughtsSaver {
 		}
 		bw = new BufferedWriter(new FileWriter(fileToSaveThoughts));
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		try {

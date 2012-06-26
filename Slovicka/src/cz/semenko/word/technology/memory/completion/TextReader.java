@@ -18,17 +18,23 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
 
 public class TextReader {
 	static Logger logger = Logger.getLogger(TextReader.class);
-	// Objekt doda Spring FW
+	// Objekty doda Spring FW
 	private FastMemory fastMemory;
-	// Objekt doda Spring FW
 	private Knowledge knowledge;
-	// Objekt doda Spring FW
 	private ThoughtsSaver thoughtsSaver;
+	private Config config;
 
 	public TextReader() {
 		
 	}
 	
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
 	/**
 	 * @param thoughtsSaver the thoughtsSaver to set
 	 */
@@ -56,7 +62,7 @@ public class TextReader {
 	 * @throws Exception
 	 */
 	public void storeFile(String fileName) throws Exception {
-		int numChars = Config.getInstance().getDataProvider_numCharsReadsFromInput();
+		int numChars = config.getDataProvider_numCharsReadsFromInput();
 		
 		FileReader fileReader = new FileReader(new File(fileName));
 		InputStreamReader inputStreamReader = null;
@@ -88,7 +94,7 @@ public class TextReader {
 			knowledge.remember(objects);
 		}
 		// Ulozit zbytek knowledge do souboru
-		if (Config.getInstance().isKnowledge_saveThoughtsToFile()) {
+		if (config.isKnowledge_saveThoughtsToFile()) {
 			Vector<Thought> thoughts = knowledge.getThoughts();
 			thoughtsSaver.saveThoughts(thoughts);
 		}

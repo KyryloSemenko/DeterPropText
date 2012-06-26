@@ -297,7 +297,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public List<Associations> getAssotiations(long minId, long maxId,
+	public List<Associations> getAssociations(long minId, long maxId,
 			int lowestCostForLeaving) {
 		Session s = getSession();
 		Query q = s.createQuery("from Associations where id > :minId and id <= :maxId and cost < :lowestCost")

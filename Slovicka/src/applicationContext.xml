@@ -3,20 +3,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+	<!-- Konfigurace aplikace -->
+	<bean id="config" class="cz.semenko.word.Config" />
+	
 	<!-- Hlavni objekt pro cteni textu -->
     <bean id="textReader"
           class="cz.semenko.word.technology.memory.completion.TextReader">
           	<property name="fastMemory" ref="fastMemory" />
           	<property name="knowledge" ref="knowledge" />
           	<property name="thoughtsSaver" ref="thoughtSaver" />
+          	<property name="config" ref="config" />
     </bean>
 
 	<!-- Spusteni databaze Derby -->
-	<bean id="dbConnector" class="cz.semenko.word.database.DBconnector" />
+	<bean id="dbConnector" class="cz.semenko.word.database.DBconnector">
+		<property name="config" ref="config" />
+	</bean>
 	
-	<!-- DAO -->
-	<bean id="dbViewer" class="cz.semenko.word.database.JdbcDBViewer"  >
+	<!-- DAO TODO spojit se slowlyMemory -->
+	<bean id="dbViewer" class="cz.semenko.word.database.JdbcDBViewer">
 		<constructor-arg ref="dbConnector" />
+		<property name="config" ref="config" />
 	</bean>
 	
 	<!-- DAO -->
@@ -25,13 +32,18 @@
 		depends-on="dbViewer">
 			<constructor-arg ref="dbViewer" />
 	</bean>
+	
 	<!-- Cashovaci pamet -->
 	<bean id="fastMemory"
 		class="cz.semenko.word.technology.memory.fast.FastMemory" depends-on="slowlyMemory">
 			<constructor-arg ref="slowlyMemory" />
+			<property name="config" ref="config" />
 	</bean>
 	
-	<bean id="thoughtSaver" class="cz.semenko.word.aware.ThoughtsSaver" />
+	<!-- Ukladac myslenek -->
+	<bean id="thoughtSaver" class="cz.semenko.word.aware.ThoughtsSaver">
+		<constructor-arg ref="config" />
+	</bean>
 	
 	<!-- Procesor pro myslenky -->
 	<bean id="knowledge" class="cz.semenko.word.aware.Knowledge" depends-on="thoughtUnionDecider">
@@ -40,20 +52,31 @@
 		<property name="thoughtUnionDecider" ref="thoughtUnionDecider" />
 		<property name="thoughtsSaver" ref="thoughtSaver" />
 		<property name="objectsCreationDecider" ref="ObjectsCreationDecider" />
+		<property name="config" ref="config" />
 	</bean>
 	
 	<!-- Rozhodovaci componenta -->
 	<bean id="thoughtUnionDecider" class="cz.semenko.word.aware.policy.ThoughtUnionDecider" depends-on="fastMemory">
 		<property name="fastMemory" ref="fastMemory" />
 		<property name="associations" ref="associations" />
+		<property name="config" ref="config" />
 	</bean>
 	
+	<!-- Reprezentace tabulky ASSOCIATIONS -->
 	<bean id="associations" class="cz.semenko.word.persistent.Associations">
 		<property name="fastMemory" ref="fastMemory" />
 	</bean>
 	
+	<!-- Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru -->
 	<bean id="ObjectsCreationDecider" class="cz.semenko.word.aware.policy.ObjectsCreationDecider">
 		<property name="fastMemory" ref="fastMemory" />
+		<property name="config" ref="config" />
+	</bean>
+	
+	<!-- Spanek a zapomenuti -->
+	<bean id="memoryCleaner" class="cz.semenko.word.sleeping.MemoryCleaner">
+		<property name="config" ref="config" />
+		<property name="dbViewer" ref="dbViewer" />
 	</bean>
 	
 	

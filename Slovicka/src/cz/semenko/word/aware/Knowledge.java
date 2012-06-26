@@ -22,16 +22,18 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
  */
 public class Knowledge {
 	private Vector<Thought> thoughts = new Vector<Thought>();
-	// Objekt nasetuje Spring
+	// Objekty nasetuje Spring
 	private FastMemory fastMemory;
-	// Objekt nasetuje Spring
 	private Associations associations;
-	// Objekt nasetuje Spring
 	private ThoughtUnionDecider thoughtUnionDecider;
-	// Object nasetuje Spring
 	private ThoughtsSaver thoughtsSaver;
-	// Object nasetuje Spring
 	private ObjectsCreationDecider objectsCreationDecider;
+	private Config config;
+	
+	/**
+	 * Constructor
+	 */
+	public Knowledge() {}
 	
 	/**
 	 * @param fastMemory the fastMemory to set
@@ -40,7 +42,13 @@ public class Knowledge {
 		this.fastMemory = fastMemory;
 	}
 
-	public Knowledge() {}	
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+	
 
 	/**
 	 * @param objectsCreationDecider the objectsCreationDecider to set
@@ -268,8 +276,8 @@ public class Knowledge {
 			fastMemory.createNewAssociationsAndObjects(thoughtPairsToMerge);
 		}
 		// Orezat thoughts2 na pozadovanou velikost
-		int maxKnowledgeSize = Config.getInstance().getKnowledge_knowledgeSize();
-		boolean saveThoughtsToFile = Config.getInstance().isKnowledge_saveThoughtsToFile();
+		int maxKnowledgeSize = config.getKnowledge_knowledgeSize();
+		boolean saveThoughtsToFile = config.isKnowledge_saveThoughtsToFile();
 		if (maxKnowledgeSize < thoughts2.size()) {
 			int num = thoughts2.size() - maxKnowledgeSize;
 			for (int i = 0; i < num; i++) {

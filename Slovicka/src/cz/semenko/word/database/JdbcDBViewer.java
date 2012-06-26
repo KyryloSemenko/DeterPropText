@@ -27,8 +27,10 @@ import cz.semenko.word.persistent.Objects;
  *
  */
 public class JdbcDBViewer implements DBViewer {
-	/** Connection je componenta pod spravou Spring FW */
+	// Componenty pod spravou Spring FW
+	private Config config;
 	private Connection connection;
+	
 	private PreparedStatement selectWordSRC;
 	private PreparedStatement selectWordID;
 	private PreparedStatement selectRightNeighbours;
@@ -108,6 +110,13 @@ public class JdbcDBViewer implements DBViewer {
 			logger.error(e.getLocalizedMessage(), e);
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
 	}
 
 	/* (non-Javadoc)
@@ -1145,7 +1154,7 @@ public class JdbcDBViewer implements DBViewer {
 				numItems++;
 				Long type = th1.getActiveObject().getType() + th2.getActiveObject().getType();
 				// TODO odstranit po uspesnem testovani
-				if (type > Config.getInstance().getKnowledge_objectsCreationDepth() * 2) {
+				if (type > config.getKnowledge_objectsCreationDepth() * 2) {
 					throw new Exception ("Typ noveho objektu je vyssi nez je povoleno v konfiguracnim souboru." +
 							" Typ objektu = " + type + "\r\nThought 1 = " + th1 + "\r\nThought 2 = " + th2);
 				}
@@ -1371,7 +1380,7 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public List<Associations> getAssotiations(long minId, long maxId,
+	public List<Associations> getAssociations(long minId, long maxId,
 			int lowestCostForLeaving) throws SQLException {
 		String sql = "SELECT * FROM associations WHERE id > " + minId
 			+ " AND id <= " + maxId + " AND cost < " + lowestCostForLeaving;

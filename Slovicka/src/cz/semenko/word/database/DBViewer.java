@@ -71,7 +71,7 @@ public interface DBViewer {
 	public ResultSet executeQuery(String sql) throws Exception;
 
 	/** Get list of Associations from min ID to max ID with COST is down to parameter */
-	public List<Associations> getAssotiations(long minId, long maxId,
+	public List<Associations> getAssociations(long minId, long maxId,
 			int lowestCostForLeaving) throws SQLException;
 
 	/**

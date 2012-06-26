@@ -1,27 +1,32 @@
 package cz.semenko.word.database;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 import cz.semenko.word.Config;
-import cz.semenko.word.technology.memory.completion.TextReader;
 
 public class DBconnector {
 	static Logger logger = Logger.getLogger(DBconnector.class);
 	private static String dbURL;
 	private static Connection derbyConnection = null;
+	// Komponenta pod spravou Spring FW
+	private Config config;
 	
 	public DBconnector() {
 		;
 	}
 	
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
 	public Connection getConnection() {
 		if (derbyConnection == null) {
 			startConnection();
@@ -33,7 +38,7 @@ public class DBconnector {
 		try {
 			// Start embedded server in different JVM
 			//String command = "java -jar /home/k/MyProgs/Derby/db-derby-10.2.2.0-bin/lib/derbyrun.jar server start";
-			String command = Config.getInstance().getDbCon_derbyJarServerStart();
+			String command = config.getDbCon_derbyJarServerStart();
 			//String command = "ls";
 			Process p = Runtime.getRuntime().exec(command);
 			String line;
@@ -52,7 +57,7 @@ public class DBconnector {
 				logger.error(line);
 			}
 			errors.close();
-			dbURL = Config.getInstance().getDbCon_dbURL();
+			dbURL = config.getDbCon_dbURL();
 			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
             //Get a connection
             derbyConnection = DriverManager.getConnection(dbURL);
@@ -63,7 +68,7 @@ public class DBconnector {
 	
 	public void stopConnection() {
 		//logger.info("Try to stop DB connection.");
-		String command = Config.getInstance().getDbCon_derbyJarServerStop();
+		String command = config.getDbCon_derbyJarServerStop();
 		Process p;
 		try {
 			if (derbyConnection != null && derbyConnection.isClosed() == false) {

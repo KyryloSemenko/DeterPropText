@@ -10,9 +10,10 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
 
 public class ThoughtUnionDecider {
 	
-	// fastMemory slowlyMemory a associations doda Spring FW
+	// Komponenty doda Spring FW
 	private FastMemory fastMemory;
 	private Associations associations;
+	private Config config;
 
 
 	/**
@@ -20,6 +21,13 @@ public class ThoughtUnionDecider {
 	 */
 	public void setFastMemory(FastMemory fastMemory) {
 		this.fastMemory = fastMemory;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
 	}
 
 	public ThoughtUnionDecider() {
@@ -80,7 +88,7 @@ public class ThoughtUnionDecider {
 	 * @return
 	 */
 	private Vector<Integer> getAllObjectsToRelation(Vector<Thought> thoughts2) {
-		int objectsCreationDepth = Config.getInstance().getKnowledge_objectsCreationDepth();
+		int objectsCreationDepth = config.getKnowledge_objectsCreationDepth();
 		Vector<Integer> objectsToRelation = new Vector<Integer>();
 		for (int i = 0; i < thoughts2.size()-1; i++) {
 			Thought nextThought = thoughts2.get(i);
@@ -106,11 +114,10 @@ public class ThoughtUnionDecider {
 	 */
 	private Vector<Integer> getDoNotRelate(Vector<Thought> thoughts2,
 			Vector<Integer> objectsToRelation) throws Exception {
-		Config con = Config.getInstance();
-		boolean relateOnlyObjectsOfSameTypes = con.isKnowledge_relateOnlyObjectsOfSameTypes();
-		boolean decideToRelateByObjectTypeOrAssocCost = con.isKnowledge_decideToRelateByObjectTypeOrAssocCost();
-		boolean decideToRelateObjectsByHigherAssocCost = con.isKnowledge_decideToRelateObjectsByHigherAssocCost();
-		boolean decideToRelateObjectsByHigherObjectType = con.isKnowledge_decideToRelateObjectsByHigherObjectType();
+		boolean relateOnlyObjectsOfSameTypes = config.isKnowledge_relateOnlyObjectsOfSameTypes();
+		boolean decideToRelateByObjectTypeOrAssocCost = config.isKnowledge_decideToRelateByObjectTypeOrAssocCost();
+		boolean decideToRelateObjectsByHigherAssocCost = config.isKnowledge_decideToRelateObjectsByHigherAssocCost();
+		boolean decideToRelateObjectsByHigherObjectType = config.isKnowledge_decideToRelateObjectsByHigherObjectType();
 		Vector<Integer> doNotRelate = new Vector<Integer>(); // zde budou polozky z objectsToRelation ktere se nemaji spojovat.
 		for (int i = 0; i < objectsToRelation.size()-1; i=i+2) {
 			Integer nextThoughtKey = objectsToRelation.get(i);
