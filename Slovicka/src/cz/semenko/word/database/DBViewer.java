@@ -42,7 +42,7 @@ public interface DBViewer {
 	public Vector<Objects> getNewObjects(
 			Vector<Thought> thoughtPairsToUnion) throws Exception;
 
-	public void deleteObjects(Vector<Long> idVector);
+	public void deleteObjects(List<Long> idVector) throws SQLException;
 
 	public int getMaxLevel(Long srcID, Long tgtID) throws Exception;
 
@@ -83,12 +83,14 @@ public interface DBViewer {
 	public List<Objects> getPrimitiveObjects(
 			List<Character> missingChars) throws SQLException;
 
-	/** Get Assotiations from list, that have cost smaller then parameter */
+	/** Get Assotiations from list, that have cost smaller then parameter 
+	 * @throws SQLException */
 	public List<Associations> getAllAssociationsUpToCost(
-			List<Long> objectsId, int lowestCostForLeaving);
+			List<Long> objectsId, int lowestCostForLeaving) throws SQLException;
 
-	/** Delete all assotiations from ID list */
-	public void deleteAssociations(List<Long> assocIdToDelete);
+	/** Delete all assotiations from ID list 
+	 * @throws SQLException */
+	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
 
 	/**
 	 * Sestavi Vector stringu z idecek tgt z parametru
@@ -130,13 +132,6 @@ public interface DBViewer {
 	 * @throws SQLException 
 	 */
 	public void removeEmptyRows() throws SQLException;
-
-	/**
-	 * Odstrani prazdne radky (posune neprazdne nahoru)
-	 */
-	public long removeEmptyRowsFromTable(int rowsToStatement, long lastExistsId,
-			String tableName, String idRowName,
-			Vector<String> preparedStatementStrings) throws SQLException;
 
 	/**
 	 * Nastavi cost u vsech objektu na 0.

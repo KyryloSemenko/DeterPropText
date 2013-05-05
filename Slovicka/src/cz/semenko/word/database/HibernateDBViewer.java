@@ -95,7 +95,7 @@ public class HibernateDBViewer implements DBViewer {
 	 * @see cz.semenko.word.database.AbstractDBViewer#deleteObjects(java.util.Vector)
 	 */
 	@Override
-	public void deleteObjects(Vector<Long> idVector) {
+	public void deleteObjects(List<Long> idVector) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -116,17 +116,6 @@ public class HibernateDBViewer implements DBViewer {
 	public void resetAssociationCost() throws SQLException {
 		// TODO Auto-generated method stub
 		
-	}
-
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#removeEmptyRowsFromTable(int, long, java.lang.String, java.lang.String, java.util.Vector)
-	 */
-	@Override
-	public long removeEmptyRowsFromTable(int rowsToStatement,
-			long lastExistsId, String tableName, String idRowName,
-			Vector<String> preparedStatementStrings) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	/* (non-Javadoc)

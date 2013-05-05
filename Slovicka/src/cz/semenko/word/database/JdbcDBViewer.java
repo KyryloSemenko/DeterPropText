@@ -27,6 +27,7 @@ import cz.semenko.word.persistent.Objects;
  *
  */
 public class JdbcDBViewer implements DBViewer {
+	private static final String COMMA = ",";
 	// Componenty pod spravou Spring FW
 	private Config config;
 	private Connection connection;
@@ -145,16 +146,16 @@ public class JdbcDBViewer implements DBViewer {
 	 */
 	@Override
 	public String getSrc(Vector<Long> idVector) throws SQLException {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		//boolean goodProbability = false;
 		Map<Long, Objects> objects = new TreeMap<Long, Objects>();
 		while (true) {
-			StringBuffer buff = new StringBuffer();
+			StringBuilder buff = new StringBuilder();
 			/* Ziskame objekty z idecek */
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
 				if (objects.containsKey(nextId) == false) {
-					buff.append(nextId + ",");
+					buff.append(nextId + COMMA);
 				}
 			}
 			if (buff.length() == 0) { // Jiz mame vsechny objekty s type, ktere maji neprazdne src
@@ -173,7 +174,7 @@ public class JdbcDBViewer implements DBViewer {
 			}
 			rs.close();
 			/* Pro ojekty vyssi nez typ, ktery jeste ma src, zjistime podobjekty */
-			StringBuffer selectAssocBuff = new StringBuffer();
+			StringBuilder selectAssocBuff = new StringBuilder();
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
 				Objects nextOb = objects.get(nextId);
@@ -181,7 +182,7 @@ public class JdbcDBViewer implements DBViewer {
 					return ("SRC nenalezeno. ID=" + nextId);
 				}
 				if (nextOb.getType() > 2) { //TODO vytvorit parametr v konfiguraku
-					selectAssocBuff.append(nextOb.getId() + ",");
+					selectAssocBuff.append(nextOb.getId() + COMMA);
 				}
 			}
 			if (selectAssocBuff.length() == 0) { // Jiz vsechny objekty maji neprazdne src
@@ -267,12 +268,12 @@ public class JdbcDBViewer implements DBViewer {
 		Map<Long, Objects> objectsPool = new TreeMap<Long, Objects>();
 		Map<Long, Associations> associationsPool = new TreeMap<Long, Associations>();
 		while (true) {
-			StringBuffer selectBuff = new StringBuffer();
+			StringBuilder selectBuff = new StringBuilder();
 			/* Ziskame objekty z idecek */
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
 				if (objectsPool.containsKey(nextId) == false) {
-					selectBuff.append(nextId + ",");
+					selectBuff.append(nextId + COMMA);
 				}
 			}
 			if (selectBuff.length() == 0) { // Jiz mame vsechny objekty s type, ktere maji neprazdne src
@@ -302,7 +303,7 @@ public class JdbcDBViewer implements DBViewer {
 					return result;
 				}
 				if (nextOb.getType() > 2 && associationsPool.containsKey(nextOb.getId()) == false) { //TODO vytvorit parametr v konfiguraku
-					selectAssocBuff.append(nextOb.getId() + ",");
+					selectAssocBuff.append(nextOb.getId() + COMMA);
 				}
 			}
 			if (selectAssocBuff.length() == 0) { // Jiz vsechny objekty maji neprazdne src
@@ -357,7 +358,7 @@ public class JdbcDBViewer implements DBViewer {
 		Vector<String> result = new Vector<String>();
 		// TODO zkontrolovat zda radi dle COST asociaci
 		for (int i = 0; i < associations.size(); i++) {
-			StringBuffer nextRes = new StringBuffer();
+			StringBuilder nextRes = new StringBuilder();
 			Long nextId = associations.get(i).getTgtId();
 			Vector<Long> objectsVector = new Vector<Long>();
 			objectsVector.add(nextId);
@@ -401,7 +402,7 @@ public class JdbcDBViewer implements DBViewer {
 		if (lastAssoc == null || nextAssoc == null) {
 			return null;
 		}
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		selectObjectsToAssociation.setLong(1, lastAssoc);
 		ResultSet rs = selectObjectsToAssociation.executeQuery();
 		ResultSet wordRS;
@@ -480,7 +481,7 @@ public class JdbcDBViewer implements DBViewer {
 //		inputObjects = ThoughtUnionDecider.getInstance().getTipsAndJoin(inputObjects);
 //		// Nejdrive najit tgt_id pro nejvyssi objekt, po neuspechu rozlozit objekt na dva
 //		// a najit pro posledni.
-//		StringBuffer selectBuff = new StringBuffer();
+//		StringBuilder selectBuff = new StringBuilder();
 //		if (inputObjects.length == 0) {
 //			return result;
 //		}
@@ -640,7 +641,7 @@ public class JdbcDBViewer implements DBViewer {
 		return 0;
 	}
 	/*
-	public Long getNewObject(Long srcID, Long tgtID, StringBuffer buf, Long synteticProperty) throws Exception {
+	public Long getNewObject(Long srcID, Long tgtID, StringBuilder buf, Long synteticProperty) throws Exception {
 		final int SRC_TBL = 1; // change when multiple tables module will be adding.
 		final int TGT_TBL = 1;
 		ResultSet rs = null;
@@ -803,97 +804,12 @@ public class JdbcDBViewer implements DBViewer {
 				"associations",
 				"id",
 				preparedStatementStrings);
-		/* Nastavit generatory Objects a Associations od posledniho objektu
-		String sql = "SELECT max(id) FROM objects";
-		ResultSet maxObRS = connection.createStatement().executeQuery(sql);
-		maxObRS.next();
-		lastIdObjectsTable = maxObRS.getLong(1);
-		maxObRS.close();
-		sql = "SELECT max(id) FROM associations";
-		ResultSet maxAssocRS = connection.createStatement().executeQuery(sql);
-		maxAssocRS.next();
-		lastIdAssociationsTable = maxAssocRS.getLong(1);
-		sql = "ALTER TABLE k.associations ALTER COLUMN id RESTART WITH " + lastIdAssociationsTable+1;
-		connection.createStatement().executeUpdate(sql);
-		sql = "ALTER TABLE k.OBJECTS ALTER COLUMN id RESTART WITH " + lastIdObjectsTable+1;
-		connection.createStatement().executeUpdate(sql);
-		*/
 	}
-/*
-	private void removeEmptyRowsAssociationsTable(int rowsToStatement) throws SQLException {
-		// Nalezneme prvni prazdny radek
-		long startPos = 1;
-		long stopPos = startPos + rowsToStatement;
-		Long nonExistsId = null;
-		while (true) {
-			if (startPos >= lastIdAssociationsTable) {
-				return;
-			}
-			System.out.println(startPos);
-			String sql = "SELECT id FROM associations WHERE id >= " + startPos
-			+ " AND id < " + stopPos + " ORDER BY id";
-			ResultSet idRS = connection.createStatement().executeQuery(sql);
-			for (long i = startPos; i < stopPos; i++) {
-				if (idRS.next() == false) {
-					nonExistsId = i;
-					break;
-				}
-				Long nextId = idRS.getLong("id");
-				if (nextId > i) {
-					nonExistsId = nextId - 1;
-					break;
-				}
-			}
-			if (nonExistsId != null) {
-				break;
-			}
-			startPos = stopPos;
-			stopPos = stopPos + rowsToStatement;
-		}
-		// Nalezneme neprazdne radky
-		Set<Long> existsId = new TreeSet<Long>();
-		startPos = nonExistsId + 1;
-		stopPos = startPos + rowsToStatement;
-		while (true) {
-			String sql = "SELECT id FROM associations WHERE id >= " + startPos
-			+ " AND id < " + stopPos;
-			ResultSet idRS = connection.createStatement().executeQuery(sql);
-			while (idRS.next()) {
-				existsId.add(idRS.getLong("id"));
-			}
-			if (existsId.size() < rowsToStatement && startPos < lastIdAssociationsTable) {
-				startPos = stopPos;
-				stopPos = stopPos + rowsToStatement;
-				continue;
-			}
-			PreparedStatement ps = connection.prepareStatement("UPDATE associations SET id = ? " +
-					"WHERE id = ?");
-			for (Iterator<Long> iter = existsId.iterator(); iter.hasNext(); ) {
-				Long next = iter.next();
-				ps.setLong(1, nonExistsId++);
-				ps.setLong(2, next);
-				ps.executeUpdate();
-			}
-			startPos = stopPos;
-			stopPos = stopPos + rowsToStatement;
-			if (startPos >= lastIdAssociationsTable) {
-				break;
-			}
-			existsId.clear();
-		}
-		String sql2 = "SELECT MAX(id) FROM associations";
-	    ResultSet rs2 = connection.createStatement().executeQuery(sql2);
-	    if (rs2.next()) {
-	    	lastIdAssociationsTable = rs2.getLong(1);
-	    }
-	}
-*/
 
 	/**
 	 * Odstrani prazdne radky (posune neprazdne nahoru)
 	 */
-	@Override
-	public long removeEmptyRowsFromTable(int rowsToStatement, 
+	private long removeEmptyRowsFromTable(int rowsToStatement, 
 			long lastExistsId, String tableName, String idRowName, 
 			Vector<String> preparedStatementStrings) throws SQLException {
 		// Nalezneme prvni prazdny radek
@@ -1076,10 +992,10 @@ public class JdbcDBViewer implements DBViewer {
 		int numRows = 200;
 		for (int i = 0; i <= lastIdObjectsTable; i = i + numRows) {
 			// Overujeme postupne sadu po sade
-			StringBuffer ids = new StringBuffer();
+			StringBuilder ids = new StringBuilder();
 			Vector<Long> objectsIdVector = new Vector<Long>();
 			for (int k = i; k < i + numRows; k++) {
-				ids.append(k + ",");
+				ids.append(k + COMMA);
 				objectsIdVector.add((long)k);
 			}
 			ids.delete(ids.length()-1, ids.length());
@@ -1109,9 +1025,9 @@ public class JdbcDBViewer implements DBViewer {
 			if (objectsIdVector.size() == 0) {
 				continue;
 			}
-			StringBuffer objectsToRemove = new StringBuffer();
+			StringBuilder objectsToRemove = new StringBuilder();
 			for (int k = 0; k < objectsIdVector.size(); k++) {
-				objectsToRemove.append(objectsIdVector.get(k) + ",");
+				objectsToRemove.append(objectsIdVector.get(k) + COMMA);
 			}
 			objectsToRemove.delete(objectsToRemove.length()-1, objectsToRemove.length());
 			System.out.println(objectsToRemove.toString());
@@ -1133,8 +1049,16 @@ public class JdbcDBViewer implements DBViewer {
 	 * @see cz.semenko.word.database.DBViewer#deleteObjects(java.util.Vector)
 	 */
 	@Override
-	public void deleteObjects(Vector<Long> idVector) {
-		// TODO Auto-generated method stub
+	public void deleteObjects(List<Long> objectsIdToDelete) throws SQLException {
+		StringBuilder sql = new StringBuilder("DELETE FROM objects WHERE id IN (");
+		for (Long nextId : objectsIdToDelete) {
+			sql.append(nextId);
+			sql.append(COMMA);
+		}
+		sql.deleteCharAt(sql.length()-1);
+		sql.append(")");
+		
+		connection.createStatement().execute(sql.toString());
 		
 	}
 
@@ -1146,7 +1070,7 @@ public class JdbcDBViewer implements DBViewer {
 		Vector<Objects> result = new Vector<Objects>();
 		connection.setAutoCommit(false);
 		try {
-			StringBuffer buff = new StringBuffer();
+			StringBuilder buff = new StringBuilder();
 			int numItems = 0;
 			for (int i = 0; i < thoughtPairsToUnion.size()-1; i = i+2) {
 				Thought th1 = thoughtPairsToUnion.get(i);
@@ -1191,7 +1115,7 @@ public class JdbcDBViewer implements DBViewer {
 			Vector<Objects> newObjects) throws SQLException {
 		Vector<Associations> result = new Vector<Associations>();
 		Iterator<Objects> iter = newObjects.iterator();
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		int numItems = 0;
 		for (int i = 0; i < thoughtPairsToUnion.size() - 1; i = i+2) {
 			Thought srcThought = thoughtPairsToUnion.get(i);
@@ -1232,7 +1156,7 @@ public class JdbcDBViewer implements DBViewer {
 	public Vector<Objects> getNewPrimitiveObjects(Vector<Character> nonExistent) throws Exception {
 		Vector<Objects> result = new Vector<Objects>();
 		Map<Character, Objects> tempMapOfCharsToId = new TreeMap<Character, Objects>();
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		
 		for (int i = 0; i < nonExistent.size(); i++) {
 			// Neukladame do DB zdvojene a opakujici se znaky
@@ -1264,7 +1188,7 @@ public class JdbcDBViewer implements DBViewer {
 		if (associationsId.size() == 0) {
 			return;
 		}
-		StringBuffer updateCostSql = new StringBuffer("UPDATE associations SET cost=cost+1 WHERE id IN (");
+		StringBuilder updateCostSql = new StringBuilder("UPDATE associations SET cost=cost+1 WHERE id IN (");
 		for (int i = 0; i < associationsId.size(); i++) {
 			updateCostSql.append(associationsId.get(i) + ", ");
 		}
@@ -1281,7 +1205,7 @@ public class JdbcDBViewer implements DBViewer {
 		if (obIdArray.length == 0) {
 			return;
 		}
-		StringBuffer updateCostSql = new StringBuffer("UPDATE associations SET cost=cost+1 WHERE obj_id IN (");
+		StringBuilder updateCostSql = new StringBuilder("UPDATE associations SET cost=cost+1 WHERE obj_id IN (");
 		for (int i = 0; i < obIdArray.length; i++) {
 			updateCostSql.append(obIdArray[i] + ", ");
 		}
@@ -1296,7 +1220,7 @@ public class JdbcDBViewer implements DBViewer {
 	@Override
 	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
 		Vector<Associations> result = new Vector<Associations>();
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for (int i = 0; i < objectsId.size(); i++) {
 			buff.append(objectsId.get(i) + ", ");
 		}
@@ -1328,13 +1252,13 @@ public class JdbcDBViewer implements DBViewer {
 	@Override
 	public Vector<Long> getSuperiorObjectsId(Vector<Long> pairsToFind) throws SQLException {
 		Vector<Long> result = new Vector<Long>();
-		StringBuffer srcBuff = new StringBuffer();
-		StringBuffer tgtBuff = new StringBuffer();
+		StringBuilder srcBuff = new StringBuilder();
+		StringBuilder tgtBuff = new StringBuilder();
 		for (int i = 0; i < pairsToFind.size()-1; i=i+2) {
 			Long srcId = pairsToFind.get(i);
 			Long tgtId = pairsToFind.get(i+1);
-			srcBuff.append(srcId + ",");
-			tgtBuff.append(tgtId + ",");
+			srcBuff.append(srcId + COMMA);
+			tgtBuff.append(tgtId + COMMA);
 		}
 		srcBuff.deleteCharAt(srcBuff.length()-1);
 		tgtBuff.deleteCharAt(tgtBuff.length()-1);
@@ -1382,7 +1306,7 @@ public class JdbcDBViewer implements DBViewer {
 	@Override
 	public List<Associations> getAssociations(long minId, long maxId,
 			int lowestCostForLeaving) throws SQLException {
-		String sql = "SELECT * FROM associations WHERE id > " + minId
+		String sql = "SELECT * FROM associations WHERE id >= " + minId
 			+ " AND id <= " + maxId + " AND cost < " + lowestCostForLeaving;
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		List<Associations> result = new Vector<Associations>();
@@ -1408,7 +1332,7 @@ public class JdbcDBViewer implements DBViewer {
 		}
 		String query = "SELECT * FROM objects " +
     		"WHERE type = 1 AND src IN (";
-		StringBuffer param = new StringBuffer();
+		StringBuilder param = new StringBuilder();
 		char singleQuote = '\'';
 		for (Character next : missingChars) {
 			if (next.compareTo(singleQuote) == 0) {
@@ -1436,15 +1360,46 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public List<Associations> getAllAssociationsUpToCost(List objectsId,
-			int lowestCostForLeaving) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Associations> getAllAssociationsUpToCost(List<Long> objectsId, int lowestCostForLeaving) throws SQLException {
+		StringBuilder sql = new StringBuilder("SELECT * FROM associations WHERE obj_id IN (");
+		for (Long nextId : objectsId) {
+			sql.append(nextId);
+			sql.append(COMMA);
+		}
+		sql.deleteCharAt(sql.length()-1);
+		sql.append(") AND cost < ");
+		sql.append(lowestCostForLeaving);
+		
+		ResultSet rs;
+		List<Associations> result = new Vector<Associations>();
+				
+		rs = connection.createStatement().executeQuery(sql.toString());
+		while(rs.next()) {
+			Long id = rs.getLong("id");
+			Long objId = rs.getLong("obj_id");
+			Long srcId = rs.getLong("src_id");
+			Long srcTable = rs.getLong("src_tbl");
+			Long tgtId = rs.getLong("tgt_id");
+			Long tgtTable = rs.getLong("tgt_tbl");
+			Long cost = rs.getLong("cost");
+			Associations assoc = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+			result.add(assoc);
+		}
+		rs.close();		
+		
+		return result;
 	}
 
 	@Override
-	public void deleteAssociations(List assocIdToDelete) {
-		// TODO Auto-generated method stub
+	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException {
+		StringBuilder sql = new StringBuilder("DELETE FROM associations WHERE id IN (");
+		for (Long nextId : assocIdToDelete) {
+			sql.append(nextId);
+			sql.append(COMMA);
+		}
+		sql.deleteCharAt(sql.length()-1);
+		sql.append(")");
 		
+		connection.createStatement().execute(sql.toString());
 	}	
 }
