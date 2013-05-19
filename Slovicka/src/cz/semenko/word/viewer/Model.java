@@ -21,7 +21,6 @@ public class Model {
 	 * @throws Exception
 	 */
 	public String getSourceToObjectsId (StyledText text) throws Exception {		
-		StringBuffer inputBuff = new StringBuffer();
 		StringBuffer resultBuff = new StringBuffer();
 		resultBuff.append("****************" + System.getProperty("line.separator"));
 		for (int i = 0; i < text.getLineCount(); i++) {
