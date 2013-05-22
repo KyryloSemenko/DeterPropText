@@ -58,7 +58,7 @@ public class FastMemory {
 		this.slowlyMemory = slowlyMemory;
 		associationsCollection = slowlyMemory.getAssociations();
 		objectsCollection = slowlyMemory.getObjects();
-		tablesCollection = slowlyMemory.getTables();
+		tablesCollection = slowlyMemory.getTables(); // TODO vyhodit nebo spravovat Springem
 	}
 
 	/**

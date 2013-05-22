@@ -297,8 +297,9 @@ public class HibernateDBViewer implements DBViewer {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<Associations> getAllAssociationsUpToCost(List objectsId,
+	public List<Associations> getAllAssociationsUpToCost(List<Long> objectsId,
 			int lowestCostForLeaving) {
 		Session s = getSession();
 		Query q = s.createQuery("from Associations where cost < :lowestCost and id in (:objectsId)")
@@ -308,7 +309,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void deleteAssociations(List assocIdToDelete) {
+	public void deleteAssociations(List<Long> assocIdToDelete) {
 		Session s = getSession();
 		s.createQuery("delete from Associations where id in :param")
 			.setParameterList("param", assocIdToDelete)

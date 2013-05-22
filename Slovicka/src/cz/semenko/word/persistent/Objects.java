@@ -1,12 +1,6 @@
 package cz.semenko.word.persistent;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-
-import cz.semenko.word.Config;
-import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
 
 /** Objects table **/
 public class Objects {

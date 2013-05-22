@@ -2,8 +2,6 @@ package cz.semenko.word.aware;
 
 import java.util.Vector;
 
-import cz.semenko.word.persistent.Associations;
-
 /**
  * Reprezentace vzniku variantu moznych vzruseni, ktere prolinaji ruznymy vrstvamy.
  * Jako pomucku predstavim si vrstvy. V nulove vrstve jsou

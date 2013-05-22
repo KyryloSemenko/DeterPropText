@@ -1267,7 +1267,6 @@ public class JdbcDBViewer implements DBViewer {
 				"tgt_id IN (" + tgtBuff.toString() + ")";
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		Vector<long[]> rsVector = new Vector<long[]>();
-		int k = 0;
 		while (rs.next()) {
 			Long srcId = rs.getLong("src_id");
 			Long tgtId = rs.getLong("tgt_id");

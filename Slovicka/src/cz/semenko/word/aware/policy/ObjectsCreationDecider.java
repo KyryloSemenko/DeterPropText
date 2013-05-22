@@ -47,7 +47,6 @@ private Config config;
 		}
 		// Else
 		/** Dohledat vsechny mozne kombinace pro spojeni */
-		StringBuffer buff = new StringBuffer();
 		Vector<Thought> thoughtsPairToUnion = new Vector<Thought>();
 		for (int i = 0; i < thoughts2.size()-1; i++) {
 			Thought th1 = thoughts2.get(i);

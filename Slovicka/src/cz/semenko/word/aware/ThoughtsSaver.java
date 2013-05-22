@@ -11,7 +11,7 @@ import cz.semenko.word.Config;
 public class ThoughtsSaver {
 	private BufferedWriter bw = null;
 	// Componeneta pod spravou Spring FW
-	private Config config;
+	private Config config; // TODO odstranit z konstruktoru na spravovat Springem
 	
 	public ThoughtsSaver(Config config) throws IOException {
 		this.config = config;
