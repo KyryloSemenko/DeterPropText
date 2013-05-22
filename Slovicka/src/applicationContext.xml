@@ -78,21 +78,5 @@
 		<property name="config" ref="config" />
 		<property name="dbViewer" ref="dbViewer" />
 	</bean>
-	
-	
-	<!-- SWT GUI -->
-	<bean id="viewerGUI" class="cz.semenko.word.viewer.ViewerGUI">
-		<property name="inputTextKeyListener" ref="inputTextKeyListener" />
-	</bean>
-	
-	<!-- Model pro tlusteho klienta -->
-	<bean id="model" class="cz.semenko.word.viewer.Model">
-		<constructor-arg ref="dbViewer" />
-	</bean>
-	
-	<bean id="inputTextKeyListener" 
-		class="cz.semenko.word.viewer.listeners.InputTextKeyListener" depends-on="viewerGUI">
-		<property name="model" ref="model" />
-		<property name="viewerGUI" ref="viewerGUI" />
-	</bean>
+
 </beans>
