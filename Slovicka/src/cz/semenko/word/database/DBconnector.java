@@ -7,25 +7,23 @@ import java.sql.DriverManager;
 
 import org.apache.log4j.Logger;
 
-import cz.semenko.word.Config;
-
+/**
+ * Provide a connection to Derby database.
+ * Start Derby server on separate process execution.
+ * You has to call stopConnection() method to shutdown server. 
+ * @author Kyrylo Semenko
+ *
+ */
 public class DBconnector {
 	static Logger logger = Logger.getLogger(DBconnector.class);
-	private static String dbURL;
+	// Spring managed elements
 	private static Connection derbyConnection = null;
-	// Komponenta pod spravou Spring FW
-	private Config config;
+	private String dbURL;
+	private String derbyJarServerStart;
+	private String derbyJarServerStop;
 	
-	public DBconnector() {
-		;
-	}
-	
-	/**
-	 * @param config the config to set
-	 */
-	public void setConfig(Config config) {
-		this.config = config;
-	}
+	/** Empty constructor */
+	public DBconnector() {}
 
 	public Connection getConnection() {
 		if (derbyConnection == null) {
@@ -34,18 +32,19 @@ public class DBconnector {
 		return derbyConnection;
 	}
 	
+	/**
+	 * Start Derby server in separate process
+	 */
 	private void startConnection() {
 		try {
-			// Start embedded server in different JVM
-			//String command = "java -jar /home/k/MyProgs/Derby/db-derby-10.2.2.0-bin/lib/derbyrun.jar server start";
-			String command = config.getDbCon_derbyJarServerStart();
-			//String command = "ls";
-			Process p = Runtime.getRuntime().exec(command);
+			logger.info("Start Derby process");
+			Process p = Runtime.getRuntime().exec(getDerbyJarServerStart());
 			String line;
 			BufferedReader input = new BufferedReader
 		          (new InputStreamReader(p.getInputStream()));
 			while (input.ready() == false) {
-				Thread.currentThread().sleep(500);
+				Thread.currentThread();
+				Thread.sleep(500);
 			}
 			while (input.ready() && (line = input.readLine()) != null) {
 				logger.info(line);
@@ -57,7 +56,6 @@ public class DBconnector {
 				logger.error(line);
 			}
 			errors.close();
-			dbURL = config.getDbCon_dbURL();
 			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
             //Get a connection
             derbyConnection = DriverManager.getConnection(dbURL);
@@ -66,20 +64,22 @@ public class DBconnector {
 		}
 	}
 	
+	/**
+	 * Shutdown Derby DB instance
+	 */
 	public void stopConnection() {
-		//logger.info("Try to stop DB connection.");
-		String command = config.getDbCon_derbyJarServerStop();
 		Process p;
 		try {
 			if (derbyConnection != null && derbyConnection.isClosed() == false) {
 				derbyConnection.close();
 			}
-			p = Runtime.getRuntime().exec(command);
+			p = Runtime.getRuntime().exec(getDerbyJarServerStop());
 			String line;
 			BufferedReader input = new BufferedReader
 		          (new InputStreamReader(p.getInputStream()));
 			while (input.ready() == false) {
-				Thread.currentThread().sleep(500);
+				Thread.currentThread();
+				Thread.sleep(500);
 			}
 			while (input.ready() && (line = input.readLine()) != null) {
 				logger.info(line);
@@ -91,18 +91,54 @@ public class DBconnector {
 				logger.error(line);
 			}
 			errors.close();
+			
+			logger.info("Shutdown Derby DB connection");
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			e.printStackTrace();
 		}			
 	}
-	
-	protected void finalize() throws Throwable {
-		try {
-			stopConnection();
-		} finally {
-			super.finalize();
-		}
+
+	/**
+	 * @return the dbURL
+	 */
+	public String getDbURL() {
+		return dbURL;
+	}
+
+	/**
+	 * @param dbURL the dbURL to set
+	 */
+	public void setDbURL(String dbURL) {
+		this.dbURL = dbURL;
+	}
+
+	/**
+	 * @return the derbyJarServerStart
+	 */
+	public String getDerbyJarServerStart() {
+		return derbyJarServerStart;
+	}
+
+	/**
+	 * @param derbyJarServerStart the derbyJarServerStart to set
+	 */
+	public void setDerbyJarServerStart(String derbyJarServerStart) {
+		this.derbyJarServerStart = derbyJarServerStart;
+	}
+
+	/**
+	 * @return the derbyJarServerStop
+	 */
+	public String getDerbyJarServerStop() {
+		return derbyJarServerStop;
+	}
+
+	/**
+	 * @param derbyJarServerStop the derbyJarServerStop to set
+	 */
+	public void setDerbyJarServerStop(String derbyJarServerStop) {
+		this.derbyJarServerStop = derbyJarServerStop;
 	}
 }

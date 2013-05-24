@@ -3,8 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<!-- Konfigurace aplikace -->
-	<bean id="config" class="cz.semenko.word.Config" />
+	<!-- Spring context provider -->
+	<bean id="applicationContextProvider" class="cz.semenko.word.ApplicationContextProvider"></bean>
+	<bean id="config" class="cz.semenko.word.Config" /><!-- TODO odstranit -->
 	
 	<!-- Hlavni objekt pro cteni textu -->
     <bean id="textReader"
@@ -17,7 +18,10 @@
 
 	<!-- Spusteni databaze Derby -->
 	<bean id="dbConnector" class="cz.semenko.word.database.DBconnector">
-		<property name="config" ref="config" />
+		<property name="dbURL" value="jdbc:derby://localhost:1527/c:\\Users\\k\\Prace\\Projects\\Slovicka\\temp\\LanguageDB2;user=k;password=k" />
+		<property name="derbyJarServerStart" value="java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server start" />
+		<property name="derbyJarServerStop" value="java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server shutdown" />
+
 	</bean>
 	
 	<!-- DAO TODO spojit se slowlyMemory -->

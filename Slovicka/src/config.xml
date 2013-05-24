@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-	<dbCon>
-		<dbURL>jdbc:derby://localhost:1527/c:\\Users\\k\\Prace\\Projects\\Slovicka\\temp\\LanguageDB2;user=k;password=k</dbURL>
-		<derbyJarServerStart>java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server start</derbyJarServerStart>
-		<derbyJarServerStop>java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server shutdown</derbyJarServerStop>
-	</dbCon>
+	
 	<dataProvider>
 		<!-- Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani -->
 		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- 512 - 1 sek., 4 - 26 sek. --> 

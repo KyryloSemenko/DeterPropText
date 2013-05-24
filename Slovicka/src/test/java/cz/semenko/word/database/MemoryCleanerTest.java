@@ -1,14 +1,14 @@
-package cz.semenko.word.database.tests;
+package test.java.cz.semenko.word.database;
 
 
 import junit.framework.TestCase;
 import cz.semenko.word.sleeping.MemoryCleaner;
 
-public class TestMemoryCleaner extends TestCase {
+public class MemoryCleanerTest extends TestCase {
 	// Componenta pod spravou Spring FW
 	private MemoryCleaner memoryCleaner;
 	
-	public TestMemoryCleaner() {
+	public MemoryCleanerTest() {
 	}
 
 	/**
@@ -19,6 +19,6 @@ public class TestMemoryCleaner extends TestCase {
 	}
 
 	public void testCleanMemoryFromRedundantAssociations () throws Exception {
-		memoryCleaner.cleanMemoryFromRedundantObjects();
+		//memoryCleaner.cleanMemoryFromRedundantObjects();
 	}
 }

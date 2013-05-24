@@ -50,7 +50,7 @@ public class Main {
 	 */
 	private static void registerSpringService() {
 		applicationContext = 
-			new ClassPathXmlApplicationContext("classpath:/applicationContext.xml");
+			new ClassPathXmlApplicationContext("classpath:/applicationContext-all.xml");
 	}
 
 }

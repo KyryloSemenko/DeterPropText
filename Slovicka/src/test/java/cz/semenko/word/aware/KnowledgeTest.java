@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.semenko.word.aware.tests;
+package test.java.cz.semenko.word.aware;
 
 import static org.junit.Assert.*;
 
