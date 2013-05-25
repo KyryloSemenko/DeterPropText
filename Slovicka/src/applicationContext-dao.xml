@@ -2,10 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+ 
 
-	<!-- Spring configuration -->
-	<import resource="classpath:/applicationContext-initialization.xml" />
-	<!-- Slovicka configuration -->
-	<import resource="classpath:/applicationContext-dao.xml" />
-
+ 
 </beans>

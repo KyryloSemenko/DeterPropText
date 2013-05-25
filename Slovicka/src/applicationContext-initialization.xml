@@ -17,7 +17,7 @@
     </bean>
 
 	<!-- Spusteni databaze Derby -->
-	<bean id="dbConnector" class="cz.semenko.word.database.DBconnector">
+	<bean id="dbConnector" class="cz.semenko.word.dao.DBconnector">
 		<property name="dbURL" value="jdbc:derby://localhost:1527/c:\\Users\\k\\Prace\\Projects\\Slovicka\\temp\\LanguageDB2;user=k;password=k" />
 		<property name="derbyJarServerStart" value="java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server start" />
 		<property name="derbyJarServerStop" value="java -jar c:\Users\k\MyProgs\classes\db-derby-10.6.1.0-bin\lib\derbyrun.jar server shutdown" />
@@ -25,7 +25,7 @@
 	</bean>
 	
 	<!-- DAO TODO spojit se slowlyMemory -->
-	<bean id="dbViewer" class="cz.semenko.word.database.JdbcDBViewer">
+	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
 		<constructor-arg ref="dbConnector" />
 		<property name="config" ref="config" />
 	</bean>

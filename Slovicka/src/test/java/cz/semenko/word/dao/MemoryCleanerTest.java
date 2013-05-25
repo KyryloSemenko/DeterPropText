@@ -1,4 +1,4 @@
-package test.java.cz.semenko.word.database;
+package test.java.cz.semenko.word.dao;
 
 
 import junit.framework.TestCase;

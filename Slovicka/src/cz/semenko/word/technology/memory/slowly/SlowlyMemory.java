@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import cz.semenko.word.aware.Thought;
-import cz.semenko.word.database.DBViewer;
+import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Objects;
 import cz.semenko.word.persistent.Tables;

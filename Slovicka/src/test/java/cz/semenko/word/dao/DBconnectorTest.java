@@ -1,4 +1,4 @@
-package test.java.cz.semenko.word.database;
+package test.java.cz.semenko.word.dao;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import cz.semenko.word.ApplicationContextProvider;
-import cz.semenko.word.database.DBconnector;
+import cz.semenko.word.dao.DBconnector;
 
 public class DBconnectorTest {
 	static ApplicationContext ctx;

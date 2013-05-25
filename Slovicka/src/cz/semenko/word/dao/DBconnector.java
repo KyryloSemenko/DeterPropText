@@ -1,4 +1,4 @@
-package cz.semenko.word.database;
+package cz.semenko.word.dao;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

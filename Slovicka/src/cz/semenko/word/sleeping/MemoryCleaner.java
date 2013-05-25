@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.semenko.word.Config;
-import cz.semenko.word.database.DBViewer;
+import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
 
 
