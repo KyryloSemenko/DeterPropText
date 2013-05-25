@@ -3,6 +3,12 @@ package cz.semenko.word.dao;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * <p>HibernateUtil class.</p>
+ *
+ * @author k
+ * @version $Id: $Id
+ */
 public class HibernateUtil {
 
 	private static final SessionFactory sessionFactory = buildSessionFactory();
@@ -19,6 +25,11 @@ public class HibernateUtil {
 		}
 	}
 
+	/**
+	 * <p>Getter for the field <code>sessionFactory</code>.</p>
+	 *
+	 * @return a {@link org.hibernate.SessionFactory} object.
+	 */
 	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}

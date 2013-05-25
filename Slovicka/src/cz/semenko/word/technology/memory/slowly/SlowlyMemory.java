@@ -16,22 +16,28 @@ import cz.semenko.word.persistent.Tables;
 
 /**
  * Třida reprezentuje pomalou paměť, která se nachází v DB.
- * 
- * @author k
  *
+ * @author k
+ * @version $Id: $Id
  */
 public class SlowlyMemory {
 	/** Objekt pod spravou Spring FW */
 	private DBViewer dbViewer;
 
+	/**
+	 * <p>Constructor for SlowlyMemory.</p>
+	 *
+	 * @param dbViewer a {@link cz.semenko.word.dao.DBViewer} object.
+	 */
 	public SlowlyMemory(DBViewer dbViewer) {
 		this.dbViewer = dbViewer;
 	}
 
 	/**
 	 * get Associations tables
-	 * @return
-	 * @throws SQLException
+	 *
+	 * @throws java.sql.SQLException if any.
+	 * @return a {@link java.util.Collection} object.
 	 */
 	public Collection<Associations> getAssociations() throws SQLException {
 		//int tablesAssociationsSize = Config.getConfig().getInt("fastMemory.tablesObjectsAndAssociationsSize");
@@ -40,6 +46,12 @@ public class SlowlyMemory {
 		return result;
 	}
 
+	/**
+	 * <p>getObjects.</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 * @throws java.sql.SQLException if any.
+	 */
 	public Collection<Objects> getObjects() throws SQLException {
 		//int tablesObjectsSize = Config.getConfig().getInt("fastMemory.tablesObjectsAndAssociationsSize");
 		Collection<Objects> result = new Vector<Objects>();
@@ -48,6 +60,12 @@ public class SlowlyMemory {
 	}
 	
 
+	/**
+	 * <p>getTables.</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 * @throws java.sql.SQLException if any.
+	 */
 	public Collection<Tables> getTables() throws SQLException {
 		//int tablesTablesSize = Config.getConfig().getInt("fastMemory.tablesTablesSize");
 		//Collection<Tables> result = DBViewer.getInstance().getTables(tablesTablesSize);
@@ -57,9 +75,11 @@ public class SlowlyMemory {
 	/**
 	 * Nalezne v DB idecka masivu znaku. Jestli znak neexistuje - vytvori ho. Zdvojene a opakujici se znaky nevytvari nove,
 	 * ale vrati jejich id.
-	 * @param missingChars
+	 *
+	 * @param missingChars a {@link java.util.Vector} object.
 	 * @return Pole Idecek znaku
-	 * @throws SQLException 
+	 * @throws SQLException if any.
+	 * @throws java.lang.Exception if any.
 	 */
 	public Long[] getCharsId(Vector<Character> missingChars) throws Exception {
 		Long[] result = new Long[missingChars.size()];
@@ -92,9 +112,10 @@ public class SlowlyMemory {
 
 	/**
 	 * Dostane z DB objekty dle zadanych ID. Nevytvari nove.
-	 * @param missingObjectsId
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param missingObjectsId a {@link java.util.Vector} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link java.util.Vector} object.
 	 */
 	public Vector<Objects> getObjects(Vector<Long> missingObjectsId) throws Exception {
 		Vector<Objects> result = new Vector<Objects>();
@@ -124,10 +145,11 @@ public class SlowlyMemory {
 
 	/**
 	 * Vytvori novy Objekts pro par Thought.
-	 * @param srcThought
-	 * @param tgtThought
+	 *
+	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @return Objects
-	 * @throws Exception
+	 * @throws java.lang.Exception if any.
 	 */
 	public Objects getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
 		Objects result = null;
@@ -141,10 +163,11 @@ public class SlowlyMemory {
 
 	/**
 	 * Dohleda v DB Associations. Jestli nenajde, vrati null
-	 * @param srcThought
-	 * @param tgtThought
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
 		Associations result = null;
@@ -171,8 +194,9 @@ public class SlowlyMemory {
 
 	/**
 	 * Zvysi COST associaci o jednicku jak v DB, tak i v cashe
+	 *
 	 * @param associationsId - IDecka associaci v kterych se ma zvednout ID
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public void increaseAssociationsCost(Vector<Long> associationsId) throws Exception {
 		dbViewer.increaseAssociationsCost(associationsId);
@@ -180,8 +204,9 @@ public class SlowlyMemory {
 
 	/**
 	 * Zvysi o jednicku COST asociaci v DB.
+	 *
 	 * @param obIdArray IDecka objektu obj_id v associations
-	 * @throws SQLException 
+	 * @throws java.sql.SQLException if any.
 	 */
 	public void increaseAssociationsCostToObjectsId(Long[] obIdArray) throws SQLException {
 		dbViewer.increaseAssociationsCostToObjectsId(obIdArray);
@@ -190,10 +215,11 @@ public class SlowlyMemory {
 
 	/**
 	 * Dohleda v DB associations pro pary objektu. Nevytvari nove.
+	 *
 	 * @param thoughtsPairToUnion - pary Thought pro spojeni
 	 * @param notFoundPositions - pozice prvniho objektu kazdeho paru pro dohledani
 	 * @return Vector<Associations> dohledanych associaci. Chybejici associations obsahuji null.
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Associations> getAssociations(
 			Vector<Thought> thoughtsPairToUnion,
@@ -240,6 +266,14 @@ public class SlowlyMemory {
 		return result;
 	}
 
+	/**
+	 * <p>insertAssociations.</p>
+	 *
+	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
+	 * @param newObjects a {@link java.util.Vector} object.
+	 * @return a {@link java.util.Vector} object.
+	 * @throws java.sql.SQLException if any.
+	 */
 	public Vector<Associations> insertAssociations(
 			Vector<Thought> thoughtPairsToUnion, Vector<Objects> newObjects)
 			throws SQLException {
@@ -249,6 +283,13 @@ public class SlowlyMemory {
 		return newAssociations;
 	}
 
+	/**
+	 * <p>getNewObjects.</p>
+	 *
+	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
+	 * @return a {@link java.util.Vector} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public Vector<Objects> getNewObjects(Vector<Thought> thoughtPairsToUnion)
 			throws Exception {
 		/** Vytvori nove objects */
@@ -258,9 +299,10 @@ public class SlowlyMemory {
 
 	/**
 	 * Dohleda vsechny associations, ve kterych src_id == objectId z parametru.
-	 * @param objectsId
-	 * @return
-	 * @throws Exception 
+	 *
+	 * @param objectsId a {@link java.util.Vector} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link java.util.Vector} object.
 	 */
 	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
 		Vector<Associations> result = dbViewer.getAllAssociations(objectsId);		
@@ -269,15 +311,15 @@ public class SlowlyMemory {
 
 	/**
 	 * Dohleda mozne Objekty, ktere jsou vytvorene na zaklade objektu z parametru.
+	 *
 	 * @param layer - id objektu, pro ktere hledame nadrazene objekty.
 	 * @param constant - hledame spojeni jen pro pary objektu, ktere jsou definovany
 	 * v konstante (prvni-treti..., prvni-sedmy..., prvni-...). Mohou obsahovat null.
-	 * 
+	 *
 	 * Vzhledem k tomu, ze se jedna o rychle dohledani i s moznosti neuplne
 	 * informace, nebudeme pouzivat Memory pro ulozeni objektu a associaci v cashe.
-	 * 
 	 * @return Vector id nadrazenych objektu nebo null-objektu.
-	 * @throws SQLException
+	 * @throws java.sql.SQLException if any.
 	 */
 	public Vector<Long> getSuperiorObjectsId(Vector<Long> layer, int constant) throws SQLException {
 		Vector<Long> pairsToFind = new Vector<Long>();

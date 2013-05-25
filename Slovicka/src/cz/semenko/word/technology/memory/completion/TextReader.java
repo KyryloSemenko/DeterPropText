@@ -16,6 +16,12 @@ import cz.semenko.word.aware.Thought;
 import cz.semenko.word.aware.ThoughtsSaver;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
+/**
+ * <p>TextReader class.</p>
+ *
+ * @author k
+ * @version $Id: $Id
+ */
 public class TextReader {
 	static Logger logger = Logger.getLogger(TextReader.class);
 	// Objekty doda Spring FW
@@ -24,11 +30,16 @@ public class TextReader {
 	private ThoughtsSaver thoughtsSaver;
 	private Config config;
 
+	/**
+	 * <p>Constructor for TextReader.</p>
+	 */
 	public TextReader() {
 		
 	}
 	
 	/**
+	 * <p>Setter for the field <code>config</code>.</p>
+	 *
 	 * @param config the config to set
 	 */
 	public void setConfig(Config config) {
@@ -36,6 +47,8 @@ public class TextReader {
 	}
 
 	/**
+	 * <p>Setter for the field <code>thoughtsSaver</code>.</p>
+	 *
 	 * @param thoughtsSaver the thoughtsSaver to set
 	 */
 	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {
@@ -43,12 +56,16 @@ public class TextReader {
 	}
 
 	/**
+	 * <p>Setter for the field <code>fastMemory</code>.</p>
+	 *
 	 * @param memory the memory to set
 	 */
 	public void setFastMemory(FastMemory memory) {
 		this.fastMemory = memory;
 	}
 	/**
+	 * <p>Setter for the field <code>knowledge</code>.</p>
+	 *
 	 * @param knowledge the knowledge to set
 	 */
 	public void setKnowledge(Knowledge knowledge) {
@@ -57,9 +74,9 @@ public class TextReader {
 	/**
 	 * Čte soubor a ukládá sloky do DB. Spojuje sloky se syntetickymi vlastnosti. Behem cteni naleza nove sloky
 	 * a uklada je do DB.
-	 * @param fileName
-	 * @param synPropArr
-	 * @throws Exception
+	 *
+	 * @param fileName a {@link java.lang.String} object.
+	 * @throws java.lang.Exception if any.
 	 */
 	public void storeFile(String fileName) throws Exception {
 		int numChars = config.getDataProvider_numCharsReadsFromInput();
@@ -103,7 +120,8 @@ public class TextReader {
 	}
 	/**
 	 * Nauci nachazet napriklad jmena, nebo cislovky, nebo podnet s prisudkem.
-	 * @param propertyName
+	 *
+	 * @param propertyName a {@link java.lang.String} object.
 	 */
 	public void learnSyntheticProperty(String propertyName) {
 		

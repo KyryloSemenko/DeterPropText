@@ -3,43 +3,50 @@
  */
 package test.java.cz.semenko.word.aware;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
- * @author k
+ * <p>KnowledgeTest class.</p>
  *
+ * @author k
+ * @version $Id: $Id
  */
 public class KnowledgeTest {
 
 	/**
-	 * @throws java.lang.Exception
+	 * <p>setUpBeforeClass.</p>
+	 *
+	 * @throws java.lang.Exception if any.
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
 
 	/**
-	 * @throws java.lang.Exception
+	 * <p>tearDownAfterClass.</p>
+	 *
+	 * @throws java.lang.Exception if any.
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
 
 	/**
-	 * @throws java.lang.Exception
+	 * <p>setUp.</p>
+	 *
+	 * @throws java.lang.Exception if any.
 	 */
 	@Before
 	public void setUp() throws Exception {
 	}
 
 	/**
-	 * @throws java.lang.Exception
+	 * <p>tearDown.</p>
+	 *
+	 * @throws java.lang.Exception if any.
 	 */
 	@After
 	public void tearDown() throws Exception {
@@ -48,9 +55,9 @@ public class KnowledgeTest {
 	/**
 	 * Test method for {@link cz.semenko.word.aware.Knowledge#remember(java.lang.Long[])}.
 	 */
-	@Test
-	public final void testRemember() {
-		fail("Not yet implemented"); // TODO
-	}
+//	@Test
+//	public final void testRemember() {
+//		fail("Not yet implemented"); // TODO
+//	}
 
 }

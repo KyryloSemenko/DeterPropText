@@ -13,19 +13,31 @@ import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
 
 
+/**
+ * <p>MemoryCleaner class.</p>
+ *
+ * @author k
+ * @version $Id: $Id
+ */
 public class MemoryCleaner {
 	
 	// Pod spravou Spring FW
 	private DBViewer dbViewer;
 	private Config config;
 	
+	/** Constant <code>logger</code> */
 	public static Logger logger = Logger.getLogger(MemoryCleaner.class);
 	
+	/**
+	 * <p>Constructor for MemoryCleaner.</p>
+	 */
 	public MemoryCleaner() {
 		;
 	}
 	
 	/**
+	 * <p>Setter for the field <code>config</code>.</p>
+	 *
 	 * @param config the config to set
 	 */
 	public void setConfig(Config config) {
@@ -33,6 +45,8 @@ public class MemoryCleaner {
 	}
 
 	/**
+	 * <p>Setter for the field <code>dbViewer</code>.</p>
+	 *
 	 * @param dbViewer the dbViewer to set
 	 */
 	public void setDbViewer(DBViewer dbViewer) {
@@ -41,7 +55,8 @@ public class MemoryCleaner {
 
 	/**
 	 * Odstrani asociace, ktere maji nizkou cost, a jejich objekty.
-	 * @throws SQLException 
+	 *
+	 * @throws java.sql.SQLException if any.
 	 */
 	public void cleanMemoryFromRedundantObjects() throws SQLException {
 		int lowestCostForLeaving = config.getMemoryCleaner_lowestCostForLeaving();
@@ -114,6 +129,11 @@ public class MemoryCleaner {
 	}
 
 	// TODO Remove this
+	/**
+	 * <p>main.</p>
+	 *
+	 * @param args an array of {@link java.lang.String} objects.
+	 */
 	public static void main(String[] args) {
 		try {
 			ApplicationContext applicationContext = 

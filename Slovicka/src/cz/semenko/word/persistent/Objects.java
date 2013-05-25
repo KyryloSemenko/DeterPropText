@@ -2,13 +2,19 @@ package cz.semenko.word.persistent;
 
 import org.apache.log4j.Logger;
 
-/** Objects table **/
+/**
+ * Objects table *
+ *
+ * @author k
+ * @version $Id: $Id
+ */
 public class Objects {
 	private Long id;
 	private String src;
 	private Long type;
 	Logger logger = Logger.getLogger(Objects.class);
 	
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -45,34 +51,79 @@ public class Objects {
 		return false;
 	}
 	
+	/**
+	 * <p>Constructor for Objects.</p>
+	 *
+	 * @param id a {@link java.lang.Long} object.
+	 * @param src a {@link java.lang.String} object.
+	 * @param type a {@link java.lang.Long} object.
+	 */
 	public Objects(Long id, String src, Long type) {
 		super();
 		this.id = id;
 		this.src = src;
 		this.type = type;
 	}
+	/**
+	 * <p>Constructor for Objects.</p>
+	 */
 	public Objects() {
 		
 	}
 	
+	/**
+	 * <p>Getter for the field <code>id</code>.</p>
+	 *
+	 * @return a {@link java.lang.Long} object.
+	 */
 	public Long getId() {
 		return id;
 	}
+	/**
+	 * <p>Setter for the field <code>id</code>.</p>
+	 *
+	 * @param id a {@link java.lang.Long} object.
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
+	/**
+	 * <p>Getter for the field <code>src</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSrc() {
 		return src;
 	}
+	/**
+	 * <p>Setter for the field <code>src</code>.</p>
+	 *
+	 * @param src a {@link java.lang.String} object.
+	 */
 	public void setSrc(String src) {
 		this.src = src;
 	}
+	/**
+	 * <p>Getter for the field <code>type</code>.</p>
+	 *
+	 * @return a {@link java.lang.Long} object.
+	 */
 	public Long getType() {
 		return type;
 	}
+	/**
+	 * <p>Setter for the field <code>type</code>.</p>
+	 *
+	 * @param type a {@link java.lang.Long} object.
+	 */
 	public void setType(Long type) {
 		this.type = type;
 	}
+	/**
+	 * <p>toString.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return ("src '" + src + "', type " + type + ", id " + id);
 	}

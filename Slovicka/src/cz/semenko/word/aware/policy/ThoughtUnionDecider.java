@@ -8,6 +8,12 @@ import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
+/**
+ * <p>ThoughtUnionDecider class.</p>
+ *
+ * @author k
+ * @version $Id: $Id
+ */
 public class ThoughtUnionDecider {
 	
 	// Komponenty doda Spring FW
@@ -17,6 +23,8 @@ public class ThoughtUnionDecider {
 
 
 	/**
+	 * <p>Setter for the field <code>fastMemory</code>.</p>
+	 *
 	 * @param fastMemory the fastMemory to set
 	 */
 	public void setFastMemory(FastMemory fastMemory) {
@@ -24,17 +32,24 @@ public class ThoughtUnionDecider {
 	}
 
 	/**
+	 * <p>Setter for the field <code>config</code>.</p>
+	 *
 	 * @param config the config to set
 	 */
 	public void setConfig(Config config) {
 		this.config = config;
 	}
 
+	/**
+	 * <p>Constructor for ThoughtUnionDecider.</p>
+	 */
 	public ThoughtUnionDecider() {
 
 	}
 	
 	/**
+	 * <p>Setter for the field <code>associations</code>.</p>
+	 *
 	 * @param associations the associations to set
 	 */
 	public void setAssociations(Associations associations) {
@@ -49,21 +64,22 @@ public class ThoughtUnionDecider {
 	 * textu.
 	 * Spojovani je podobne zapouzdreni, jen v pameti nezustavaji stopy zapouzdrenych objektu.
 	 * Spojovani je podobne slozkam a podslozkam v pocitaci.
-	 * 
+	 *
 	 * Jake by mohly byt rozhodujici faktory?
 	 * 	Sirka vytvarenych asociaci a novych objektu (sirku by mel ridit jiny objekt):
-	 * 		
+	 *
 	 * 		Vytvaret objekty jen pro ty pary, ktere budou spojovany, nebo pro vsechny pary do hloubky?
 	 * 		Jestli do hloubky - databaze bude rychle rust; podkladu pro dalsi spojovani bude vice;
 	 * 		analyza textu bude trvat dele; mensi zavistlost na poradi a nahode; ...
 	 * 		Musim odzkouset ruzne postupy.
 	 * 	Hloubka zapouzdreni:
 	 * 		Cim vetsi hloubka zapouzdreni, tim vetsi zobecneni jevu muze byt vytvoreno; vetsi databaze,
-	 * 		kterou nejde dobre cistit; mohla by zaviset na hardvarovych moznostech; delsi kus textu nebo 
+	 * 		kterou nejde dobre cistit; mohla by zaviset na hardvarovych moznostech; delsi kus textu nebo
 	 * 		znalosti bude v Knowledge; ...
+	 *
 	 * @param thoughts2 - Vector jiz spojenych a nespojenych objektu.
 	 * @return - Vector pozici v thoughts2, ktere musi byt spojeny.
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Integer> getPositionsToRelation(Vector<Thought> thoughts2) throws Exception {
 		// Projit vsechny pary v celem thoughts2, zda nemaji assoc na nasledujici objekt
@@ -199,13 +215,13 @@ public class ThoughtUnionDecider {
 	}
 
 	/**
-	 * Nejdriv dohledat spicky pro rozhodovani, jake objekty spojovat 
+	 * Nejdriv dohledat spicky pro rozhodovani, jake objekty spojovat
 	 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 	 * ktere vytvareji tyto spickove objekty.
-	 * 
-	 * @param inputObjects
-	 * @return
-	 * @throws Exception 
+	 *
+	 * @param inputObjects an array of {@link java.lang.Long} objects.
+	 * @throws java.lang.Exception if any.
+	 * @return an array of {@link java.lang.Long} objects.
 	 */
 	public Long[] getTipsAndJoin(Long[] inputObjects) throws Exception {
 		Layers layers = new Layers();

@@ -14,20 +14,39 @@ import org.springframework.context.ApplicationContext;
 import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.dao.DBconnector;
 
+/**
+ * <p>DBconnectorTest class.</p>
+ *
+ * @author k
+ * @version $Id: $Id
+ */
 public class DBconnectorTest {
 	static ApplicationContext ctx;
 
+	/**
+	 * <p>setUp.</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	@Before
 	public void setUp() throws Exception {
 		ctx = ApplicationContextProvider.getApplicationContext();
 	}
 
+	/**
+	 * <p>tearDown.</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	@After
 	public void tearDown() throws Exception {
 		DBconnector connector = ctx.getBean(DBconnector.class);
 		connector.stopConnection();
 	}
 
+	/**
+	 * <p>testDBconnector.</p>
+	 */
 	@Test
 	public final void testDBconnector() {
 		DBconnector connector = ctx.getBean(DBconnector.class);
@@ -42,6 +61,9 @@ public class DBconnectorTest {
 	}
 	
 
+	/**
+	 * <p>testCloseDBconnector.</p>
+	 */
 	@Test
 	public final void testCloseDBconnector() {
 		DBconnector connector = ctx.getBean(DBconnector.class);

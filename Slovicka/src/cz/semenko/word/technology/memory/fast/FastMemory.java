@@ -15,16 +15,18 @@ import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
 
 /**
  * Singleton. FastMemory is cached on. SlowlyMemory is saved in DB.
- * 
- * The size of fast memory is set in first configuration parameter;
-  * and later management system configuration parameters.
-  * It's a DB cache and serves to reduce the number of requests to the database.
-  * So that should contain the same data and have the same structure as the DB.
- * @author k
  *
+ * The size of fast memory is set in first configuration parameter;
+ * and later management system configuration parameters.
+ * It's a DB cache and serves to reduce the number of requests to the database.
+ * So that should contain the same data and have the same structure as the DB.
+ *
+ * @author k
+ * @version $Id: $Id
  */
 public class FastMemory {
 	private Collection<Tables> tablesCollection;
+	/** Constant <code>logger</code> */
 	public static Logger logger = Logger.getLogger(FastMemory.class);
 	/**
 	 * Bude naplnovana a doplnovana dle nasledujicich pravidel:
@@ -52,7 +54,9 @@ public class FastMemory {
 	
 	/**
 	 * Constucor
-	 * @throws SQLException
+	 *
+	 * @throws java.sql.SQLException if any.
+	 * @param slowlyMemory a {@link cz.semenko.word.technology.memory.slowly.SlowlyMemory} object.
 	 */
 	public FastMemory(SlowlyMemory slowlyMemory) throws SQLException {
 		this.slowlyMemory = slowlyMemory;
@@ -62,6 +66,8 @@ public class FastMemory {
 	}
 
 	/**
+	 * <p>Setter for the field <code>config</code>.</p>
+	 *
 	 * @param config the config to set
 	 */
 	public void setConfig(Config config) {
@@ -69,15 +75,16 @@ public class FastMemory {
 	}
 
 	/**
-	 * Najde idecka masivu znaku. Jestli ne, tak sahne na SlowlyMemory. 
+	 * Najde idecka masivu znaku. Jestli ne, tak sahne na SlowlyMemory.
 	 * Seradi elementy v objectsTableCollection dle vyuzivanosti.
-	 * 
+	 *
 	 * Finds ID of solid characters. If not, feel the SlowlyMemory.
 	 * Sorts the elements in objectsTableCollection by frequency utilized.
-	 * 
-	 * @param array of charcters
+	 *
 	 * @return array of Id
-	 * @throws SQLException 
+	 * @throws SQLException if any.
+	 * @param chars an array of char.
+	 * @throws java.lang.Exception if any.
 	 */
 	public Long[] getCharsId(char[] chars) throws Exception {
 		Vector<Objects> localObjectsTable = (Vector<Objects>)objectsCollection;
@@ -149,14 +156,14 @@ public class FastMemory {
 	 * Najde Objekts pro Vektor IDecek. Jestli ne, tak sahne na SlowlyMemory.
 	 * Pri hledani rozbali objekty do prvniho Levelu a zkusi najit podobnost.
 	 * Seradi elementy v objectsTableCollection dle vyuzivanosti.
-	 * 
+	 *
 	 * Find the Objekts to ID vector. If not, feel the SlowlyMemory.
 	 * When searching, expand the first level and try to find similarities.
 	 * Sorts the elements in objectsTableCollection by used frequency.
-	 * 
-	 * @param objectsId
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param objectsId a {@link java.util.Vector} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link java.util.Vector} object.
 	 */
 	public Vector<Objects> getObjects(Vector<Long> objectsId) throws Exception {
 		Vector<Objects> result = new Vector<Objects>();
@@ -201,6 +208,14 @@ public class FastMemory {
 	}
 
 	/* Viz. Memory getNewObject(...) */
+	/**
+	 * <p>getNewObject.</p>
+	 *
+	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @return a {@link cz.semenko.word.persistent.Objects} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public Objects getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
 		Objects result = slowlyMemory.getNewObject(srcThought, tgtThought);
 		// pridat object na konec kolekce
@@ -212,13 +227,13 @@ public class FastMemory {
 
 	/**
 	 * Dohleda Association ve FastMemory. Jestli nenajde, zkusi najit ve SlowlyMemory.
-	 * 
+	 *
 	 * Supervision Association in FastMemory. If not found, try to find the SlowlyMemory.
-	 * 
-	 * @param srcThought
-	 * @param tgtThought
-	 * @return
-	 * @throws Exception 
+	 *
+	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
 		Vector<Associations> assocTable = (Vector<Associations>)associationsCollection;
@@ -250,12 +265,12 @@ public class FastMemory {
 	/**
 	 * Zvysi COST u asociaci, ktere maji obj_id z parametru jak v DB,
 	 * tak i v cashe
-	 * 
+	 *
 	 * increase the associations COST, which are obj_id parameter of both DB
 	 * as well as in cash
-	 * 
+	 *
 	 * @param obIdArray - array of Objects ID
-	 * @throws SQLException 
+	 * @throws java.sql.SQLException if any.
 	 */
 	public void increaseAssociationsCostToObjectsId(Long[] obIdArray) throws SQLException {
 		Vector<Associations> localAssocTable = (Vector<Associations>)associationsCollection;
@@ -272,11 +287,11 @@ public class FastMemory {
 
 	/**
 	 * Zvysi COST associaci o jednicku jak v DB, tak i v cashe
-	 * 
+	 *
 	 * COST Associations will increase by one in both the DB and in Cash
-	 * 
+	 *
 	 * @param associationsId - Associations \id, in which the COST is to lift
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public void increaseAssociationsCost(Vector<Long> associationsId) throws Exception {
 		slowlyMemory.increaseAssociationsCost(associationsId);
@@ -291,8 +306,9 @@ public class FastMemory {
 
 	/**
 	 * Viz. increaseAssociationsCost(Vector<Long> associationsId)
-	 * @param result
-	 * @throws Exception 
+	 *
+	 * @param result an array of {@link java.lang.Long} objects.
+	 * @throws java.lang.Exception if any.
 	 */
 	public void increaseAssociationsCost(Long[] result) throws Exception {
 		Vector<Long> param = new Vector<Long>();
@@ -306,14 +322,14 @@ public class FastMemory {
 	 * Dohleda associations. Nevytvari nove.
 	 * Zvedne nahoru nalezene.
 	 * Nenalezene dohleda v SlowlyMemory a prida k FastMemory cashe.
-	 * 
+	 *
 	 * Find associations. Does not create new.
 	 * He picks up finding.
 	 * Found in the supervisors and adding SlowlyMemory FastMemory Cash.
-	 * 
-	 * @param thoughtsPairToUnion
+	 *
+	 * @param thoughtsPairToUnion a {@link java.util.Vector} object.
 	 * @return Vector<Associations> Nenalezene pozice obsahuji null
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Associations> getAssociations(
 			Vector<Thought> thoughtsPairToUnion) throws Exception {
@@ -367,8 +383,9 @@ public class FastMemory {
 
 	/**
 	 * Vytvori nove objekty a asociace. Prida je do objectsTableCollection a associationsTableCollection
+	 *
 	 * @param thoughtPairsToUnion - pary Thought, ktere zarucene nemaji Associations ani spolecny Objects
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public void createNewAssociationsAndObjects(
 			Vector<Thought> thoughtPairsToUnion) throws Exception {
@@ -400,6 +417,11 @@ public class FastMemory {
 		// TODO vymyslit test
 	}
 
+	/**
+	 * <p>addObjects.</p>
+	 *
+	 * @param newThoughts a {@link java.util.Vector} object.
+	 */
 	public void addObjects(Vector<Thought> newThoughts) {
 		Vector<Objects> activeObjects = new Vector<Objects>();
 		for (int i = 0; i < newThoughts.size(); i++) {
@@ -416,14 +438,15 @@ public class FastMemory {
 	 * Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani,
 	 * Melke - hledat jen ve FastMemory.
 	 * 	uspokojit se, kdyz ve FastMemory nalezena aspon jedna Association,
-	 * 	kdyz aspon jedna chybi - 
+	 * 	kdyz aspon jedna chybi -
 	 * 		dohledat associations u vsech prvku,
 	 * 		nebo
 	 * 		dohledat associations jen u chybejicich prvku.
-	 * Hluboke - dohledat vzdy v SlowlyMemory.  
+	 * Hluboke - dohledat vzdy v SlowlyMemory.
+	 *
 	 * @param objectsId - Vector idecek Objektu.
 	 * @return - Vector<Associations> bud melke, stredni nebo hluboke dle nastavenych parametru
-	 * @throws Exception 
+	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
 		boolean deepSearch = config.isFastMemory_alwaysSearchToAssociationsDeepInTheMemory();
@@ -472,7 +495,8 @@ public class FastMemory {
 	/**
 	 * Prida associations na zacatek associationsCollection.
 	 * Jestli assocoation existuje - zvedne ji o jednu pozici nahoru.
-	 * @param newAssociations
+	 *
+	 * @param newAssociations a {@link java.util.Collection} object.
 	 */
 	public void addAssociations(Collection<Associations> newAssociations) {
 		/** Odstrani null hodnoty z parametru */
@@ -506,7 +530,8 @@ public class FastMemory {
 	/**
 	 * Prida objects na zacatek objectsCollection.
 	 * Jestli objects existuje - zvedne ho o jednu pozici nahoru.
-	 * @param newObjects
+	 *
+	 * @param newObjects a {@link java.util.Collection} object.
 	 */
 	public void addObjects(Collection<Objects> newObjects) {
 		Vector<Objects> tempObjects = (Vector<Objects>)objectsCollection;
@@ -531,10 +556,11 @@ public class FastMemory {
 
 	/**
 	 * Dohleda spolecny Thought pro par. Nic nevytvari.
-	 * @param th1
-	 * @param th2
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param th1 a {@link cz.semenko.word.aware.Thought} object.
+	 * @param th2 a {@link cz.semenko.word.aware.Thought} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link cz.semenko.word.aware.Thought} object.
 	 */
 	public Thought getThought(Thought th1, Thought th2) throws Exception {
 		Associations ass = th1.getAssociation(th2);
@@ -553,9 +579,10 @@ public class FastMemory {
 	/**
 	 * Dohleda vsechny objekty. Nevytvari nove. Zvedne pozici objektu v cashe jestli existuje.
 	 * Prida object do cashe jestli neexistuje.
-	 * @param inputObjects
-	 * @return
-	 * @throws Exception
+	 *
+	 * @param inputObjects an array of {@link java.lang.Long} objects.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link java.util.Vector} object.
 	 */
 	public Vector<Objects> getObjects(Long[] inputObjects) throws Exception {
 		Vector<Long> unitedObjectsId = new Vector<Long>();
@@ -568,11 +595,13 @@ public class FastMemory {
 
 	/**
 	 * Vytvori nove Associations pro pary Thought.
+	 *
 	 * @param nonExistsPairs - pary Thought pro spojeni, ktere zarucene
 	 * nemaji Objects ani Associations.
 	 * @return Vector<Associations> serazeny stejne jako vstupni data.
-	 * @throws Exception 
-	 * @throws SQLException 
+	 * @throws java.sql.SQLException if any.
+	 * @throws java.sql.SQLException if any.
+	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Associations> getNewAssociations(
 			Vector<Thought> nonExistsPairs) throws SQLException, Exception {
@@ -584,9 +613,10 @@ public class FastMemory {
 	/**
 	 * Dohleda vsechny asociace. Nevytvari nove. Zvedne pozici asociace v cashe jestli existuje.
 	 * Prida asociaci do cashe jestli neexistuje.
-	 * @param objects
-	 * @return
-	 * @throws Exception 
+	 *
+	 * @param objects a {@link java.util.Vector} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link java.util.Vector} object.
 	 */
 	public Vector<Associations> getAssociationsToObjects(Vector<Objects> objects) throws Exception {
 		Vector<Long> objectsId = new Vector<Long>();
@@ -600,12 +630,24 @@ public class FastMemory {
 	/**
 	 * Vyhleda id znaku ve FastMemory, kdyz nenajde tak v SlowlyMemory,
 	 * kdyz nenajde tak zalozi novy znak ve SlowlyMemory.
+	 *
+	 * @param inputChars an array of char.
+	 * @return an array of {@link java.lang.Long} objects.
+	 * @throws java.lang.Exception if any.
 	 */
 	public Long[] getObjects(char[] inputChars) throws Exception {
 		Long[] result = getCharsId(inputChars);
 		return result;
 	}
 	
+	/**
+	 * <p>getSuperiorObjectsId.</p>
+	 *
+	 * @param layer a {@link java.util.Vector} object.
+	 * @param constant a int.
+	 * @return a {@link java.util.Vector} object.
+	 * @throws java.sql.SQLException if any.
+	 */
 	public Vector<Long> getSuperiorObjectsId(Vector<Long> layer, int constant) throws SQLException {
 		return slowlyMemory.getSuperiorObjectsId(layer, constant);
 	}
