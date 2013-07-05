@@ -350,11 +350,15 @@ public class JdbcDBViewer implements DBViewer {
 	 * @param objectsPool
 	 * @param associationsPool
 	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
-	 * @return
+	 * @return pole Stringu SRC
 	 */
 	@Override
-	public Vector<String> getStringVectorFromPools(Map<Long, String> paramStringsMap, Vector<Associations> associations, Map<Long, Objects> objectsPool,
+	public Vector<String> getStringVectorFromPools(
+			Map<Long, String> paramStringsMap, 
+			Vector<Associations> associations, 
+			Map<Long, Objects> objectsPool,
 			Map<Long, Associations> associationsPool) {
+		
 		Vector<String> result = new Vector<String>();
 		// TODO zkontrolovat zda radi dle COST asociaci
 		for (int i = 0; i < associations.size(); i++) {
@@ -471,9 +475,9 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 	
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#getRightNeighbours(java.lang.String)
-	 */
+//	/* (non-Javadoc)
+//	 * @see cz.semenko.word.database.DBViewer#getRightNeighbours(java.lang.String)
+//	 */
 //	public synchronized Vector<String> getRightNeighbours(String src) throws Exception {
 //		Vector<String> result = new Vector<String>();
 //		char[] inputChars = src.toCharArray();
@@ -640,133 +644,133 @@ public class JdbcDBViewer implements DBViewer {
 		rs.close();
 		return 0;
 	}
-	/*
-	public Long getNewObject(Long srcID, Long tgtID, StringBuilder buf, Long synteticProperty) throws Exception {
-		final int SRC_TBL = 1; // change when multiple tables module will be adding.
-		final int TGT_TBL = 1;
-		ResultSet rs = null;
-		int srcTbl = SRC_TBL;
-		int tgtTbl = TGT_TBL;
-		int cost = 1;
-		
-		int level = getMaxLevel(srcID, tgtID);
-		level++;
-		String tmp = buf.toString();
-		tmp = tmp.replaceAll("'", "''");
-		String insert = "INSERT INTO objects (src, type) VALUES ('"
-			+ tmp + "', " + level + ")";
-		Statement stmt = connection.createStatement();
-		stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
-		rs = stmt.getGeneratedKeys();
-		rs.next();
-		Long id =  rs.getLong(1);
-		// Save synthetic property association
-		if (synteticProperty != null) {
-			insertAssociation.setLong(1, id);
-			insertAssociation.setLong(2, srcTbl);
-			insertAssociation.setLong(3, synteticProperty);
-			insertAssociation.setLong(4, tgtTbl);
-			insertAssociation.setInt(5, 1);
-			if (insertAssociation.execute() == true) {
-				throw new Exception("Association does not created. src_id: " + id + 
-						" tgt_id: " + synteticProperty);
-			}
-		}
-		
-		updateCostToAssoc.setLong(1, srcID);
-		updateCostToAssoc.setLong(2, tgtID);
-		if (updateCostToAssoc.executeUpdate() == 0) {
-			// insert association to src and tgt objects
-			insertAssociation.setLong(1, srcID);
-			insertAssociation.setLong(2, srcTbl);
-			insertAssociation.setLong(3, tgtID);
-			insertAssociation.setLong(4, tgtTbl);
-			insertAssociation.setInt(5, cost);
-			if (insertAssociation.execute() == true) {
-				throw new Exception("Association does not created. src_id: " + srcID + 
-						" tgt_id: " + tgtID);
-			}
-		}
-		// insert association with src and new created odjects
-		insertAssociation.setLong(1, srcID);
-		insertAssociation.setLong(2, srcTbl);
-		insertAssociation.setLong(3, id);
-		insertAssociation.setLong(4, tgtTbl);
-		insertAssociation.setInt(5, cost);
-		if (insertAssociation.execute() == true) {
-			throw new Exception("Association does not created. tgtID: " + srcID + 
-					" tgt_id: " + id);
-		}
-		return id;
-	}
-	*/
-	/**
-	 * Store property defined of user or administrator 
-	 * or return exists object id
-	 * @param objType
-	 * @param descr
-	 * @return
-	 * @throws Exception
-	 
-	public Long getNewSyntheticObject(int objType) throws Exception {
-		ResultSet rs = null;
-		//String tmp = Thought.getDescription(objType);
-		String tmp = "";
-		tmp = tmp.replaceAll("'", "''");
-		// return old property id
-		String sql = "select id from objects where type = " + objType +
-		" and src LIKE '" + tmp + "'";
-		Statement stmt = connection.createStatement();
-		rs = stmt.executeQuery(sql);
-		if (rs.next()) {
-			return rs.getLong("id");
-		}
-		// Else create a new one
-		String insert = "INSERT INTO objects (src, type) VALUES ('"
-			+ tmp + "', " + objType + ")";
-		stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
-		rs = stmt.getGeneratedKeys();
-		rs.next();
-		Long id =  rs.getLong(1);
-		
-		return id;
-	}*/
-	/*
-	public Long getCharID(int character, Long synteticProperty) throws Exception {
-		char[] c = {(char)character};
-		String str = new String(c);
-		selectWordID.setString(1, str);
-		ResultSet rs = selectWordID.executeQuery();
-		if (rs.next() == true) {
-			return rs.getLong("id");
-		} else {
-			// Type 1 - primitive character
-			if (str.equals("'")) {
-				str = "''";
-			}
-			String insert = "INSERT INTO objects (src, type) VALUES ('"
-				+ str + "', 1)";
-			Statement stmt = connection.createStatement();
-			stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
-			rs = stmt.getGeneratedKeys();
-			rs.next();
-		}
-		Long charId = rs.getLong(1);
-		// Save synthetic property association
-		if (synteticProperty != null) {
-			insertAssociation.setLong(1, charId);
-			insertAssociation.setLong(2, 1);
-			insertAssociation.setLong(3, synteticProperty);
-			insertAssociation.setLong(4, 1);
-			insertAssociation.setInt(5, 1);
-			if (insertAssociation.execute() == true) {
-				throw new Exception("Association does not created. src_id: " + charId + 
-						" tgt_id: " + synteticProperty);
-			}
-		}
-		
-		return charId;
-	}*/
+//	/*
+//	public Long getNewObject(Long srcID, Long tgtID, StringBuilder buf, Long synteticProperty) throws Exception {
+//		final int SRC_TBL = 1; // change when multiple tables module will be adding.
+//		final int TGT_TBL = 1;
+//		ResultSet rs = null;
+//		int srcTbl = SRC_TBL;
+//		int tgtTbl = TGT_TBL;
+//		int cost = 1;
+//		
+//		int level = getMaxLevel(srcID, tgtID);
+//		level++;
+//		String tmp = buf.toString();
+//		tmp = tmp.replaceAll("'", "''");
+//		String insert = "INSERT INTO objects (src, type) VALUES ('"
+//			+ tmp + "', " + level + ")";
+//		Statement stmt = connection.createStatement();
+//		stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
+//		rs = stmt.getGeneratedKeys();
+//		rs.next();
+//		Long id =  rs.getLong(1);
+//		// Save synthetic property association
+//		if (synteticProperty != null) {
+//			insertAssociation.setLong(1, id);
+//			insertAssociation.setLong(2, srcTbl);
+//			insertAssociation.setLong(3, synteticProperty);
+//			insertAssociation.setLong(4, tgtTbl);
+//			insertAssociation.setInt(5, 1);
+//			if (insertAssociation.execute() == true) {
+//				throw new Exception("Association does not created. src_id: " + id + 
+//						" tgt_id: " + synteticProperty);
+//			}
+//		}
+//		
+//		updateCostToAssoc.setLong(1, srcID);
+//		updateCostToAssoc.setLong(2, tgtID);
+//		if (updateCostToAssoc.executeUpdate() == 0) {
+//			// insert association to src and tgt objects
+//			insertAssociation.setLong(1, srcID);
+//			insertAssociation.setLong(2, srcTbl);
+//			insertAssociation.setLong(3, tgtID);
+//			insertAssociation.setLong(4, tgtTbl);
+//			insertAssociation.setInt(5, cost);
+//			if (insertAssociation.execute() == true) {
+//				throw new Exception("Association does not created. src_id: " + srcID + 
+//						" tgt_id: " + tgtID);
+//			}
+//		}
+//		// insert association with src and new created odjects
+//		insertAssociation.setLong(1, srcID);
+//		insertAssociation.setLong(2, srcTbl);
+//		insertAssociation.setLong(3, id);
+//		insertAssociation.setLong(4, tgtTbl);
+//		insertAssociation.setInt(5, cost);
+//		if (insertAssociation.execute() == true) {
+//			throw new Exception("Association does not created. tgtID: " + srcID + 
+//					" tgt_id: " + id);
+//		}
+//		return id;
+//	}
+//	*/
+//	/**
+//	 * Store property defined of user or administrator 
+//	 * or return exists object id
+//	 * @param objType
+//	 * @param descr
+//	 * @return
+//	 * @throws Exception
+//	 
+//	public Long getNewSyntheticObject(int objType) throws Exception {
+//		ResultSet rs = null;
+//		//String tmp = Thought.getDescription(objType);
+//		String tmp = "";
+//		tmp = tmp.replaceAll("'", "''");
+//		// return old property id
+//		String sql = "select id from objects where type = " + objType +
+//		" and src LIKE '" + tmp + "'";
+//		Statement stmt = connection.createStatement();
+//		rs = stmt.executeQuery(sql);
+//		if (rs.next()) {
+//			return rs.getLong("id");
+//		}
+//		// Else create a new one
+//		String insert = "INSERT INTO objects (src, type) VALUES ('"
+//			+ tmp + "', " + objType + ")";
+//		stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
+//		rs = stmt.getGeneratedKeys();
+//		rs.next();
+//		Long id =  rs.getLong(1);
+//		
+//		return id;
+//	}*/
+//	/*
+//	public Long getCharID(int character, Long synteticProperty) throws Exception {
+//		char[] c = {(char)character};
+//		String str = new String(c);
+//		selectWordID.setString(1, str);
+//		ResultSet rs = selectWordID.executeQuery();
+//		if (rs.next() == true) {
+//			return rs.getLong("id");
+//		} else {
+//			// Type 1 - primitive character
+//			if (str.equals("'")) {
+//				str = "''";
+//			}
+//			String insert = "INSERT INTO objects (src, type) VALUES ('"
+//				+ str + "', 1)";
+//			Statement stmt = connection.createStatement();
+//			stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
+//			rs = stmt.getGeneratedKeys();
+//			rs.next();
+//		}
+//		Long charId = rs.getLong(1);
+//		// Save synthetic property association
+//		if (synteticProperty != null) {
+//			insertAssociation.setLong(1, charId);
+//			insertAssociation.setLong(2, 1);
+//			insertAssociation.setLong(3, synteticProperty);
+//			insertAssociation.setLong(4, 1);
+//			insertAssociation.setInt(5, 1);
+//			if (insertAssociation.execute() == true) {
+//				throw new Exception("Association does not created. src_id: " + charId + 
+//						" tgt_id: " + synteticProperty);
+//			}
+//		}
+//		
+//		return charId;
+//	}*/
 	
 	@Override
 	protected void finalize() throws Throwable {
@@ -889,89 +893,89 @@ public class JdbcDBViewer implements DBViewer {
 	    rs2.close();
 	    return lastExistsId;
 	}
-	/**
-	 * Vycisti tabulku Objects od praydnych radku
-	 * @param rowsToStatement
-	 * @throws SQLException
-	 
-	private void removeEmptyRowsObjectsTable(int rowsToStatement)
-			throws SQLException {
-		// Pro urcity rozsah nalezne prazdne radky a neprazdne radky ktere podlehaji prenosu nahoru
-		long startPos = 1;
-		long stopPos = startPos + rowsToStatement;
-		while (startPos < lastIdObjectsTable) {
-			System.out.println(startPos);
-			String sql = "SELECT id FROM objects WHERE id >= " + startPos
-			+ " AND id < " + stopPos;
-			ResultSet idRS = connection.createStatement().executeQuery(sql);
-			//Map<Long, Long> toLift = new TreeMap<Long, Long>();
-			Set<Long> existsId = new TreeSet<Long>();
-			Long firstNonExistsId = null;
-			while(idRS.next()) {
-				existsId.add(idRS.getLong("id"));
-			}
-			for (long i = startPos; i < stopPos; i++) {
-				if (firstNonExistsId == null && existsId.contains(i) == false) {
-					firstNonExistsId = i;
-				}
-			}
-			if (firstNonExistsId == null) {
-				startPos = stopPos;
-				stopPos = stopPos + rowsToStatement;
-				continue;
-			}
-			// Nezajimaji nas exists ktere jsou nad firstNonExistsId
-			Vector<Long> toDelete = new Vector<Long>();
-			for (Iterator<Long> existsIter = existsId.iterator(); existsIter.hasNext(); ) {
-				Long next = existsIter.next();
-				if (next < firstNonExistsId) {
-					toDelete.add(next);
-				}
-			}
-			existsId.removeAll(toDelete);
-			// Doplnime exists, aby zaplnila cely rozsah rowsToStatement
-			long tempStartPos = firstNonExistsId;
-			long tempStopPos = stopPos;
-			while (existsId.size() < rowsToStatement && tempStartPos < lastIdObjectsTable) {
-				sql = "SELECT id FROM objects WHERE id >= " + tempStartPos
-				+ " AND id < " + tempStopPos;
-				ResultSet tempRS = connection.createStatement().executeQuery(sql);
-				while (tempRS.next()) {
-					existsId.add(tempRS.getLong("id"));
-				}
-				tempStartPos = tempStopPos;
-				tempStopPos = tempStopPos + rowsToStatement;
-			}
-			// Provedeme zasah do DB
-			Statement stmt = connection.createStatement();
-			for (Iterator<Long> existsIter = existsId.iterator(); existsIter.hasNext(); ) {
-				Long nextId = existsIter.next();
-				String sqlStmt = "UPDATE objects SET id=" + firstNonExistsId
-				+ " WHERE id=" + nextId;
-				stmt.executeUpdate(sqlStmt);
-				sqlStmt = "UPDATE associations SET obj_id=" + firstNonExistsId
-				+ " WHERE obj_id=" + nextId;
-				stmt.executeUpdate(sqlStmt);
-				sqlStmt = "UPDATE associations SET src_id=" + firstNonExistsId
-				+ " WHERE src_id=" + nextId;
-				stmt.executeUpdate(sqlStmt);
-				sqlStmt = "UPDATE associations SET tgt_id=" + firstNonExistsId
-				+ " WHERE tgt_id=" + nextId;
-				stmt.executeUpdate(sqlStmt);
-				firstNonExistsId++;
-			}
-			stmt.close();
-			// Pokracujeme s iteraci od dalsi varky
-			startPos = stopPos;
-			stopPos = stopPos + rowsToStatement;
-		}
-		String sql = "SELECT MAX(id) FROM objects";
-	    ResultSet rs = connection.createStatement().executeQuery(sql);
-	    if (rs.next()) {
-	    	lastIdObjectsTable = rs.getLong(1);
-	    }
-	}
-*/
+//	/**
+//	 * Vycisti tabulku Objects od praydnych radku
+//	 * @param rowsToStatement
+//	 * @throws SQLException
+//	 
+//	private void removeEmptyRowsObjectsTable(int rowsToStatement)
+//			throws SQLException {
+//		// Pro urcity rozsah nalezne prazdne radky a neprazdne radky ktere podlehaji prenosu nahoru
+//		long startPos = 1;
+//		long stopPos = startPos + rowsToStatement;
+//		while (startPos < lastIdObjectsTable) {
+//			System.out.println(startPos);
+//			String sql = "SELECT id FROM objects WHERE id >= " + startPos
+//			+ " AND id < " + stopPos;
+//			ResultSet idRS = connection.createStatement().executeQuery(sql);
+//			//Map<Long, Long> toLift = new TreeMap<Long, Long>();
+//			Set<Long> existsId = new TreeSet<Long>();
+//			Long firstNonExistsId = null;
+//			while(idRS.next()) {
+//				existsId.add(idRS.getLong("id"));
+//			}
+//			for (long i = startPos; i < stopPos; i++) {
+//				if (firstNonExistsId == null && existsId.contains(i) == false) {
+//					firstNonExistsId = i;
+//				}
+//			}
+//			if (firstNonExistsId == null) {
+//				startPos = stopPos;
+//				stopPos = stopPos + rowsToStatement;
+//				continue;
+//			}
+//			// Nezajimaji nas exists ktere jsou nad firstNonExistsId
+//			Vector<Long> toDelete = new Vector<Long>();
+//			for (Iterator<Long> existsIter = existsId.iterator(); existsIter.hasNext(); ) {
+//				Long next = existsIter.next();
+//				if (next < firstNonExistsId) {
+//					toDelete.add(next);
+//				}
+//			}
+//			existsId.removeAll(toDelete);
+//			// Doplnime exists, aby zaplnila cely rozsah rowsToStatement
+//			long tempStartPos = firstNonExistsId;
+//			long tempStopPos = stopPos;
+//			while (existsId.size() < rowsToStatement && tempStartPos < lastIdObjectsTable) {
+//				sql = "SELECT id FROM objects WHERE id >= " + tempStartPos
+//				+ " AND id < " + tempStopPos;
+//				ResultSet tempRS = connection.createStatement().executeQuery(sql);
+//				while (tempRS.next()) {
+//					existsId.add(tempRS.getLong("id"));
+//				}
+//				tempStartPos = tempStopPos;
+//				tempStopPos = tempStopPos + rowsToStatement;
+//			}
+//			// Provedeme zasah do DB
+//			Statement stmt = connection.createStatement();
+//			for (Iterator<Long> existsIter = existsId.iterator(); existsIter.hasNext(); ) {
+//				Long nextId = existsIter.next();
+//				String sqlStmt = "UPDATE objects SET id=" + firstNonExistsId
+//				+ " WHERE id=" + nextId;
+//				stmt.executeUpdate(sqlStmt);
+//				sqlStmt = "UPDATE associations SET obj_id=" + firstNonExistsId
+//				+ " WHERE obj_id=" + nextId;
+//				stmt.executeUpdate(sqlStmt);
+//				sqlStmt = "UPDATE associations SET src_id=" + firstNonExistsId
+//				+ " WHERE src_id=" + nextId;
+//				stmt.executeUpdate(sqlStmt);
+//				sqlStmt = "UPDATE associations SET tgt_id=" + firstNonExistsId
+//				+ " WHERE tgt_id=" + nextId;
+//				stmt.executeUpdate(sqlStmt);
+//				firstNonExistsId++;
+//			}
+//			stmt.close();
+//			// Pokracujeme s iteraci od dalsi varky
+//			startPos = stopPos;
+//			stopPos = stopPos + rowsToStatement;
+//		}
+//		String sql = "SELECT MAX(id) FROM objects";
+//	    ResultSet rs = connection.createStatement().executeQuery(sql);
+//	    if (rs.next()) {
+//	    	lastIdObjectsTable = rs.getLong(1);
+//	    }
+//	}
+//*/
 
 	/**
 	 * Nastavi cost u vsech objektu na 0.
