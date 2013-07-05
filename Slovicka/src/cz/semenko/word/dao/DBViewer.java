@@ -13,8 +13,7 @@ import cz.semenko.word.persistent.Objects;
 /**
  * Interface pro pristup k datum DB
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public interface DBViewer {
 
@@ -274,7 +273,6 @@ public interface DBViewer {
 			 * Dale nahore budou SRC s Asociacemi s vyssim COST
 			 *
 			 * @param associations
-			 * @param associationsPool
 			 * @param objectsPool a {@link java.util.Map} object.
 			 * @param associationsPool a {@link java.util.Map} object.
 			 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty

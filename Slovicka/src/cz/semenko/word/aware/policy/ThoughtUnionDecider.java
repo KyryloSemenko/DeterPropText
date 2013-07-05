@@ -9,10 +9,9 @@ import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
- * <p>ThoughtUnionDecider class.</p>
+ * Business process to decide, if TODO
+ * @author Kyrylo Semenko
  *
- * @author k
- * @version $Id: $Id
  */
 public class ThoughtUnionDecider {
 	
@@ -61,31 +60,35 @@ public class ThoughtUnionDecider {
 	 * pro spojovani elementu. Elementy jsou spojovany proto, aby v pameti zabiraly mene mista.
 	 * Dale diky spojovani muzeme odhalit pravidelnosti ve vyskytech prvku. S touto informaci
 	 * bychom meli byt schopny doplnit chybejici prvky, odhalit chyby v textu a navrhovat autodoplneni
-	 * textu.
+	 * textu.<br>
 	 * Spojovani je podobne zapouzdreni, jen v pameti nezustavaji stopy zapouzdrenych objektu.
 	 * Spojovani je podobne slozkam a podslozkam v pocitaci.
 	 *
-	 * Jake by mohly byt rozhodujici faktory?
-	 * 	Sirka vytvarenych asociaci a novych objektu (sirku by mel ridit jiny objekt):
+	 * <ul>Jake by mohly byt rozhodujici faktory?
+	 * 	<li>Sirka vytvarenych asociaci a novych objektu (sirku by mel ridit jiny objekt):
+	 *		<ul>
+	 * 			<li>Vytvaret objekty jen pro ty pary, ktere budou spojovany, nebo pro vsechny pary do hloubky?
+	 * 			<li>Jestli do hloubky - databaze bude rychle rust; podkladu pro dalsi spojovani bude vice;
+	 * 			<li>analyza textu bude trvat dele; mensi zavistlost na poradi a nahode; ...
+	 * 			<li>Musim odzkouset ruzne postupy.
+	 * 		</ul>
+	 *	<li>Hloubka zapouzdreni:
+	 *		<ul>
+	 * 			<li>Cim vetsi hloubka zapouzdreni, tim vetsi zobecneni jevu muze byt vytvoreno; vetsi databaze,
+	 * 			<li>kterou nejde dobre cistit; mohla by zaviset na hardvarovych moznostech; delsi kus textu nebo
+	 * 			<li>znalosti bude v Knowledge; ...
+	 * 		</ul>
+	 * </ul>
 	 *
-	 * 		Vytvaret objekty jen pro ty pary, ktere budou spojovany, nebo pro vsechny pary do hloubky?
-	 * 		Jestli do hloubky - databaze bude rychle rust; podkladu pro dalsi spojovani bude vice;
-	 * 		analyza textu bude trvat dele; mensi zavistlost na poradi a nahode; ...
-	 * 		Musim odzkouset ruzne postupy.
-	 * 	Hloubka zapouzdreni:
-	 * 		Cim vetsi hloubka zapouzdreni, tim vetsi zobecneni jevu muze byt vytvoreno; vetsi databaze,
-	 * 		kterou nejde dobre cistit; mohla by zaviset na hardvarovych moznostech; delsi kus textu nebo
-	 * 		znalosti bude v Knowledge; ...
-	 *
-	 * @param thoughts2 - Vector jiz spojenych a nespojenych objektu.
+	 * @param thoughts - Vector jiz spojenych a nespojenych objektu.
 	 * @return - Vector pozici v thoughts2, ktere musi byt spojeny.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Integer> getPositionsToRelation(Vector<Thought> thoughts2) throws Exception {
+	public Vector<Integer> getPositionsToRelation(Vector<Thought> thoughts) throws Exception {
 		// Projit vsechny pary v celem thoughts2, zda nemaji assoc na nasledujici objekt
-		Vector<Integer> result = getAllObjectsToRelation(thoughts2);
+		Vector<Integer> result = getAllObjectsToRelation(thoughts);
 		// Zde osetrime pripad kdyz nekolik objektu za sebou konkuruji ve vytvoreni asociace.
-		Vector<Integer> doNotRelate = getDoNotRelate(thoughts2, result);
+		Vector<Integer> doNotRelate = getDoNotRelate(thoughts, result);
 		// az ted je pospojujeme
 		// odstranime asociace ktere prohraly v konkurenci se sousednimi asociacemi
 		for (int h = 0; h < doNotRelate.size(); h++) {
@@ -99,16 +102,16 @@ public class ThoughtUnionDecider {
 	 * Projit vsechny pary v celem thoughts2 a oznacit pro spojeni Thoughts,
 	 * ktere maji hloubku mensi nez objectsCreationDepth.
 	 * Oznacuje pro spojeni i objekty z ruznych urovni TYPE
-	 * @param thoughts2 - samotna Myslenka
+	 * @param thoughts - samotna Myslenka
 	 * @param objectsCreationDepth
 	 * @return
 	 */
-	private Vector<Integer> getAllObjectsToRelation(Vector<Thought> thoughts2) {
+	private Vector<Integer> getAllObjectsToRelation(Vector<Thought> thoughts) {
 		int objectsCreationDepth = config.getKnowledge_objectsCreationDepth();
 		Vector<Integer> objectsToRelation = new Vector<Integer>();
-		for (int i = 0; i < thoughts2.size()-1; i++) {
-			Thought nextThought = thoughts2.get(i);
-			Thought nextFollThought = thoughts2.get(i+1);
+		for (int i = 0; i < thoughts.size()-1; i++) {
+			Thought nextThought = thoughts.get(i);
+			Thought nextFollThought = thoughts.get(i+1);
 			if (nextThought.getActiveObject().getType() < objectsCreationDepth 
 					&&nextFollThought.getActiveObject().getType() < objectsCreationDepth) {
 				objectsToRelation.add(i);
@@ -120,7 +123,7 @@ public class ThoughtUnionDecider {
 	/**
 	 * Rozhodnout ktere objekty nespojovat. Konkurence. Tato metoda je rekurzivni, 
 	 * aby nepustila ke spojeni blizke pary objektu.
-	 * @param thoughts2
+	 * @param thoughts
 	 * @param decideToRelateByObjectTypeOrAssocCost true = objectType, false = associationCost
 	 * @param decideToRelateObjectsByHigherAssocCost
 	 * @param decideToRelateObjectsByHigherObjectType
@@ -128,7 +131,7 @@ public class ThoughtUnionDecider {
 	 * @return
 	 * @throws Exception
 	 */
-	private Vector<Integer> getDoNotRelate(Vector<Thought> thoughts2,
+	private Vector<Integer> getDoNotRelate(Vector<Thought> thoughts,
 			Vector<Integer> objectsToRelation) throws Exception {
 		boolean relateOnlyObjectsOfSameTypes = config.isKnowledge_relateOnlyObjectsOfSameTypes();
 		boolean decideToRelateByObjectTypeOrAssocCost = config.isKnowledge_decideToRelateByObjectTypeOrAssocCost();
@@ -141,9 +144,9 @@ public class ThoughtUnionDecider {
 			// Oznacit pro spojeni vsechny ktere maji assoc na nasled. objekt, nacist nove vznikle Thought a opakovat pokud budou nalezeny.
 			// Budou spojene dle pravidla definovaneho v promenne bud s vetsim anebo s mensim objektem.
 			if (nextThoughtFollowingKey - nextThoughtKey == 1) {
-				Thought th1 = thoughts2.get(nextThoughtKey);
-				Thought th2 = thoughts2.get(nextThoughtFollowingKey);
-				Thought th3 = thoughts2.get(nextThoughtFollowingKey+1);
+				Thought th1 = thoughts.get(nextThoughtKey);
+				Thought th2 = thoughts.get(nextThoughtFollowingKey);
+				Thought th3 = thoughts.get(nextThoughtFollowingKey+1);
 				/* Jestli parametr narizuje spojeni jen objektu, ktere maji stejny typ (jsou ve stejne vrstve),
 				 * nebudeme spojovat objekty s ruznym TYPE */
 				if (relateOnlyObjectsOfSameTypes) {

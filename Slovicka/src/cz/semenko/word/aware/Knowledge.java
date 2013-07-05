@@ -14,11 +14,16 @@ import cz.semenko.word.persistent.Objects;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
- * Vedomi.
+ * <p>Knowledge.<br>
+ * The place where thoughts are living. Knowledge differs from subconscious mind
+ * ability to activate events and actions.
+ * Knowledge process to more credible thoughts and scenario then subconscious mind.
+ * 
+ * <p>Vedomi.<br>
  * Misto kde se roji myslenky. Lisi se od podvedomi tim, ze muze aktivovat ciny, akce.
  * Lisi se od podvedomi tim, ze zpracovava vice verohodnejsi myslenky nebo scenare.
- * @author k
- *
+ * 
+ * @author Kyrylo Semenko
  */
 public class Knowledge {
 	private Vector<Thought> thoughts = new Vector<Thought>();
@@ -48,7 +53,6 @@ public class Knowledge {
 	public void setConfig(Config config) {
 		this.config = config;
 	}
-	
 
 	/**
 	 * @param objectsCreationDecider the objectsCreationDecider to set
