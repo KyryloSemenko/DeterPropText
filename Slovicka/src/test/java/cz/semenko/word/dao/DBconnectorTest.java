@@ -15,16 +15,15 @@ import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.dao.DBconnector;
 
 /**
- * <p>DBconnectorTest class.</p>
+ * <p>DBconnectorTest class. Tests for {@link cz.semenko.word.dao.DBconnector}
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class DBconnectorTest {
 	static ApplicationContext ctx;
 
 	/**
-	 * <p>setUp.</p>
+	 * <p>Context set up</p>
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
@@ -34,7 +33,7 @@ public class DBconnectorTest {
 	}
 
 	/**
-	 * <p>tearDown.</p>
+	 * <p>Shutdown DB server</p>
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
@@ -45,7 +44,7 @@ public class DBconnectorTest {
 	}
 
 	/**
-	 * <p>testDBconnector.</p>
+	 * <p>Start DB server and try to call select</p>
 	 */
 	@Test
 	public final void testDBconnector() {
@@ -62,7 +61,7 @@ public class DBconnectorTest {
 	
 
 	/**
-	 * <p>testCloseDBconnector.</p>
+	 * <p>Shutdown DB server and test it state</p>
 	 */
 	@Test
 	public final void testCloseDBconnector() {
