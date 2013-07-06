@@ -27,7 +27,6 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
  */
 public class Knowledge {
 	private Vector<Thought> thoughts = new Vector<Thought>();
-	// Objekty nasetuje Spring
 	private FastMemory fastMemory;
 	private Associations associations;
 	private ThoughtUnionDecider thoughtUnionDecider;
@@ -36,49 +35,31 @@ public class Knowledge {
 	private Config config;
 	
 	/**
-	 * Constructor
+	 * Empty constructor
 	 */
 	public Knowledge() {}
 	
-	/**
-	 * @param fastMemory the fastMemory to set
-	 */
 	public void setFastMemory(FastMemory fastMemory) {
 		this.fastMemory = fastMemory;
 	}
 
-	/**
-	 * @param config the config to set
-	 */
 	public void setConfig(Config config) {
 		this.config = config;
 	}
 
-	/**
-	 * @param objectsCreationDecider the objectsCreationDecider to set
-	 */
 	public void setObjectsCreationDecider(
 			ObjectsCreationDecider objectsCreationDecider) {
 		this.objectsCreationDecider = objectsCreationDecider;
 	}
 
-	/**
-	 * @param thoughtsSaver the thoughtsSaver to set
-	 */
 	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {
 		this.thoughtsSaver = thoughtsSaver;
 	}
 
-	/**
-	 * @param thoughtUnionDecider the thoughtUnionDecider to set
-	 */
 	public void setThoughtUnionDecider(ThoughtUnionDecider thoughtUnionDecider) {
 		this.thoughtUnionDecider = thoughtUnionDecider;
 	}
 
-	/**
-	 * @param associations the associations to set
-	 */
 	public void setAssociations(Associations associations) {
 		this.associations = associations;
 	}
@@ -193,7 +174,7 @@ public class Knowledge {
 		for (int k = 0; k < positionsToRelation.size(); k++) {
 			Thought srcThought = thoughts2.get(positionsToRelation.get(k));
 			Thought tgtThought = thoughts2.get(positionsToRelation.get(k)+1);
-			Associations assoc = associations.getAssociation(srcThought, tgtThought);
+			Associations assoc = fastMemory.getAssociation(srcThought, tgtThought);
 			if (assoc == null) {
 				unitedObjectsId.add(null);
 			} else {
@@ -220,7 +201,7 @@ public class Knowledge {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
-			Associations assoc = associations.getAssociation(srcThought, tgtThought);
+			Associations assoc = fastMemory.getAssociation(srcThought, tgtThought);
 			if (assoc == null) {
 				nonExistsPairs.add(srcThought);
 				nonExistsPairs.add(tgtThought);
@@ -235,7 +216,7 @@ public class Knowledge {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
-			Associations assoc = associations.getAssociation(srcThought, tgtThought);
+			Associations assoc = fastMemory.getAssociation(srcThought, tgtThought);
 			if (assoc != null) {
 				associationsToIncrease.add(assoc.getId());
 			}

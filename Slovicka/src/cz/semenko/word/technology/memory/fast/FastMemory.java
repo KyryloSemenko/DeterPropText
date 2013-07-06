@@ -236,22 +236,32 @@ public class FastMemory {
 	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
-		Vector<Associations> assocTable = (Vector<Associations>)associationsCollection;
+		// Jestli srcThought je spojena associaci s tgtThought, nalezne a vrati tuto Association
+		Vector<Associations> assocVector = srcThought.getConsequenceAssociations();
+		Associations result = null;
+		for (int i = 0; i < assocVector.size(); i++) {
+			result = assocVector.get(i);
+			if (result.getTgtId().compareTo(tgtThought.getActiveObject().getId()) == 0) {
+				return result;
+			}
+		}
+		// Kdyz asociace nenalezena, dohledat Association v Memory
+		assocVector = (Vector<Associations>)associationsCollection;
 		long srcObjectId = srcThought.getActiveObject().getId();
 		long tgtObjectId = tgtThought.getActiveObject().getId();
-		for (int i = 0; i < assocTable.size(); i++) {
-			Associations nextAssoc = assocTable.get(i);
+		for (int i = 0; i < assocVector.size(); i++) {
+			Associations nextAssoc = assocVector.get(i);
 			if (nextAssoc.getSrcId() == srcObjectId && nextAssoc.getTgtId() == tgtObjectId) {
 				if (i > 0) { // Zvednout o jednu pozici pouzitou Associations
-					Associations tempAssoc = assocTable.get(i-1);
-					assocTable.set(i-1, nextAssoc);
-					assocTable.set(i, tempAssoc);
+					Associations tempAssoc = assocVector.get(i-1);
+					assocVector.set(i-1, nextAssoc);
+					assocVector.set(i, tempAssoc);
 				}
 				return nextAssoc;
 			}
 		}
 		// Nenalezeno. Zkusit najit v SlowlyMemory
-		Associations result = slowlyMemory.getAssociation(srcThought, tgtThought);
+		result = slowlyMemory.getAssociation(srcThought, tgtThought);
 		if (result == null) {
 			return null;
 		}

@@ -17,7 +17,6 @@ public class ThoughtUnionDecider {
 	
 	// Komponenty doda Spring FW
 	private FastMemory fastMemory;
-	private Associations associations;
 	private Config config;
 
 
@@ -44,15 +43,6 @@ public class ThoughtUnionDecider {
 	 */
 	public ThoughtUnionDecider() {
 
-	}
-	
-	/**
-	 * <p>Setter for the field <code>associations</code>.</p>
-	 *
-	 * @param associations the associations to set
-	 */
-	public void setAssociations(Associations associations) {
-		this.associations = associations;
 	}
 
 	/**
@@ -182,9 +172,9 @@ public class ThoughtUnionDecider {
 					}
 				} else {
 					// rozhodovat dle cost asociace. Jestli obe associace maji stejnou Cost, spoji dva prvni objekty.
-					Associations assFirst = associations.getAssociation(th1, th2);
+					Associations assFirst = fastMemory.getAssociation(th1, th2);
 					long firstAssocCost = (assFirst == null ? 0 : assFirst.getCost());
-					Associations assSecond = associations.getAssociation(th2, th3);
+					Associations assSecond = fastMemory.getAssociation(th2, th3);
 					long secondAssocCost = (assSecond == null ? 0 : assSecond.getCost());
 					if (secondAssocCost == firstAssocCost) {
 						doNotRelate.add(nextThoughtFollowingKey); 

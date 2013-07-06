@@ -48,13 +48,11 @@
 	<!-- Rozhodovaci componenta -->
 	<bean id="thoughtUnionDecider" class="cz.semenko.word.aware.policy.ThoughtUnionDecider" depends-on="fastMemory">
 		<property name="fastMemory" ref="fastMemory" />
-		<property name="associations" ref="associations" />
 		<property name="config" ref="config" />
 	</bean>
 	
 	<!-- Reprezentace tabulky ASSOCIATIONS -->
 	<bean id="associations" class="cz.semenko.word.persistent.Associations">
-		<property name="fastMemory" ref="fastMemory" />
 	</bean>
 	
 	<!-- Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru -->
