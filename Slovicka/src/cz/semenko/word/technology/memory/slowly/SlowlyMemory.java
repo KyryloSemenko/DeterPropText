@@ -17,8 +17,7 @@ import cz.semenko.word.persistent.Tables;
 /**
  * Třida reprezentuje pomalou paměť, která se nachází v DB.
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class SlowlyMemory {
 	/** Objekt pod spravou Spring FW */
@@ -118,29 +117,7 @@ public class SlowlyMemory {
 	 * @return a {@link java.util.Vector} object.
 	 */
 	public Vector<Objects> getObjects(Vector<Long> missingObjectsId) throws Exception {
-		Vector<Objects> result = new Vector<Objects>();
-		result.setSize(missingObjectsId.size());
-		StringBuffer sql = new StringBuffer("SELECT * FROM objects WHERE id IN (");
-		for (int i = 0; i < missingObjectsId.size(); i++) {
-			sql.append(missingObjectsId.get(i) + ", ");
-		}
-		sql.delete(sql.length()-2, sql.length());
-		sql.append(")");
-		ResultSet rs = dbViewer.executeQuery(sql.toString());
-		Map<Long, Objects> objectsMap = new TreeMap<Long, Objects>();
-		while (rs.next()) {
-			Long id = rs.getLong("id");
-			String src = rs.getString("src");
-			Long type = rs.getLong("type");
-			Objects ob = new Objects(id, src, type);
-			objectsMap.put(id, ob);
-		}
-		// Vyplni result
-		for (int i = 0; i < missingObjectsId.size(); i++) {
-			Long id = missingObjectsId.get(i);
-			result.set(i, objectsMap.get(id));
-		}
-		return result;
+		return dbViewer.getObjects(missingObjectsId);
 	}
 
 	/**
@@ -170,26 +147,7 @@ public class SlowlyMemory {
 	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
-		Associations result = null;
-		String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveObject().getId()
-			+ " AND tgt_id = " + tgtThought.getActiveObject().getId();
-		ResultSet rs = dbViewer.executeQuery(sql);
-		int i = 0;
-		while (rs.next()) {
-			if (i > 0) {
-				throw new Exception("V tabulce ASSOCIATIONS byly nalezeny dva vyskyty Associace se stejmymi src_id a tgt_id: " + result.toString());
-			}
-			long id = rs.getLong("id");
-			long srcId = rs.getLong("src_id");
-			long srcTable = rs.getLong("src_tbl");
-			long tgtId = rs.getLong("tgt_id");
-			long tgtTable = rs.getLong("tgt_tbl");
-			long cost = rs.getLong("cost");
-			Long objId = rs.getLong("obj_id");
-			result = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
-			i++;
-		}
-		return result;
+		return dbViewer.getAssociation(srcThought, tgtThought);
 	}
 
 	/**

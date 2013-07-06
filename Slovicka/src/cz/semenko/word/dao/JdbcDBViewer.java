@@ -1295,6 +1295,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Long getLastIdAssociationsTable() throws SQLException {
 		String sql2 = "SELECT MAX(id) FROM associations";
@@ -1306,6 +1307,7 @@ public class JdbcDBViewer implements DBViewer {
 	    return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public List<Associations> getAssociations(long minId, long maxId,
 			int lowestCostForLeaving) throws SQLException {
@@ -1328,6 +1330,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 
+	/** {@inheritDoc} */
 	public List<Objects> getPrimitiveObjects(List<Character> missingChars) throws SQLException {
 		List<Objects> result = new Vector<Objects>();
 		if (missingChars.size() == 0) {
@@ -1362,6 +1365,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public List<Associations> getAllAssociationsUpToCost(List<Long> objectsId, int lowestCostForLeaving) throws SQLException {
 		StringBuilder sql = new StringBuilder("SELECT * FROM associations WHERE obj_id IN (");
@@ -1393,6 +1397,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException {
 		StringBuilder sql = new StringBuilder("DELETE FROM associations WHERE id IN (");
@@ -1404,5 +1409,60 @@ public class JdbcDBViewer implements DBViewer {
 		sql.append(")");
 		
 		connection.createStatement().execute(sql.toString());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Vector<Objects> getObjects(Vector<Long> missingObjectsId)
+			throws SQLException {
+		Vector<Objects> result = new Vector<Objects>();
+		result.setSize(missingObjectsId.size());
+		StringBuffer sql = new StringBuffer("SELECT * FROM objects WHERE id IN (");
+		for (int i = 0; i < missingObjectsId.size(); i++) {
+			sql.append(missingObjectsId.get(i) + ", ");
+		}
+		sql.delete(sql.length()-2, sql.length());
+		sql.append(")");
+		ResultSet rs = connection.createStatement().executeQuery(sql.toString());
+		Map<Long, Objects> objectsMap = new TreeMap<Long, Objects>();
+		while (rs.next()) {
+			Long id = rs.getLong("id");
+			String src = rs.getString("src");
+			Long type = rs.getLong("type");
+			Objects ob = new Objects(id, src, type);
+			objectsMap.put(id, ob);
+		}
+		// Vyplni result
+		for (int i = 0; i < missingObjectsId.size(); i++) {
+			Long id = missingObjectsId.get(i);
+			result.set(i, objectsMap.get(id));
+		}
+		return result;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Associations getAssociation(Thought srcThought, Thought tgtThought)
+			throws SQLException {
+		Associations result = null;
+		String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveObject().getId()
+			+ " AND tgt_id = " + tgtThought.getActiveObject().getId();
+		ResultSet rs = connection.createStatement().executeQuery(sql);
+		int i = 0;
+		while (rs.next()) {
+			if (i > 0) {
+				throw new SQLException("V tabulce ASSOCIATIONS byly nalezeny dva vyskyty Associace se stejmymi src_id a tgt_id: " + result.toString());
+			}
+			long id = rs.getLong("id");
+			long srcId = rs.getLong("src_id");
+			long srcTable = rs.getLong("src_tbl");
+			long tgtId = rs.getLong("tgt_id");
+			long tgtTable = rs.getLong("tgt_tbl");
+			long cost = rs.getLong("cost");
+			Long objId = rs.getLong("obj_id");
+			result = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+			i++;
+		}
+		return result;
 	}	
 }

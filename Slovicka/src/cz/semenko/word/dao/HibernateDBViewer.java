@@ -353,4 +353,20 @@ public class HibernateDBViewer implements DBViewer {
 		return;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public Vector<Objects> getObjects(Vector<Long> missingObjectsId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Associations getAssociation(Thought srcThought, Thought tgtThought)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -288,16 +288,37 @@ public interface DBViewer {
 	 * @throws java.sql.SQLException if any.
 	 */
 	public void removeEmptyRows() throws SQLException;
+	
 	/**
 	 * Nastavi cost u vsech objektu na 0.
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
 	public void resetAssociationCost() throws SQLException;
-/**
- * Procisti databazi od objektu, ktere nejsou spojene s zadnum jinym objektem
- *
- * @throws java.sql.SQLException if any.
- */
+	
+	/**
+	 * Procisti databazi od objektu, ktere nejsou spojene s zadnum jinym objektem
+	 *
+	 * @throws java.sql.SQLException if any.
+	 */
 	public void cleanMemoryFromRedundantObjects() throws SQLException;
+	
+	/**
+	 * Dostane z DB objekty dle zadanych ID. Nevytvari nove.
+	 *
+	 * @param missingObjectsId a {@link java.util.Vector} of {@link cz.semenko.word.persistent.Objects}
+	 * @throws java.sql.SQLException if any.
+	 * @return a {@link java.util.Vector} of {@link cz.semenko.word.persistent.Objects}
+	 */
+	public Vector<Objects> getObjects(Vector<Long> missingObjectsId) throws SQLException;
+	
+	/**
+	 * Dohleda v DB Associations. Jestli nenajde, vrati null
+	 *
+	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @throws java.lang.Exception if any.
+	 * @return a {@link cz.semenko.word.persistent.Associations} object.
+	 */
+	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws SQLException;
 }
