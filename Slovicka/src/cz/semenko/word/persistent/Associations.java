@@ -1,7 +1,7 @@
 package cz.semenko.word.persistent;
 
 /**
- * Value object to represent association of two {@link cz.semenko.word.persistent.Objects}
+ * Associations class is data transfer object. Represent association of two {@link cz.semenko.word.persistent.Objects}
  * @author Kyrylo Semenko
  *
  */

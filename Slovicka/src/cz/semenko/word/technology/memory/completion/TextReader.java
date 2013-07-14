@@ -17,57 +17,36 @@ import cz.semenko.word.aware.ThoughtsSaver;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
- * <p>TextReader class.</p>
+ * 
+ * @author Kyrylo Semenko
  *
- * @author k
- * @version $Id: $Id
  */
 public class TextReader {
 	static Logger logger = Logger.getLogger(TextReader.class);
-	// Objekty doda Spring FW
 	private FastMemory fastMemory;
 	private Knowledge knowledge;
 	private ThoughtsSaver thoughtsSaver;
 	private Config config;
 
 	/**
-	 * <p>Constructor for TextReader.</p>
+	 * <p>Empty constructor for TextReader.</p>
 	 */
 	public TextReader() {
 		
 	}
 	
-	/**
-	 * <p>Setter for the field <code>config</code>.</p>
-	 *
-	 * @param config the config to set
-	 */
 	public void setConfig(Config config) {
 		this.config = config;
 	}
 
-	/**
-	 * <p>Setter for the field <code>thoughtsSaver</code>.</p>
-	 *
-	 * @param thoughtsSaver the thoughtsSaver to set
-	 */
 	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {
 		this.thoughtsSaver = thoughtsSaver;
 	}
 
-	/**
-	 * <p>Setter for the field <code>fastMemory</code>.</p>
-	 *
-	 * @param memory the memory to set
-	 */
 	public void setFastMemory(FastMemory memory) {
 		this.fastMemory = memory;
 	}
-	/**
-	 * <p>Setter for the field <code>knowledge</code>.</p>
-	 *
-	 * @param knowledge the knowledge to set
-	 */
+
 	public void setKnowledge(Knowledge knowledge) {
 		this.knowledge = knowledge;
 	}
@@ -84,7 +63,8 @@ public class TextReader {
 		FileReader fileReader = new FileReader(new File(fileName));
 		InputStreamReader inputStreamReader = null;
 		if (fileReader.getEncoding().equalsIgnoreCase("utf-8") == false) {
-			logger.warn("File " + fileName + " may have not UTF-8 encoding!");
+			logger.error("File " + fileName + " may have not UTF-8 encoding!");
+			fileReader.close();
 			fileReader = null;
 			inputStreamReader = new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8"));
 		}
@@ -94,14 +74,6 @@ public class TextReader {
 		int off = 0;
 		int len = numChars;
 		while ((len = in.read(cbuf, off, len)) != -1) {
-			/* TODO odstranit
-			StringBuffer str = new StringBuffer();
-			for (char ch : cbuf) {
-				str.append(ch);
-			}
-			if (str.toString().contains("s n'êtes plus mon am")) {
-				System.out.println("Je to tady");
-			}*/
 			// ziskame id vsech znaku
 			Long[] objects = fastMemory.getObjects(cbuf);
 			// TODO odstranit breakpoint
@@ -117,15 +89,7 @@ public class TextReader {
 		}
 		// Zde by mohli odeznivat SyntheticProperties jako myslenky na pozadi. Donastavi se priorita a budou
 		// vyvozeny zavery.
-	}
-	/**
-	 * Nauci nachazet napriklad jmena, nebo cislovky, nebo podnet s prisudkem.
-	 *
-	 * @param propertyName a {@link java.lang.String} object.
-	 */
-	public void learnSyntheticProperty(String propertyName) {
 		
+		fileReader.close();
 	}
-
-
 }

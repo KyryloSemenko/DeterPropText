@@ -28,7 +28,6 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
 public class Knowledge {
 	private Vector<Thought> thoughts = new Vector<Thought>();
 	private FastMemory fastMemory;
-	private Associations associations;
 	private ThoughtUnionDecider thoughtUnionDecider;
 	private ThoughtsSaver thoughtsSaver;
 	private ObjectsCreationDecider objectsCreationDecider;
@@ -58,10 +57,6 @@ public class Knowledge {
 
 	public void setThoughtUnionDecider(ThoughtUnionDecider thoughtUnionDecider) {
 		this.thoughtUnionDecider = thoughtUnionDecider;
-	}
-
-	public void setAssociations(Associations associations) {
-		this.associations = associations;
 	}
 	
 	/**

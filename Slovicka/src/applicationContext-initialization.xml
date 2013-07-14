@@ -38,7 +38,6 @@
 	<!-- Procesor pro myslenky -->
 	<bean id="knowledge" class="cz.semenko.word.aware.Knowledge" depends-on="thoughtUnionDecider">
 		<property name="fastMemory" ref="fastMemory" />
-		<property name="associations" ref="associations" />
 		<property name="thoughtUnionDecider" ref="thoughtUnionDecider" />
 		<property name="thoughtsSaver" ref="thoughtSaver" />
 		<property name="objectsCreationDecider" ref="ObjectsCreationDecider" />

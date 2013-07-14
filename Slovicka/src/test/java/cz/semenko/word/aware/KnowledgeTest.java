@@ -1,63 +1,60 @@
 /**
- * 
+ * Test cases for cz.semenko.word.aware package
  */
 package test.java.cz.semenko.word.aware;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
+import java.util.Vector;
+
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+
+import cz.semenko.word.ApplicationContextProvider;
+import cz.semenko.word.aware.Knowledge;
 
 /**
- * <p>KnowledgeTest class.</p>
+ * <p>Test for {@link cz.semenko.word.aware.Knowledge} class</p>
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class KnowledgeTest {
+	public static Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());
+	static ApplicationContext ctx;
 
-	/**
-	 * <p>setUpBeforeClass.</p>
-	 *
-	 * @throws java.lang.Exception if any.
-	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		ctx = ApplicationContextProvider.getTestApplicationContext();
+		setUpDataBase();
 	}
 
 	/**
-	 * <p>tearDownAfterClass.</p>
-	 *
-	 * @throws java.lang.Exception if any.
+	 * Set up connection to DB server, create tables and constraints
 	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * <p>setUp.</p>
-	 *
-	 * @throws java.lang.Exception if any.
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * <p>tearDown.</p>
-	 *
-	 * @throws java.lang.Exception if any.
-	 */
-	@After
-	public void tearDown() throws Exception {
+	private static void setUpDataBase() throws Exception {
+//		Resource resource = ctx.getResource("classpath:cz/semenko/word/sql/createTables.sql");
+//		JdbcTestUtils.executeSqlScript(new JdbcTemplate((DataSource)ctx.getBean("dataSource")), resource, false);
+		
+		//LazyConnectionDataSourceProxy dbProxy = (LazyConnectionDataSourceProxy)ctx.getBean("database.dataSource");
 	}
 
 	/**
 	 * Test method for {@link cz.semenko.word.aware.Knowledge#remember(java.lang.Long[])}.
 	 */
-//	@Test
-//	public final void testRemember() {
-//		fail("Not yet implemented"); // TODO
-//	}
+	@Test
+	public final void testRemember() {
+		Knowledge knowledge = ctx.getBean(Knowledge.class);
+		Vector<Long> testData = new Vector<Long>();
+		testData.add(1L);		
+		testData.add(2L);		
+		testData.add(3L);		
+		Long[] inputObjects = testData.toArray(new Long[0]);
+		try {
+			knowledge.remember(inputObjects);
+			// TODO dopsat tento test
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
 
 }

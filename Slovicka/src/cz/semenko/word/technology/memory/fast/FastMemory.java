@@ -39,21 +39,20 @@ public class FastMemory {
 	 */
 	private Collection<Objects> objectsCollection;
 	/**
-	 * Bude naplnovana a doplnovana dle nasledujicich pravidel:
-	 * 	vector ma zacatek nahore - vector.get(0) je nahore;
-	 * 	nove prvky se pridavaji na zacatek kolekce.
+	 * <ul>Bude naplnovana a doplnovana dle nasledujicich pravidel:
+	 * 	<li>vector ma zacatek nahore - vector.get(0) je nahore;
+	 * 	<li>nove prvky se pridavaji na zacatek kolekce.
 	 * 
-	 * To be implemented and supplemented by the following rules:
-	 * Vector has a start up - vector.get (0) is up;
-	 * new elements are added to the beginning of the collection.
+	 * <ul>To be implemented and supplemented by the following rules:
+	 * 	<li>Vector has a start up - vector.get (0) is up;
+	 * 	<li>new elements are added to the beginning of the collection.
 	 */
 	private Collection<Associations> associationsCollection;
-	/** Objekt pod spravou Spring kontejneru */
 	private SlowlyMemory slowlyMemory;
 	private Config config;
 	
 	/**
-	 * Constucor
+	 * Constructor
 	 *
 	 * @throws java.sql.SQLException if any.
 	 * @param slowlyMemory a {@link cz.semenko.word.technology.memory.slowly.SlowlyMemory} object.

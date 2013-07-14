@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- Run DB in memory -->
+	<bean id="dbConnector" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+		<constructor-arg ref="dataSource" />
+	</bean>
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="org.h2.Driver" />
+		<property name="url"
+			value="jdbc:h2:mem:k;DB_CLOSE_DELAY=-1;MODE=DERBY;TRACE_LEVEL_FILE=1;TRACE_LEVEL_SYSTEM_OUT=1;user=k;password=k" />
+	</bean>
+	<!-- provides a H2 console to look into the db if necessary -->
+	<!-- TODO zjistit jak to funguje -->
+	<bean id="org.h2.tools.Server-WebServer" class="org.h2.tools.Server"
+		factory-method="createWebServer" depends-on="dbConnector" init-method="start"
+		lazy-init="false">
+		<constructor-arg value="-web,-webPort,11111" />
+	</bean>
+	<!-- DAO -->
+	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
+		<constructor-arg ref="dbConnector" />
+		<property name="config" ref="config" />
+	</bean>
+</beans>

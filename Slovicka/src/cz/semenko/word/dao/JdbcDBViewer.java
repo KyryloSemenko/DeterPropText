@@ -13,8 +13,16 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
+import org.springframework.test.jdbc.JdbcTestUtils;
+
+import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
@@ -56,7 +64,24 @@ public class JdbcDBViewer implements DBViewer {
 	
 	public JdbcDBViewer(DBconnector dbConnector) {
 		connection = dbConnector.getConnection();
+		prepareStatements();
+	}
+	
+	public JdbcDBViewer(LazyConnectionDataSourceProxy dbProxy) {
 		try {
+			connection = dbProxy.getConnection();
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			System.exit(1);
+		}
+		prepareStatements();
+	}
+
+	private void prepareStatements() {
+		try {
+			if (!isTablesExists()) {
+				createTables();
+			}
             selectWordSRC = connection.prepareStatement("SELECT src FROM " +
             		"objects WHERE id = ?");
             selectRightNeighbours = connection.prepareStatement("SELECT tgt_id FROM " +
@@ -111,6 +136,28 @@ public class JdbcDBViewer implements DBViewer {
 			logger.error(e.getLocalizedMessage(), e);
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Create tables and constrains
+	 */
+	private void createTables() {
+		ApplicationContext ctx = ApplicationContextProvider.getTestApplicationContext();
+		Resource resource = ctx.getResource("classpath:cz/semenko/word/sql/createTables.sql");
+		JdbcTestUtils.executeSqlScript(new JdbcTemplate((DataSource)ctx.getBean("dataSource")), resource, false);
+		
+	}
+
+	// Check to tables are exists in DB
+	private boolean isTablesExists() {
+		try {
+			connection.createStatement().executeQuery("SELECT 1 FROM objects");
+			connection.createStatement().executeQuery("SELECT 1 FROM associations");
+			connection.createStatement().executeQuery("SELECT 1 FROM tables");
+		} catch (SQLException e) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

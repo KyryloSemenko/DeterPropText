@@ -24,10 +24,22 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 		}
 		return ctx;
 	}
+	
+	/**
+	 *
+	 * @return a {@link org.springframework.context.ApplicationContext} object.
+	 */
+	public static ApplicationContext getTestApplicationContext() {
+		if (ctx == null) {
+			ctx = new ClassPathXmlApplicationContext("classpath:/applicationContext-all-test.xml");
+		}
+		return ctx;
+	}
 
 	/** {@inheritDoc} */
 	public void setApplicationContext(ApplicationContext ctx)
 			throws BeansException {
 		ApplicationContextProvider.ctx = ctx;
 	}
+
 }
