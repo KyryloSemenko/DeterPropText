@@ -3,8 +3,6 @@
  */
 package test.java.cz.semenko.word.aware;
 
-import java.util.Vector;
-
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 
 import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.aware.Knowledge;
+import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
  * <p>Test for {@link cz.semenko.word.aware.Knowledge} class</p>
@@ -44,13 +43,10 @@ public class KnowledgeTest {
 	@Test
 	public final void testRemember() {
 		Knowledge knowledge = ctx.getBean(Knowledge.class);
-		Vector<Long> testData = new Vector<Long>();
-		testData.add(1L);		
-		testData.add(2L);		
-		testData.add(3L);		
-		Long[] inputObjects = testData.toArray(new Long[0]);
+		FastMemory memory = ctx.getBean(FastMemory.class);
 		try {
-			knowledge.remember(inputObjects);
+			Long[] testData = memory.getObjects(new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g'});
+			knowledge.remember(testData);
 			// TODO dopsat tento test
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

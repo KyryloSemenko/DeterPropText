@@ -6,6 +6,7 @@ CREATE TABLE TABLES
    conn_string VARCHAR (225) NOT NULL
 )
 ;
+INSERT INTO tables (conn_string) VALUES ('blabla');
 
 CREATE TABLE ASSOCIATIONS
 (
