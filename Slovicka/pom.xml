@@ -8,7 +8,6 @@
 	který používá příroda pro zjištění vlastností objektů.</description>
 
 	<properties>
-		<!-- <org.springframework.version>3.0.0.RELEASE</org.springframework.version> -->
 		<org.springframework.version>3.2.2.RELEASE</org.springframework.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
