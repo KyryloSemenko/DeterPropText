@@ -34,17 +34,25 @@ public class DBconnector {
 	
 	/**
 	 * Start Derby server in separate process
+	 * @throws Exception 
 	 */
 	private void startConnection() {
+		Process p = null;
 		try {
 			logger.info("Start Derby process");
-			Process p = Runtime.getRuntime().exec(getDerbyJarServerStart());
+			p = Runtime.getRuntime().exec(getDerbyJarServerStart());
 			String line;
 			BufferedReader input = new BufferedReader
 		          (new InputStreamReader(p.getInputStream()));
+			int sleepTime = 500;
+			int count = 0;
+			int maxCount = 60;
 			while (input.ready() == false) {
+				if ( count++ == maxCount + 1) {
+					throw new Exception("Input is not ready. Connection has not been created during " + sleepTime * maxCount + " millis.");
+				}
 				Thread.currentThread();
-				Thread.sleep(500);
+				Thread.sleep(sleepTime);
 			}
 			while (input.ready() && (line = input.readLine()) != null) {
 				logger.info(line);
@@ -60,7 +68,9 @@ public class DBconnector {
             //Get a connection
             derbyConnection = DriverManager.getConnection(dbURL);
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			logger.error("Error occured while starting DB connection. Message: " + e.getMessage() + ", derbyJarServerStart: " + getDerbyJarServerStart() + ", process exit value: " + p.exitValue());
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	
