@@ -2,5 +2,5 @@
 /dbConnector_log.txt
 /derby.log
 /.settings
-/target/**
+/target
 /doc
