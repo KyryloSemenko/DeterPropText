@@ -89,7 +89,11 @@ public class TextReader {
 		}
 		// Zde by mohli odeznivat SyntheticProperties jako myslenky na pozadi. Donastavi se priorita a budou
 		// vyvozeny zavery.
-		
-		fileReader.close();
+		if (fileReader != null) {
+			fileReader.close();
+		}
+		if (inputStreamReader != null) {
+			inputStreamReader.close();
+		}
 	}
 }

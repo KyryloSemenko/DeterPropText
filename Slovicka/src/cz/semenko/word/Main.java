@@ -4,12 +4,11 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import cz.semenko.word.technology.memory.completion.TextReader;
 /**
- * Main class to run text analyze.
- * @author k
+ * Main class to run text analyser.
+ * @author Kyrylo Semenko
  *
  */
 public class Main {

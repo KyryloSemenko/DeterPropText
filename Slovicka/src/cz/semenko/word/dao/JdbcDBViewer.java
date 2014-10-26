@@ -13,16 +13,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.sql.DataSource;
-
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
-import org.springframework.test.jdbc.JdbcTestUtils;
 
-import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
@@ -36,9 +28,11 @@ import cz.semenko.word.persistent.Objects;
  */
 public class JdbcDBViewer implements DBViewer {
 	private static final String COMMA = ",";
-	// Componenty pod spravou Spring FW
+	// Interface field
 	private Config config;
+	// Private fields
 	private Connection connection;
+	private DBconnector dbConnector;
 	
 	private PreparedStatement selectWordSRC;
 	private PreparedStatement selectWordID;
@@ -62,26 +56,15 @@ public class JdbcDBViewer implements DBViewer {
 	
 	public static Logger logger = Logger.getLogger(JdbcDBViewer.class);
 	
+	/** Constructor */
 	public JdbcDBViewer(DBconnector dbConnector) throws SQLException {
-		connection = dbConnector.getConnection();
-		prepareStatements();
-	}
-	
-	public JdbcDBViewer(LazyConnectionDataSourceProxy dbProxy) {
-		try {
-			connection = dbProxy.getConnection();
-		} catch (SQLException e) {
-			logger.error(e.getMessage(), e);
-			System.exit(1);
-		}
+		this.dbConnector = dbConnector;
+		this.connection = dbConnector.getConnection();
 		prepareStatements();
 	}
 
 	private void prepareStatements() {
 		try {
-			if (!isTablesExists()) {
-				createTables();
-			}
             selectWordSRC = connection.prepareStatement("SELECT src FROM " +
             		"objects WHERE id = ?");
             selectRightNeighbours = connection.prepareStatement("SELECT tgt_id FROM " +
@@ -139,29 +122,7 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	/**
-	 * Create tables and constrains
-	 */
-	private void createTables() {
-		ApplicationContext ctx = ApplicationContextProvider.getUnitTestApplicationContext();// TODO getDevApplicationContext
-		Resource resource = ctx.getResource("classpath:cz/semenko/word/sql/createTables.sql");
-		JdbcTestUtils.executeSqlScript(new JdbcTemplate((DataSource)ctx.getBean("dataSource")), resource, false);
-		
-	}
-
-	// Check to tables are exists in DB
-	private boolean isTablesExists() {
-		try {
-			connection.createStatement().executeQuery("SELECT 1 FROM objects");
-			connection.createStatement().executeQuery("SELECT 1 FROM associations");
-			connection.createStatement().executeQuery("SELECT 1 FROM tables");
-		} catch (SQLException e) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @param config the config to set
+	 * @param config
 	 */
 	public void setConfig(Config config) {
 		this.config = config;
@@ -1511,5 +1472,5 @@ public class JdbcDBViewer implements DBViewer {
 			i++;
 		}
 		return result;
-	}	
+	}
 }

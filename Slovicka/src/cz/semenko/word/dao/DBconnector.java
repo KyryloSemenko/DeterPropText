@@ -35,6 +35,10 @@ public class DBconnector {
 		dbPath = userHome + System.getProperty("file.separator") + applicationName + System.getProperty("file.separator") + databaseName;
 		dbUrl = dbSystem + dbPath + ";create=true";
 	}
+	
+	/** Constructor for unit tests */
+	public DBconnector() {
+	}
 
 	/**
 	 * @see test.java.cz.semenko.word.dao.DBconnectorTest#testGetConnection
@@ -44,12 +48,15 @@ public class DBconnector {
 		Connection connection = null;
 		if (connection == null) {
 			connection = dataSource.getConnection();
+			if (!isTablesExists()) {
+				createDatabaseStructure();
+			}
 		}
 		return connection;
 	}
 	
 	/** Apply initialisation script */
-	public void createDatabaseStructure() {
+	private void createDatabaseStructure() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		ResourceLoader resourceLoader = ApplicationContextProvider.getApplicationContext();
 		String sqlResourcePath = "cz\\semenko\\word\\sql\\createTables.sql";
@@ -57,13 +64,23 @@ public class DBconnector {
 		JdbcTestUtils.executeSqlScript(jdbcTemplate, resourceLoader, sqlResourcePath, continueOnError); 
 	}
 	
+	/** If tables not exists, return false 
+	 * @throws SQLException */
+	private boolean isTablesExists() throws SQLException {
+		Connection connection = dataSource.getConnection();
+		try {
+			connection.createStatement().executeQuery("SELECT 1 FROM objects");
+			connection.createStatement().executeQuery("SELECT 1 FROM associations");
+			connection.createStatement().executeQuery("SELECT 1 FROM tables");
+		} catch (SQLException e) {
+			return false;
+		}
+		return true;
+	}
+	
 	/** Place of database on disk */
 	public String getDbPath() {
 		return dbPath;
-	}
-
-	public DataSource getDataSource() {
-		return dataSource;
 	}
 
 	public void setDataSource(DataSource dataSource) {
@@ -72,10 +89,6 @@ public class DBconnector {
 
 	public String getDbUrl() {
 		return dbUrl;
-	}
-
-	public void setDbUrl(String dbUrl) {
-		this.dbUrl = dbUrl;
 	}
 
 }
