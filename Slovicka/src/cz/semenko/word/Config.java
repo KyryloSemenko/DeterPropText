@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
  * @version $Id: $Id
  */
 public class Config {
+	private String application_name = null;
 	private String dbCon_dbURL = null;
 	private String dbCon_derbyJarServerStart = null;
 	private String dbCon_derbyJarServerStop = null;
@@ -43,6 +44,7 @@ public class Config {
 		try {
 			conf = new XMLConfiguration("config.xml");
 			// Naplnit privatni promenne
+			application_name = conf.getString("application.name");
 			dbCon_dbURL = conf.getString("dbCon.dbURL");
 			dbCon_derbyJarServerStart = conf.getString("dbCon.derbyJarServerStart");
 			dbCon_derbyJarServerStop = conf.getString("dbCon.derbyJarServerStop");
@@ -71,6 +73,11 @@ public class Config {
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+	
+	/** Application business name */
+	public String getApplication_name() {
+		return application_name;
 	}
 
 	/**

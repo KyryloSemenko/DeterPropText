@@ -1,154 +1,81 @@
 package cz.semenko.word.dao;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
+
+import cz.semenko.word.ApplicationContextProvider;
+import cz.semenko.word.Config;
 
 /**
- * Provide a connection to Derby database.
- * Start Derby server on separate process execution.
- * You has to call stopConnection() method to shutdown server. 
+ * Provide a connection to database defined in Spring context.
  * @author Kyrylo Semenko
  *
  */
 public class DBconnector {
 	static Logger logger = Logger.getLogger(DBconnector.class);
-	// Spring managed elements
-	private static Connection derbyConnection = null;
-	private String dbURL;
-	private String derbyJarServerStart;
-	private String derbyJarServerStop;
+	// Spring managed
+	private String dbUrl;
+	private DataSource dataSource;
+	// Class interface
+	private String dbPath;
 	
-	/** Empty constructor */
-	public DBconnector() {}
+	/** Constructor */
+	public DBconnector(Config config, String databaseName) {
+		// "jdbc:derby:target/database;create=true"
+		String dbSystem = "jdbc:derby:";
+		String userHome = System.getProperty("user.home");
+		String applicationName = config.getApplication_name();
+		dbPath = userHome + System.getProperty("file.separator") + applicationName + System.getProperty("file.separator") + databaseName;
+		dbUrl = dbSystem + dbPath + ";create=true";
+	}
 
-	public Connection getConnection() {
-		if (derbyConnection == null) {
-			startConnection();
+	/**
+	 * @see test.java.cz.semenko.word.dao.DBconnectorTest#testGetConnection
+	 * @throws SQLException 
+	 */
+	public Connection getConnection() throws SQLException {
+		Connection connection = null;
+		if (connection == null) {
+			connection = dataSource.getConnection();
 		}
-		return derbyConnection;
+		return connection;
 	}
 	
-	/**
-	 * Start Derby server in separate process
-	 * @throws Exception 
-	 */
-	private void startConnection() {
-		Process p = null;
-		try {
-			logger.info("Start Derby process");
-			p = Runtime.getRuntime().exec(getDerbyJarServerStart());
-			String line;
-			BufferedReader input = new BufferedReader
-		          (new InputStreamReader(p.getInputStream()));
-			int sleepTime = 500;
-			int count = 0;
-			int maxCount = 60;
-			while (input.ready() == false) {
-				if ( count++ == maxCount + 1) {
-					throw new Exception("Input is not ready. Connection has not been created during " + sleepTime * maxCount + " millis.");
-				}
-				Thread.currentThread();
-				Thread.sleep(sleepTime);
-			}
-			while (input.ready() && (line = input.readLine()) != null) {
-				logger.info(line);
-			}
-			input.close();
-			BufferedReader errors = new BufferedReader
-				(new InputStreamReader(p.getErrorStream()));
-			while (errors.ready() && (line = errors.readLine()) != null) {
-				logger.error(line);
-			}
-			errors.close();
-			Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
-            //Get a connection
-            derbyConnection = DriverManager.getConnection(dbURL);
-		} catch (Exception e) {
-			logger.error("Error occured while starting DB connection. Message: " + e.getMessage() + ", derbyJarServerStart: " + getDerbyJarServerStart() + ", process exit value: " + p.exitValue());
-			e.printStackTrace();
-			System.exit(1);
-		}
+	/** Apply initialisation script */
+	public void createDatabaseStructure() {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		ResourceLoader resourceLoader = ApplicationContextProvider.getApplicationContext();
+		String sqlResourcePath = "cz\\semenko\\word\\sql\\createTables.sql";
+		boolean continueOnError = false;
+		JdbcTestUtils.executeSqlScript(jdbcTemplate, resourceLoader, sqlResourcePath, continueOnError); 
 	}
 	
-	/**
-	 * Shutdown Derby DB instance
-	 */
-	public void stopConnection() {
-		Process p;
-		try {
-			if (derbyConnection != null && derbyConnection.isClosed() == false) {
-				derbyConnection.close();
-			}
-			p = Runtime.getRuntime().exec(getDerbyJarServerStop());
-			String line;
-			BufferedReader input = new BufferedReader
-		          (new InputStreamReader(p.getInputStream()));
-			while (input.ready() == false) {
-				Thread.currentThread();
-				Thread.sleep(500);
-			}
-			while (input.ready() && (line = input.readLine()) != null) {
-				logger.info(line);
-			}
-			input.close();
-			BufferedReader errors = new BufferedReader
-				(new InputStreamReader(p.getErrorStream()));
-			while (errors.ready() && (line = errors.readLine()) != null) {
-				logger.error(line);
-			}
-			errors.close();
-			
-			logger.info("Shutdown Derby DB connection");
-
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			e.printStackTrace();
-		}			
+	/** Place of database on disk */
+	public String getDbPath() {
+		return dbPath;
 	}
 
-	/**
-	 * @return the dbURL
-	 */
-	public String getDbURL() {
-		return dbURL;
+	public DataSource getDataSource() {
+		return dataSource;
 	}
 
-	/**
-	 * @param dbURL the dbURL to set
-	 */
-	public void setDbURL(String dbURL) {
-		this.dbURL = dbURL;
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
-	/**
-	 * @return the derbyJarServerStart
-	 */
-	public String getDerbyJarServerStart() {
-		return derbyJarServerStart;
+	public String getDbUrl() {
+		return dbUrl;
 	}
 
-	/**
-	 * @param derbyJarServerStart the derbyJarServerStart to set
-	 */
-	public void setDerbyJarServerStart(String derbyJarServerStart) {
-		this.derbyJarServerStart = derbyJarServerStart;
+	public void setDbUrl(String dbUrl) {
+		this.dbUrl = dbUrl;
 	}
 
-	/**
-	 * @return the derbyJarServerStop
-	 */
-	public String getDerbyJarServerStop() {
-		return derbyJarServerStop;
-	}
-
-	/**
-	 * @param derbyJarServerStop the derbyJarServerStop to set
-	 */
-	public void setDerbyJarServerStop(String derbyJarServerStop) {
-		this.derbyJarServerStop = derbyJarServerStop;
-	}
 }

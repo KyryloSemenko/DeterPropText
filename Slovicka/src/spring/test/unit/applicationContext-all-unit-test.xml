@@ -4,8 +4,8 @@
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- Spring configuration -->
-	<import resource="classpath:/applicationContext-initialization.xml" />
-	<!-- Slovicka configuration -->
-	<import resource="classpath:/applicationContext-dao.xml" />
+	<import resource="classpath:/spring/applicationContext-initialization.xml" />
+	<!-- Data base configuration -->
+	<import resource="classpath:/spring/test/unit/applicationContext-dao-unit-test.xml" />
 
 </beans>

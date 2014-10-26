@@ -62,7 +62,7 @@ public class JdbcDBViewer implements DBViewer {
 	
 	public static Logger logger = Logger.getLogger(JdbcDBViewer.class);
 	
-	public JdbcDBViewer(DBconnector dbConnector) {
+	public JdbcDBViewer(DBconnector dbConnector) throws SQLException {
 		connection = dbConnector.getConnection();
 		prepareStatements();
 	}
@@ -142,7 +142,7 @@ public class JdbcDBViewer implements DBViewer {
 	 * Create tables and constrains
 	 */
 	private void createTables() {
-		ApplicationContext ctx = ApplicationContextProvider.getTestApplicationContext();
+		ApplicationContext ctx = ApplicationContextProvider.getUnitTestApplicationContext();// TODO getDevApplicationContext
 		Resource resource = ctx.getResource("classpath:cz/semenko/word/sql/createTables.sql");
 		JdbcTestUtils.executeSqlScript(new JdbcTemplate((DataSource)ctx.getBean("dataSource")), resource, false);
 		

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-	
+	<application>
+		<name>DeterPropText</name>
+	</application>
 	<dataProvider>
 		<!-- Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani -->
 		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- 512 - 1 sek., 4 - 26 sek. --> 

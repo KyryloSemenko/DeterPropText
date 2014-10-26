@@ -46,11 +46,10 @@ public class Main {
 	}
 
 	/**
-	 * Zaregistrovat Spring FW kontejner
+	 * Initialise Spring container context.
 	 */
 	private static void registerSpringService() {
-		applicationContext = 
-			new ClassPathXmlApplicationContext("classpath:/applicationContext-all.xml");
+		applicationContext = ApplicationContextProvider.getDevApplicationContext();
 	}
 
 }

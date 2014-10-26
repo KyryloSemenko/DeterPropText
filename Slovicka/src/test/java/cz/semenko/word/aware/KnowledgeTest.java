@@ -23,7 +23,7 @@ public class KnowledgeTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		ctx = ApplicationContextProvider.getTestApplicationContext();
+		ctx = ApplicationContextProvider.getUnitTestApplicationContext();
 		setUpDataBase();
 	}
 
