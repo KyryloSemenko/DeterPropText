@@ -75,12 +75,12 @@ public class TextReader {
 		int len = numChars;
 		while ((len = in.read(cbuf, off, len)) != -1) {
 			// ziskame id vsech znaku
-			Long[] objects = fastMemory.getObjects(cbuf);
+			Long[] cells = fastMemory.getCells(cbuf);
 			// TODO odstranit breakpoint
 			System.out.println(cbuf);
-			// rekurzivne zpracujeme masiv objects, upravime vlastnost COST v tabulce ASSOCIATIONS
+			// rekurzivne zpracujeme masiv cells, upravime vlastnost COST v tabulce ASSOCIATIONS
 			// a vytvorime nove objekty. Pravidla vytvareni novych objektu budou stanovene ve zvlastni tride.
-			knowledge.remember(objects);
+			knowledge.remember(cells);
 		}
 		// Ulozit zbytek knowledge do souboru
 		if (config.isKnowledge_saveThoughtsToFile()) {

@@ -3,31 +3,31 @@ package cz.semenko.word.persistent;
 import org.apache.log4j.Logger;
 
 /**
- * Objects class is data transfer object. It represents a connection of two Associations or single sign (character).<br>
+ * Cell class is data transfer object. It represents a connection of two Associations or single sign (character).<br>
  * When it represents a single sign, it's type is 1.<br>
- * When it represents a {@link Associations} of two {@link Objects}, it's type is higher than 1.<br>
- * For example Objects "a" (type 1) and Objects "b" (type 1) creates Associations and a new Objects "ab" (type 2).
+ * When it represents a {@link Associations} of two {@link Cell}, it's type is higher than 1.<br>
+ * For example Cell "a" (type 1) and Cell "b" (type 1) creates Associations and a new Cell "ab" (type 2).
  * @author Kyrylo Semenko
  *
  */
-public class Objects {
+public class Cell {
 	private Long id;
 	private String src;
 	private Long type;
-	Logger logger = Logger.getLogger(Objects.class);
+	Logger logger = Logger.getLogger(Cell.class);
 	
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (!(obj instanceof Objects)) return false;
-		Objects that = (Objects)obj;
+		if (!(obj instanceof Cell)) return false;
+		Cell that = (Cell)obj;
 		// Pro zrychleni
 //		if (this.getId() == that.getId()) {
 //			return true;
 //		}
-		/** Muze dochazet k ruznym chybam. Objects se stejnym ID bude mit jine hodnoty,
-		 * nebo Objects s ruznymi ID budou mit stejne hodnoty.
+		/** Muze dochazet k ruznym chybam. Cell se stejnym ID bude mit jine hodnoty,
+		 * nebo Cell s ruznymi ID budou mit stejne hodnoty.
 		 * Overim oba pripady, ale nevim jak rychle bude fungovat tato metoda.
 		 * TODO overit rychlost metody.
 		 * TODO az bude odladen beh, odstranit overovani duplicit pro vetsi rychlost.
@@ -53,7 +53,7 @@ public class Objects {
 		return false;
 	}
 	
-	public Objects(Long id, String src, Long type) {
+	public Cell(Long id, String src, Long type) {
 		super();
 		this.id = id;
 		this.src = src;
@@ -63,7 +63,7 @@ public class Objects {
 	/**
 	 * <p>Empty constructor</p>
 	 */
-	public Objects() {
+	public Cell() {
 		
 	}
 	

@@ -14,7 +14,7 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
  * @author Kyrylo Semenko
  *
  */
-public class ObjectsCreationDecider {
+public class CellCreationDecider {
 // Komponenty doda Spring FW
 private FastMemory fastMemory;
 private Config config;
@@ -22,7 +22,7 @@ private Config config;
 	/**
 	 * Empty constructor
 	 */
-	public ObjectsCreationDecider() {}
+	public CellCreationDecider() {}
 
 	public void setConfig(Config config) {
 		this.config = config;
@@ -43,23 +43,23 @@ private Config config;
 	 * 
 	 * @throws Exception 
 	 */
-	public Vector<Integer> getPositionsToCreateNewObjects(
+	public Vector<Integer> getPositionsToCreateNewCells(
 			Vector<Thought> thoughts) throws Exception {
 		Vector<Integer> result = new Vector<Integer>();
-		boolean isCreateNewObjectsToAllPairs = config.isObjectsCreationDecider_createNewObjectsToAllPairs();
-		if (isCreateNewObjectsToAllPairs == false) {
+		boolean isCreateNewCellsToAllPairs = config.isCellsCreationDecider_createNewCellsToAllPairs();
+		if (isCreateNewCellsToAllPairs == false) {
 			return result;
 		}
 
-		int createNewObjectsToAllPairsDepth = config.getObjectsCreationDecider_createNewObjectsToAllPairsDepth();
+		int createNewCellsToAllPairsDepth = config.getCellsCreationDecider_createNewCellsToAllPairsDepth();
 		// Dohledat vsechny mozne kombinace pro spojeni
 		// Trace all possible combinations to merge
 		Vector<Thought> thoughtsPairToUnion = new Vector<Thought>();
 		for (int i = 0; i < thoughts.size()-1; i++) {
 			Thought th = thoughts.get(i);
 			Thought nextTh = thoughts.get(i+1);
-			if (th.getActiveObject().getType() <= createNewObjectsToAllPairsDepth 
-					&& nextTh.getActiveObject().getType() <= createNewObjectsToAllPairsDepth) {
+			if (th.getActiveObject().getType() <= createNewCellsToAllPairsDepth 
+					&& nextTh.getActiveObject().getType() <= createNewCellsToAllPairsDepth) {
 				thoughtsPairToUnion.add(th);
 				thoughtsPairToUnion.add(nextTh);
 			}			

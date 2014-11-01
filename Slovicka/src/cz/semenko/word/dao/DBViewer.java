@@ -8,7 +8,7 @@ import java.util.Vector;
 
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
+import cz.semenko.word.persistent.Cell;
 
 /**
  * Interface pro pristup k datum DB
@@ -26,32 +26,32 @@ public interface DBViewer {
 	public Long getLastIdAssociationsTable() throws SQLException;
 
 	/**
-	 * <p>getSuperiorObjectsId.</p>
+	 * <p>getSuperiorCellsId.</p>
 	 *
 	 * @param pairsToFind a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public Vector<Long> getSuperiorObjectsId(Vector<Long> pairsToFind)
+	public Vector<Long> getSuperiorCellsId(Vector<Long> pairsToFind)
 			throws SQLException;
 
 	/**
 	 * <p>getAllAssociations.</p>
 	 *
-	 * @param objectsId a {@link java.util.Vector} object.
+	 * @param cellsId a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Associations> getAllAssociations(
-			Vector<Long> objectsId) throws Exception;
+			Vector<Long> cellsId) throws Exception;
 
 	/**
-	 * <p>increaseAssociationsCostToObjectsId.</p>
+	 * <p>increaseAssociationsCostToCellsId.</p>
 	 *
-	 * @param obIdArray an array of {@link java.lang.Long} objects.
+	 * @param obIdArray an array of {@link java.lang.Long} cells.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void increaseAssociationsCostToObjectsId(Long[] obIdArray)
+	public void increaseAssociationsCostToCellsId(Long[] obIdArray)
 			throws SQLException;
 
 	/**
@@ -64,44 +64,44 @@ public interface DBViewer {
 			throws Exception;
 
 	/**
-	 * <p>getNewPrimitiveObjects.</p>
+	 * <p>getNewPrimitiveCells.</p>
 	 *
 	 * @param nonExistent a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Objects> getNewPrimitiveObjects(
+	public Vector<Cell> getNewPrimitiveCells(
 			Vector<Character> nonExistent) throws Exception;
 
 	/**
 	 * <p>insertAssociations.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
-	 * @param newObjects a {@link java.util.Vector} object.
+	 * @param newCells a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.sql.SQLException if any.
 	 */
 	public Vector<Associations> insertAssociations(
-			Vector<Thought> thoughtPairsToUnion, Vector<Objects> newObjects)
+			Vector<Thought> thoughtPairsToUnion, Vector<Cell> newCells)
 			throws SQLException;
 
 	/**
-	 * <p>getNewObjects.</p>
+	 * <p>getNewCells.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Objects> getNewObjects(
+	public Vector<Cell> getNewCells(
 			Vector<Thought> thoughtPairsToUnion) throws Exception;
 
 	/**
-	 * <p>deleteObjects.</p>
+	 * <p>deleteCells.</p>
 	 *
 	 * @param idVector a {@link java.util.List} object.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void deleteObjects(List<Long> idVector) throws SQLException;
+	public void deleteCells(List<Long> idVector) throws SQLException;
 
 	/**
 	 * <p>getMaxLevel.</p>
@@ -132,17 +132,17 @@ public interface DBViewer {
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public Vector<Objects> getLeftNeighbours(String src)
+	public Vector<Cell> getLeftNeighbours(String src)
 			throws SQLException;
 
 	/**
-	 * <p>getSrcToObjects.</p>
+	 * <p>getSrcToCells.</p>
 	 *
-	 * @param inputObjects an array of {@link java.lang.Long} objects.
+	 * @param inputCells an array of {@link java.lang.Long} cells.
 	 * @return a {@link java.util.Map} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Map<Long, String> getSrcToObjects(Long[] inputObjects)
+	public Map<Long, String> getSrcToCells(Long[] inputCells)
 			throws Exception;
 
 	/**
@@ -217,25 +217,25 @@ public interface DBViewer {
 			int lowestCostForLeaving) throws SQLException;
 
 	/**
-	 * Get Objects from DB
+	 * Get Cell from DB
 	 *
-	 * @return Set of Objects POJO
+	 * @return Set of Cell POJO
 	 * @throws java.sql.SQLException if any.
 	 * @param missingChars a {@link java.util.List} object.
 	 */
-	public List<Objects> getPrimitiveObjects(
+	public List<Cell> getPrimitiveCells(
 			List<Character> missingChars) throws SQLException;
 
 			/**
 			 * Get Assotiations from list, that have cost smaller then parameter
 			 *
 			 * @throws java.sql.SQLException if any.
-			 * @param objectsId a {@link java.util.List} object.
+			 * @param cellsId a {@link java.util.List} object.
 			 * @param lowestCostForLeaving a int.
 			 * @return a {@link java.util.List} object.
 			 */
 	public List<Associations> getAllAssociationsUpToCost(
-			List<Long> objectsId, int lowestCostForLeaving) throws SQLException;
+			List<Long> cellsId, int lowestCostForLeaving) throws SQLException;
 
 	/**
 	 * Delete all assotiations from ID list
@@ -273,17 +273,17 @@ public interface DBViewer {
 			 * Dale nahore budou SRC s Asociacemi s vyssim COST
 			 *
 			 * @param associations
-			 * @param objectsPool a {@link java.util.Map} object.
+			 * @param cellsPool a {@link java.util.Map} object.
 			 * @param associationsPool a {@link java.util.Map} object.
 			 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
 			 * @return a {@link java.util.Vector} object.
 			 */
 	public Vector<String> getStringVectorFromPools(Map<Long, String> paramStringsMap,
-			Vector<Associations> associations, Map<Long, Objects> objectsPool,
+			Vector<Associations> associations, Map<Long, Cell> cellsPool,
 			Map<Long, Associations> associationsPool);
 
 	/**
-	 * Odstrani prazdne radky v tabulkach associations a objects - posune radku nahoru
+	 * Odstrani prazdne radky v tabulkach associations a cells - posune radku nahoru
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
@@ -301,16 +301,16 @@ public interface DBViewer {
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void cleanMemoryFromRedundantObjects() throws SQLException;
+	public void cleanMemoryFromRedundantCells() throws SQLException;
 	
 	/**
 	 * Dostane z DB objekty dle zadanych ID. Nevytvari nove.
 	 *
-	 * @param missingObjectsId a {@link java.util.Vector} of {@link cz.semenko.word.persistent.Objects}
+	 * @param missingCellsId a {@link java.util.Vector} of {@link cz.semenko.word.persistent.Cell}
 	 * @throws java.sql.SQLException if any.
-	 * @return a {@link java.util.Vector} of {@link cz.semenko.word.persistent.Objects}
+	 * @return a {@link java.util.Vector} of {@link cz.semenko.word.persistent.Cell}
 	 */
-	public Vector<Objects> getObjects(Vector<Long> missingObjectsId) throws SQLException;
+	public Vector<Cell> getCells(Vector<Long> missingCellsId) throws SQLException;
 	
 	/**
 	 * Dohleda v DB Associations. Jestli nenajde, vrati null

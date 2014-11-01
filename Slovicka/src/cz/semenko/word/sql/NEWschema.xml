@@ -19,13 +19,13 @@
       <column name="TGT_TBL" primaryKey="false" required="true" type="SMALLINT" size="5" autoIncrement="false"/>
       <column name="COST" primaryKey="false" required="true" type="SMALLINT" size="5" autoIncrement="false"/>
       <column name="ID" primaryKey="true" required="true" type="INTEGER" size="10" default="0" autoIncrement="false"/>
-      <foreign-key foreignTable="OBJECTS" name="ASSOC_OBJECTS_FK_MAIN">
+      <foreign-key foreignTable="CELLS" name="ASSOC_CELLS_FK_MAIN">
         <reference local="ID" foreign="ID"/>
       </foreign-key>
-      <foreign-key foreignTable="OBJECTS" name="ASSOC_OBJECTS_FK2">
+      <foreign-key foreignTable="CELLS" name="ASSOC_CELLS_FK2">
         <reference local="TGT_ID" foreign="ID"/>
       </foreign-key>
-      <foreign-key foreignTable="OBJECTS" name="ASSOC_OBJECTS_FK">
+      <foreign-key foreignTable="CELLS" name="ASSOC_CELLS_FK">
         <reference local="SRC_ID" foreign="ID"/>
       </foreign-key>
       <foreign-key foreignTable="TABLES" name="ASSOC_TABLES_FK2">
@@ -35,11 +35,11 @@
         <reference local="SRC_TBL" foreign="ID"/>
       </foreign-key>
     </table>
-    <table name="OBJECTS">
+    <table name="CELLS">
       <column name="ID" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="true"/>
       <column name="SRC" primaryKey="false" required="false" type="VARCHAR" size="30" autoIncrement="false"/>
       <column name="TYPE" primaryKey="false" required="false" type="SMALLINT" size="5" autoIncrement="false"/>
-      <index name="OBJECTS_SRC_IDX">
+      <index name="CELLS_SRC_IDX">
         <index-column name="SRC"/>
       </index>
     </table>

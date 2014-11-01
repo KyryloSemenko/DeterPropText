@@ -1,21 +1,21 @@
 package cz.semenko.word.persistent;
 
 /**
- * Associations class is data transfer object. Represent association of two {@link cz.semenko.word.persistent.Objects}
+ * Associations class is data transfer object. Represent association of two {@link cz.semenko.word.persistent.Cell}
  * @author Kyrylo Semenko
  *
  */
 public class Associations {
 	private Long id;
-	/** Each Association has its own Objects. Reference to created Objects */
+	/** Each Association has its own Cell. Reference to created Cell */
 	private Long objId;
-	/** ID of source Obects */
+	/** ID of source Cells */
 	private Long srcId;
-	/** Table ID of source Objects */
+	/** Table ID of source Cell */
 	private Long srcTable;
-	/** ID of target Objects */
+	/** ID of target Cell */
 	private Long tgtId;
-	/** Table ID of target Objects */
+	/** Table ID of target Cell */
 	private Long tgtTable;
 	/** Cost is a property, that describe a value of Association. Frequently used Associations has higher cost */
 	private Long cost;

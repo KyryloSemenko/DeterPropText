@@ -58,7 +58,7 @@ public class MemoryCleaner {
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void cleanMemoryFromRedundantObjects() throws SQLException {
+	public void cleanMemoryFromRedundantCells() throws SQLException {
 		int lowestCostForLeaving = config.getMemoryCleaner_lowestCostForLeaving();
 		cleanMemoryFromRedundantAssociations(lowestCostForLeaving);		
 	}
@@ -82,22 +82,22 @@ public class MemoryCleaner {
 			List<List<Associations>> levels = new ArrayList<List<Associations>>();
 			levels.add(associations);
 			while (true) {
-				List<Long> objectsId = new ArrayList<Long>();
+				List<Long> cellsId = new ArrayList<Long>();
 				List<Associations> previousLevel = levels.get(levels.size()-1);
 				
 				for (int k = 0; k < previousLevel.size(); k++) {
 					Associations nextAssoc = previousLevel.get(k);
-					objectsId.add(nextAssoc.getSrcId());
-					objectsId.add(nextAssoc.getTgtId());
+					cellsId.add(nextAssoc.getSrcId());
+					cellsId.add(nextAssoc.getTgtId());
 				}
-				List<Associations> nextLevel = dbViewer.getAllAssociationsUpToCost(objectsId, lowestCostForLeaving);
+				List<Associations> nextLevel = dbViewer.getAllAssociationsUpToCost(cellsId, lowestCostForLeaving);
 				if (nextLevel.size() == 0) {
 					break;
 				}
 				levels.add(nextLevel);
 			}
 			
-			deleteAssociationsAndObjectsList(levels);
+			deleteAssociationsAndCellsList(levels);
 		}
 		System.out.println("Startuji removeEmptyRows()");
 		dbViewer.removeEmptyRows();
@@ -111,28 +111,28 @@ public class MemoryCleaner {
 	 * @param levels
 	 * @throws SQLException
 	 */
-	private void deleteAssociationsAndObjectsList(List<List<Associations>> levels)
+	private void deleteAssociationsAndCellsList(List<List<Associations>> levels)
 			throws SQLException {
 		List<Long> assocIdToDelete = new ArrayList<Long>();
-		List<Long> objectsToDelete = new ArrayList<Long>();
+		List<Long> cellsToDelete = new ArrayList<Long>();
 		
 		for (int m = 0; m < levels.size(); m++) {
 			List<Associations> nextLevel = levels.get(m);
 			for (int n = 0; n < nextLevel.size(); n++) {
 				assocIdToDelete.add(nextLevel.get(n).getId());
-				objectsToDelete.add(nextLevel.get(n).getObjId());
+				cellsToDelete.add(nextLevel.get(n).getObjId());
 			}
 		}
 		System.out.println("Mazu Associations. Pocet: " + assocIdToDelete.size());
 		dbViewer.deleteAssociations(assocIdToDelete);
-		dbViewer.deleteObjects(objectsToDelete);
+		dbViewer.deleteCells(cellsToDelete);
 	}
 
 	// TODO Remove this
 	/**
 	 * <p>main.</p>
 	 *
-	 * @param args an array of {@link java.lang.String} objects.
+	 * @param args an array of {@link java.lang.String} cells.
 	 */
 	public static void main(String[] args) {
 		try {
@@ -140,7 +140,7 @@ public class MemoryCleaner {
 				new ClassPathXmlApplicationContext("classpath:/applicationContext.xml");
 			//ViewerGUI window = ViewerGUI.getInstance();
 			MemoryCleaner cleaner = (MemoryCleaner)applicationContext.getBean("memoryCleaner");
-			cleaner.cleanMemoryFromRedundantObjects();
+			cleaner.cleanMemoryFromRedundantCells();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);

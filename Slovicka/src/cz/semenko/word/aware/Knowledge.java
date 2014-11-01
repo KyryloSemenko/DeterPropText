@@ -7,10 +7,10 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
-import cz.semenko.word.aware.policy.ObjectsCreationDecider;
+import cz.semenko.word.aware.policy.CellCreationDecider;
 import cz.semenko.word.aware.policy.ThoughtUnionDecider;
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
+import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
@@ -30,7 +30,7 @@ public class Knowledge {
 	private FastMemory fastMemory;
 	private ThoughtUnionDecider thoughtUnionDecider;
 	private ThoughtsSaver thoughtsSaver;
-	private ObjectsCreationDecider objectsCreationDecider;
+	private CellCreationDecider cellsCreationDecider;
 	private Config config;
 	
 	/**
@@ -40,9 +40,9 @@ public class Knowledge {
 	
 	/**
 	 * Predicts of the continuation of the text.
-	 * @param inputObjects array of {@link Objects} of first type - signs.
+	 * @param inputCells array of {@link Cell} of first type - signs.
 	 */
-	public void predict(Long[] inputObjects) {
+	public void predict(Long[] inputCells) {
 		
 	}
 	
@@ -51,9 +51,9 @@ public class Knowledge {
 	 * u znamych Associations. Behem zpracovani vstupnich objektu tato metoda ovlivnuje
 	 * stav Knowledge - vedomi.
 	 */
-	public void remember(Long[] inputObjects) throws Exception {
-		// Pripojit inputObjects k predchozim myslenkam
-		thoughts = attachToExistingThoughts(thoughts, inputObjects);
+	public void remember(Long[] inputCells) throws Exception {
+		// Pripojit inputCells k predchozim myslenkam
+		thoughts = attachToExistingThoughts(thoughts, inputCells);
 		// Provest dohledani v DB. Pak vytvaret nove objekty do takove hloubky, jak je to
 		// definovano v konfiguracni promenne.
 		thoughts = getThoughtsToSomeDepth(thoughts);
@@ -89,7 +89,7 @@ public class Knowledge {
 		Projit vsechny pary v celem thoughts2, zda jsou vhodnymi klijenty pro spojeni.
 		Jestli objekty pro spojeni jsou vedle sebe, rozhodnout ktery z objektu ma prioritu.
 		Dostat z DB vsechny asociace pro nove objekty. Jestli asociace a novy objekt neexistuje, vytvorit
-			novy Objects a Associations.
+			novy Cell a Associations.
 		Sestavit Thoughts pro nove objekty.
 		Nahradit Spojene Thoughts novymi Thoughts.			
 	*/
@@ -100,7 +100,7 @@ public class Knowledge {
 			if (positionsToRelation.isEmpty()) {
 				return thoughts2;
 			}
-			/** Vytvorime nove Associations, vytvorime nove Objects ktere drive neexistovali a zvysime Cost u stavajicich*/
+			/** Vytvorime nove Associations, vytvorime nove Cell ktere drive neexistovali a zvysime Cost u stavajicich*/
 			increaseAssociationsCost(thoughts2, positionsToRelation); // Ted vsechny objekty a associace existuji
 			/** Sestavime pary pro spojovani. */
 			Vector<Thought> thoughtsPairToUnion = new Vector<Thought>();
@@ -109,18 +109,18 @@ public class Knowledge {
 				thoughtsPairToUnion.add(thoughts2.get(positionsToRelation.get(i) + 1));
 			}
 			/** Ziskame idecka vsech novych objektu. Zde nemaji co delat prazdne objekty. */
-			Vector<Long> unitedObjectsId = getNewObjectsId(thoughts2, positionsToRelation);
-			if (unitedObjectsId.contains(null)) {
-				throw new Exception("Zde nemaji co delat prazdne objekty. " + unitedObjectsId);
+			Vector<Long> unitedCellsId = getNewCellsId(thoughts2, positionsToRelation);
+			if (unitedCellsId.contains(null)) {
+				throw new Exception("Zde nemaji co delat prazdne objekty. " + unitedCellsId);
 			}
 			/** Ziskame vsechny asociace novych objektu. Nevytvarime nove. */
-			Vector<Associations> allAssociations = fastMemory.getAllAssociations(unitedObjectsId);
+			Vector<Associations> allAssociations = fastMemory.getAllAssociations(unitedCellsId);
 			/** Ziskame vsechny nove objekty. Nevytvarime nove. */
-			Vector<Objects> newObjects = fastMemory.getObjects(unitedObjectsId);
+			Vector<Cell> newCells = fastMemory.getCells(unitedCellsId);
 			/** sestavime Thoughts. */
 			Vector<Thought> newThoughts = new Vector<Thought>();
-			for (int n = 0; n < newObjects.size(); n++) {
-				Objects ob = newObjects.get(n);
+			for (int n = 0; n < newCells.size(); n++) {
+				Cell ob = newCells.get(n);
 				Vector<Associations> assocVector = new Vector<Associations>();
 				for (int i = 0; i < allAssociations.size(); i++) {
 					Associations assoc = allAssociations.get(i);
@@ -145,40 +145,40 @@ public class Knowledge {
 	/**
 	 * Vrati Vektor IDecek, ktery muze obsahovat i nullove hodnoty
 	 * @param thoughts2
-	 * @param objectsToRelation Vektor pozici v thoughts2 pro spojeni s nasledujicimi objekty
+	 * @param cellsToRelation Vektor pozici v thoughts2 pro spojeni s nasledujicimi objekty
 	 * @return Vektor IDecek Objektu
 	 * @throws Exception 
 	 */
-	private Vector<Long> getNewObjectsId(Vector<Thought> thoughts2,
+	private Vector<Long> getNewCellsId(Vector<Thought> thoughts2,
 			Vector<Integer> positionsToRelation) throws Exception {
-		Vector<Long> unitedObjectsId = new Vector<Long>();
+		Vector<Long> unitedCellsId = new Vector<Long>();
 		for (int k = 0; k < positionsToRelation.size(); k++) {
 			Thought srcThought = thoughts2.get(positionsToRelation.get(k));
 			Thought tgtThought = thoughts2.get(positionsToRelation.get(k)+1);
 			Associations assoc = fastMemory.getAssociation(srcThought, tgtThought);
 			if (assoc == null) {
-				unitedObjectsId.add(null);
+				unitedCellsId.add(null);
 			} else {
-				unitedObjectsId.add(assoc.getObjId());
+				unitedCellsId.add(assoc.getObjId());
 			}
 		}
-		return unitedObjectsId;
+		return unitedCellsId;
 	}
 
 	/**
 	 * Zvysi cost associaci spojovanych objektu. Jestli association neexistuje,
 	 * vytvori novou. Vytvari nove objety.
 	 * @param thoughts2
-	 * @param objectsToRelation
+	 * @param cellsToRelation
 	 * @return Vector<Associations> novych vytvorenych associations
 	 * @throws Exception
 	 */
 	private Vector<Associations> increaseAssociationsCost(Vector<Thought> thoughts2,
-			Vector<Integer> objectsToRelation) throws Exception {
+			Vector<Integer> cellsToRelation) throws Exception {
 		// doplnit chybejici associations
 		Vector<Thought> nonExistsPairs = new Vector<Thought>();
 		Vector<Associations> result = new Vector<Associations>();
-		for (Iterator<Integer> it = objectsToRelation.iterator(); it.hasNext(); ) {
+		for (Iterator<Integer> it = cellsToRelation.iterator(); it.hasNext(); ) {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
@@ -193,7 +193,7 @@ public class Knowledge {
 		}		
 		// zvysit cost associations ktere jiz existovaly v DB
 		Vector<Long> associationsToIncrease = new Vector<Long>();
-		for (Iterator<Integer> it = objectsToRelation.iterator(); it.hasNext(); ) {
+		for (Iterator<Integer> it = cellsToRelation.iterator(); it.hasNext(); ) {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
@@ -208,20 +208,20 @@ public class Knowledge {
 		return result;
 	}
 
-	/** Pripojit inputObjects k predchozim myslenkam.
+	/** Pripojit inputCells k predchozim myslenkam.
 	 * Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
 	 * Vytvorit nove objekty.
 	 * Omezit velikost vektoru myslenek aby nedochazelo k preteceni.
 	 **/
 	private Vector<Thought> attachToExistingThoughts(Vector<Thought> thoughts2,
-			Long[] inputObjects) throws Exception {
+			Long[] inputCells) throws Exception {
 		/* Nejdriv dohledat spicky pro rozhodovani, jake objekty spojovat 
 		 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 		 * ktere vytvareji tyto spickove objekty */
-		inputObjects = thoughtUnionDecider.getTipsAndJoin(inputObjects);
+		inputCells = thoughtUnionDecider.getTipsAndJoin(inputCells);
 		// Vytvorit vektor Thoughts
 		Vector<Thought> newThoughts = new Vector<Thought>();
-		newThoughts = getExistsThoughts(inputObjects);
+		newThoughts = getExistsThoughts(inputCells);
 		// posledni element z thoughts2 prehodit k newThoughts
 		if (thoughts2.size() > 0) {
 			newThoughts.add(0, thoughts2.remove(thoughts2.size()-1));
@@ -230,16 +230,16 @@ public class Knowledge {
 		newThoughts = recognizeKnownThoughts(newThoughts);
 		thoughts2.addAll(newThoughts);
 		// Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
-		Vector<Integer> positionsToCreateNewObjects = 
-			objectsCreationDecider.getPositionsToCreateNewObjects(thoughts2);
-		// Vytvorime nove objects a associations
+		Vector<Integer> positionsToCreateNewCells = 
+			cellsCreationDecider.getPositionsToCreateNewCells(thoughts2);
+		// Vytvorime nove cells a associations
 		Vector<Thought> thoughtPairsToMerge = new Vector<Thought>();
-		for (int i = 0; i < positionsToCreateNewObjects.size(); i++) {
+		for (int i = 0; i < positionsToCreateNewCells.size(); i++) {
 			thoughtPairsToMerge.add(thoughts2.get(i));
 			thoughtPairsToMerge.add(thoughts2.get(i+1));
 		}
 		if (thoughtPairsToMerge.size() > 0) {
-			fastMemory.createNewAssociationsAndObjects(thoughtPairsToMerge);
+			fastMemory.createNewAssociationsAndCells(thoughtPairsToMerge);
 		}
 		// Orezat thoughts2 na pozadovanou velikost
 		int maxKnowledgeSize = config.getKnowledge_knowledgeSize();
@@ -306,21 +306,21 @@ public class Knowledge {
 	}
 
 	/** 
-	 * Ziska z Memory Objects a Associations a vytvori nove Thoughts.
+	 * Ziska z Memory Cell a Associations a vytvori nove Thoughts.
 	 * 
-	 * @param inputObjects
+	 * @param inputCells
 	 * @return
 	 * @throws Exception 
 	 */
-	private Vector<Thought> getExistsThoughts(Long[] inputObjects) throws Exception {
-		// Get objects
-		Vector<Objects> objects = fastMemory.getObjects(inputObjects);
+	private Vector<Thought> getExistsThoughts(Long[] inputCells) throws Exception {
+		// Get cells
+		Vector<Cell> cells = fastMemory.getCells(inputCells);
 		// Get associations
-		Vector<Associations> associations = fastMemory.getAssociationsToObjects(objects);
+		Vector<Associations> associations = fastMemory.getAssociationsToCells(cells);
 		// Create thought
 		Vector<Thought> result = new Vector<Thought>();
-		for (int i = 0; i < objects.size(); i++) {
-			Objects ob = objects.get(i);
+		for (int i = 0; i < cells.size(); i++) {
+			Cell ob = cells.get(i);
 			Vector<Associations> ass = new Vector<Associations>();
 			for (int k = 0; k < associations.size(); k++) {
 				Associations nextAss = associations.get(k);
@@ -346,9 +346,9 @@ public class Knowledge {
 		this.config = config;
 	}
 
-	public void setObjectsCreationDecider(
-			ObjectsCreationDecider objectsCreationDecider) {
-		this.objectsCreationDecider = objectsCreationDecider;
+	public void setCellsCreationDecider(
+			CellCreationDecider cellsCreationDecider) {
+		this.cellsCreationDecider = cellsCreationDecider;
 	}
 
 	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {

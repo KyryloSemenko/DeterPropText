@@ -17,6 +17,6 @@
 	</sql-type>
 </type-mapping>
 <table-filter match-schema="K" match-name="ASSOCIATIONS"/>
-  <table-filter match-schema="K" match-name="OBJECTS"/>
+  <table-filter match-schema="K" match-name="CELLS"/>
   <table-filter match-schema="K" match-name="TABLES"/>
 </hibernate-reverse-engineering>

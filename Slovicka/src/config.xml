@@ -10,8 +10,8 @@
 	<fastMemory>
 		<!-- Velikost tabulky Tables v cashe FastMemory -->
 		<tablesTableSize>400</tablesTableSize>
-		<!-- Velikost tabulek Objects v cashe FastMemory -->
-		<tablesObjectsSize>400</tablesObjectsSize>
+		<!-- Velikost tabulek Cells v cashe FastMemory -->
+		<tablesCellsSize>400</tablesCellsSize>
 		<!-- Velikost tabulek Associations v cashe FastMemory -->
 		<tablesAssociationsSize>400</tablesAssociationsSize>
 		<!--
@@ -30,13 +30,13 @@
 	</fastMemory>
 	<knowledge>
 		<!-- Maximalni pocet objektu, ktere aware zdruzuje do obecnejsi formy -->
-		<objectsCreationDepth>68</objectsCreationDepth>
+		<cellsCreationDepth>68</cellsCreationDepth>
 		<!-- Maximalni velikost aware - delka vektoru myslenek -->
 		<knowledgeSize>100</knowledgeSize>
 
 		<!-- Zda maji byt spojovany jen objekty stejneho typu. Jestli true,
 		parametr decideToRelateByObjectTypeOrAssocCost musi byt false. -->
-		<relateOnlyObjectsOfSameTypes>true</relateOnlyObjectsOfSameTypes>
+		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
 		<!-- Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
 		true - Budou spojeny dle velikosti type objektu,
 		false - budou spojeny dle velikosti cost associaci -->
@@ -44,23 +44,23 @@
 		<!-- Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
 		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
 		je nastaven na true, nebo bc kdyz parameter je nastaven na false  -->
-		<decideToRelateObjectsByHigherObjectType>true</decideToRelateObjectsByHigherObjectType>
+		<decideToRelateCellsByHigherObjectType>true</decideToRelateCellsByHigherObjectType>
 		<!-- Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,
 		potom budou spojovany objekty dle velikosti hodnot asociaci.
 		true - budou spojovany objekty s vyssi hodnotou asociaci
 		false - budou spojovany objekty s nizsi hodnotou asociaci -->
-		<decideToRelateObjectsByHigherAssocCost>true</decideToRelateObjectsByHigherAssocCost>
+		<decideToRelateCellsByHigherAssocCost>true</decideToRelateCellsByHigherAssocCost>
 		<!-- Ukladat do souboru pospojovane objekty behem cteni nebo ne -->
 		<saveThoughtsToFile>true</saveThoughtsToFile>
 	</knowledge>
-	<objectsCreationDecider>
+	<cellsCreationDecider>
 		<!-- Vytvaret nove objekty pro veskere nove nactene Thought nebo ne. Mozna se to 
 		vyplati na zacatecnych fazich zaskoleni systemu. -->
-		<createNewObjectsToAllPairs>true</createNewObjectsToAllPairs>
+		<createNewCellsToAllPairs>true</createNewCellsToAllPairs>
 		<!-- Jak hluboko vytvaret nove objekty pro nove nactene Thought. To znamena
 		pro objekty jakeho Type jeste provadet vytvareni spoju. -->
-		<createNewObjectsToAllPairsDepth>1</createNewObjectsToAllPairsDepth>
-	</objectsCreationDecider>
+		<createNewCellsToAllPairsDepth>1</createNewCellsToAllPairsDepth>
+	</cellsCreationDecider>
 	<thoughtsSaver>
 		<!-- Cesta a nazev souboru pro ulozeni idecek spojenzch objektu behem cteni vstupniho souboru -->
 		<filePathToSaveThoughts>

@@ -69,7 +69,7 @@ public class DBconnector {
 	private boolean isTablesExists() throws SQLException {
 		Connection connection = dataSource.getConnection();
 		try {
-			connection.createStatement().executeQuery("SELECT 1 FROM objects");
+			connection.createStatement().executeQuery("SELECT 1 FROM cells");
 			connection.createStatement().executeQuery("SELECT 1 FROM associations");
 			connection.createStatement().executeQuery("SELECT 1 FROM tables");
 		} catch (SQLException e) {

@@ -40,7 +40,7 @@
 		<property name="fastMemory" ref="fastMemory" />
 		<property name="thoughtUnionDecider" ref="thoughtUnionDecider" />
 		<property name="thoughtsSaver" ref="thoughtSaver" />
-		<property name="objectsCreationDecider" ref="ObjectsCreationDecider" />
+		<property name="cellsCreationDecider" ref="CellsCreationDecider" />
 		<property name="config" ref="config" />
 	</bean>
 	
@@ -55,7 +55,7 @@
 	</bean>
 	
 	<!-- Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru -->
-	<bean id="ObjectsCreationDecider" class="cz.semenko.word.aware.policy.ObjectsCreationDecider">
+	<bean id="CellsCreationDecider" class="cz.semenko.word.aware.policy.CellCreationDecider">
 		<property name="fastMemory" ref="fastMemory" />
 		<property name="config" ref="config" />
 	</bean>

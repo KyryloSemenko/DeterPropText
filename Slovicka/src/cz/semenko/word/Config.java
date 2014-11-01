@@ -17,18 +17,18 @@ public class Config {
 	private String dbCon_derbyJarServerStop = null;
 	private int dataProvider_numCharsReadsFromInput = 0;
 	private int fastMemory_tablesTableSize = 0;
-	private int fastMemory_tablesObjectsSize = 0;
+	private int fastMemory_tablesCellsSize = 0;
 	private int fastMemory_tablesAssociationsSize = 0;
-	private int knowledge_objectsCreationDepth = 0;
+	private int knowledge_cellsCreationDepth = 0;
 	private int knowledge_knowledgeSize = 0;
 	private boolean knowledge_decideToRelateByObjectTypeOrAssocCost = false;
-	private boolean knowledge_decideToRelateObjectsByHigherObjectType = false;
-	private boolean knowledge_decideToRelateObjectsByHigherAssocCost = false;
-	private boolean objectsCreationDecider_createNewObjectsToAllPairs = false;
-	private int objectsCreationDecider_createNewObjectsToAllPairsDepth = 0;
+	private boolean knowledge_decideToRelateCellsByHigherCellType = false;
+	private boolean knowledge_decideToRelateCellsByHigherAssocCost = false;
+	private boolean cellsCreationDecider_createNewCellsToAllPairs = false;
+	private int cellsCreationDecider_createNewCellsToAllPairsDepth = 0;
 	private boolean fastMemory_alwaysSearchToAssociationsDeepInTheMemory = false;
 	private boolean fastMemory_searchToAssociationsAtAllElements = false;
-	private boolean knowledge_relateOnlyObjectsOfSameTypes = false;
+	private boolean knowledge_relateOnlyCellsOfSameTypes = false;
 	private boolean knowledge_saveThoughtsToFile = false;
 	private String thoughtsSaver_filePathToSaveThoughts;
 	private int memoryCleaner_lowestCostForLeaving;
@@ -50,21 +50,21 @@ public class Config {
 			dbCon_derbyJarServerStop = conf.getString("dbCon.derbyJarServerStop");
 			dataProvider_numCharsReadsFromInput = conf.getInt("dataProvider.numCharsReadsFromInput");
 			fastMemory_tablesTableSize = conf.getInt("fastMemory.tablesTableSize");
-			fastMemory_tablesObjectsSize = conf.getInt("fastMemory.tablesObjectsSize");
-			if(dataProvider_numCharsReadsFromInput > fastMemory_tablesObjectsSize) {
-				String msg = "Configuration parameter dataProvider.numCharsReadsFromInput must not be greater then fastMemory.tablesObjectsSize";
+			fastMemory_tablesCellsSize = conf.getInt("fastMemory.tablesCellsSize");
+			if(dataProvider_numCharsReadsFromInput > fastMemory_tablesCellsSize) {
+				String msg = "Configuration parameter dataProvider.numCharsReadsFromInput must not be greater then fastMemory.tablesCellsSize";
 				System.out.println(msg);
 				throw new ConfigurationException(msg);
 			}
 			setFastMemory_tablesAssociationsSize(conf.getInt("fastMemory.tablesAssociationsSize"));
-			setKnowledge_objectsCreationDepth(conf.getInt("knowledge.objectsCreationDepth"));
+			setKnowledge_cellsCreationDepth(conf.getInt("knowledge.cellsCreationDepth"));
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
 			setKnowledge_decideToRelateByObjectTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByObjectTypeOrAssocCost"));
-			setKnowledge_decideToRelateObjectsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateObjectsByHigherAssocCost"));
-			setKnowledge_decideToRelateObjectsByHigherObjectType(conf.getBoolean("knowledge.decideToRelateObjectsByHigherObjectType"));
-			setKnowledge_relateOnlyObjectsOfSameTypes(conf.getBoolean("knowledge.relateOnlyObjectsOfSameTypes"));
-			setObjectsCreationDecider_createNewObjectsToAllPairs(conf.getBoolean("objectsCreationDecider.createNewObjectsToAllPairs"));
-			setObjectsCreationDecider_createNewObjectsToAllPairsDepth(conf.getInt("objectsCreationDecider.createNewObjectsToAllPairsDepth"));
+			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
+			setKnowledge_decideToRelateCellsByHigherObjectType(conf.getBoolean("knowledge.decideToRelateCellsByHigherObjectType"));
+			setKnowledge_relateOnlyCellsOfSameTypes(conf.getBoolean("knowledge.relateOnlyCellsOfSameTypes"));
+			setCellsCreationDecider_createNewCellsToAllPairs(conf.getBoolean("cellsCreationDecider.createNewCellsToAllPairs"));
+			setCellsCreationDecider_createNewCellsToAllPairsDepth(conf.getInt("cellsCreationDecider.createNewCellsToAllPairsDepth"));
 			setFastMemory_alwaysSearchToAssociationsDeepInTheMemory(conf.getBoolean("fastMemory.alwaysSearchToAssociationsDeepInTheMemory"));
 			setFastMemory_searchToAssociationsAtAllElements(conf.getBoolean("fastMemory.searchToAssociationsAtAllElements"));
 			setKnowledge_saveThoughtsToFile(conf.getBoolean("knowledge.saveThoughtsToFile"));
@@ -118,22 +118,22 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>fastMemory_tablesObjectsSize</code>.</p>
+	 * <p>Getter for the field <code>fastMemory_tablesCellsSize</code>.</p>
 	 *
 	 * @return a int.
 	 */
-	public int getFastMemory_tablesObjectsSize() {
-		return fastMemory_tablesObjectsSize;
+	public int getFastMemory_tablesCellsSize() {
+		return fastMemory_tablesCellsSize;
 	}
 
 	/**
-	 * <p>Setter for the field <code>fastMemory_tablesObjectsSize</code>.</p>
+	 * <p>Setter for the field <code>fastMemory_tablesCellsSize</code>.</p>
 	 *
-	 * @param fastMemoryTablesObjectsSize a int.
+	 * @param fastMemoryTablesCellsSize a int.
 	 */
-	public void setFastMemory_tablesObjectsSize(
-			int fastMemoryTablesObjectsSize) {
-		fastMemory_tablesObjectsSize = fastMemoryTablesObjectsSize;
+	public void setFastMemory_tablesCellsSize(
+			int fastMemoryTablesCellsSize) {
+		fastMemory_tablesCellsSize = fastMemoryTablesCellsSize;
 	}
 
 	/**
@@ -210,21 +210,21 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>knowledge_objectsCreationDepth</code>.</p>
+	 * <p>Getter for the field <code>knowledge_cellsCreationDepth</code>.</p>
 	 *
 	 * @return a int.
 	 */
-	public int getKnowledge_objectsCreationDepth() {
-		return knowledge_objectsCreationDepth;
+	public int getKnowledge_cellsCreationDepth() {
+		return knowledge_cellsCreationDepth;
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_objectsCreationDepth</code>.</p>
+	 * <p>Setter for the field <code>knowledge_cellsCreationDepth</code>.</p>
 	 *
-	 * @param knowledgeObjectsCreationDepth a int.
+	 * @param knowledgeCellsCreationDepth a int.
 	 */
-	public void setKnowledge_objectsCreationDepth(int knowledgeObjectsCreationDepth) {
-		knowledge_objectsCreationDepth = knowledgeObjectsCreationDepth;
+	public void setKnowledge_cellsCreationDepth(int knowledgeCellsCreationDepth) {
+		knowledge_cellsCreationDepth = knowledgeCellsCreationDepth;
 	}
 
 	/**
@@ -265,79 +265,79 @@ public class Config {
 	}
 
 	/**
-	 * <p>isKnowledge_decideToRelateObjectsByHigherObjectType.</p>
+	 * <p>isKnowledge_decideToRelateCellsByHigherObjectType.</p>
 	 *
 	 * @return a boolean.
 	 */
-	public boolean isKnowledge_decideToRelateObjectsByHigherObjectType() {
-		return knowledge_decideToRelateObjectsByHigherObjectType;
+	public boolean isKnowledge_decideToRelateCellsByHigherObjectType() {
+		return knowledge_decideToRelateCellsByHigherCellType;
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_decideToRelateObjectsByHigherObjectType</code>.</p>
+	 * <p>Setter for the field <code>knowledge_decideToRelateCellsByHigherCellType</code>.</p>
 	 *
-	 * @param knowledge_decideToRelateObjectsByHigherObjectType a boolean.
+	 * @param knowledge_decideToRelateCellsByHigherCellType a boolean.
 	 */
-	public void setKnowledge_decideToRelateObjectsByHigherObjectType(
-			boolean knowledge_decideToRelateObjectsByHigherObjectType) {
-		this.knowledge_decideToRelateObjectsByHigherObjectType = knowledge_decideToRelateObjectsByHigherObjectType;
+	public void setKnowledge_decideToRelateCellsByHigherObjectType(
+			boolean knowledge_decideToRelateCellsByHigherObjectType) {
+		this.knowledge_decideToRelateCellsByHigherCellType = knowledge_decideToRelateCellsByHigherObjectType;
 	}
 
 	/**
-	 * <p>isKnowledge_decideToRelateObjectsByHigherAssocCost.</p>
-	 *
-	 * @return a boolean.
-	 */
-	public boolean isKnowledge_decideToRelateObjectsByHigherAssocCost() {
-		return knowledge_decideToRelateObjectsByHigherAssocCost;
-	}
-
-	/**
-	 * <p>Setter for the field <code>knowledge_decideToRelateObjectsByHigherAssocCost</code>.</p>
-	 *
-	 * @param knowledge_decideToRelateObjectsByHigherAssocCost a boolean.
-	 */
-	public void setKnowledge_decideToRelateObjectsByHigherAssocCost(
-			boolean knowledge_decideToRelateObjectsByHigherAssocCost) {
-		this.knowledge_decideToRelateObjectsByHigherAssocCost = knowledge_decideToRelateObjectsByHigherAssocCost;
-	}
-
-	/**
-	 * <p>isObjectsCreationDecider_createNewObjectsToAllPairs.</p>
+	 * <p>isKnowledge_decideToRelateCellsByHigherAssocCost.</p>
 	 *
 	 * @return a boolean.
 	 */
-	public boolean isObjectsCreationDecider_createNewObjectsToAllPairs() {
-		return objectsCreationDecider_createNewObjectsToAllPairs;
+	public boolean isKnowledge_decideToRelateCellsByHigherAssocCost() {
+		return knowledge_decideToRelateCellsByHigherAssocCost;
 	}
 
 	/**
-	 * <p>Setter for the field <code>objectsCreationDecider_createNewObjectsToAllPairs</code>.</p>
+	 * <p>Setter for the field <code>knowledge_decideToRelateCellsByHigherAssocCost</code>.</p>
 	 *
-	 * @param objectsCreationDecider_createNewObjectsToAllPairs a boolean.
+	 * @param knowledge_decideToRelateCellsByHigherAssocCost a boolean.
 	 */
-	public void setObjectsCreationDecider_createNewObjectsToAllPairs(
-			boolean objectsCreationDecider_createNewObjectsToAllPairs) {
-		this.objectsCreationDecider_createNewObjectsToAllPairs = objectsCreationDecider_createNewObjectsToAllPairs;
+	public void setKnowledge_decideToRelateCellsByHigherAssocCost(
+			boolean knowledge_decideToRelateCellsByHigherAssocCost) {
+		this.knowledge_decideToRelateCellsByHigherAssocCost = knowledge_decideToRelateCellsByHigherAssocCost;
 	}
 
 	/**
-	 * <p>Setter for the field <code>objectsCreationDecider_createNewObjectsToAllPairsDepth</code>.</p>
+	 * <p>isCellsCreationDecider_createNewCellsToAllPairs.</p>
 	 *
-	 * @param objectsCreationDecider_createNewObjectsToAllPairsDepth a int.
+	 * @return a boolean.
 	 */
-	public void setObjectsCreationDecider_createNewObjectsToAllPairsDepth(
-			int objectsCreationDecider_createNewObjectsToAllPairsDepth) {
-		this.objectsCreationDecider_createNewObjectsToAllPairsDepth = objectsCreationDecider_createNewObjectsToAllPairsDepth;
+	public boolean isCellsCreationDecider_createNewCellsToAllPairs() {
+		return cellsCreationDecider_createNewCellsToAllPairs;
 	}
 
 	/**
-	 * <p>Getter for the field <code>objectsCreationDecider_createNewObjectsToAllPairsDepth</code>.</p>
+	 * <p>Setter for the field <code>cellsCreationDecider_createNewCellsToAllPairs</code>.</p>
+	 *
+	 * @param cellsCreationDecider_createNewCellsToAllPairs a boolean.
+	 */
+	public void setCellsCreationDecider_createNewCellsToAllPairs(
+			boolean cellsCreationDecider_createNewCellsToAllPairs) {
+		this.cellsCreationDecider_createNewCellsToAllPairs = cellsCreationDecider_createNewCellsToAllPairs;
+	}
+
+	/**
+	 * <p>Setter for the field <code>cellsCreationDecider_createNewCellsToAllPairsDepth</code>.</p>
+	 *
+	 * @param cellsCreationDecider_createNewCellsToAllPairsDepth a int.
+	 */
+	public void setCellsCreationDecider_createNewCellsToAllPairsDepth(
+			int cellsCreationDecider_createNewCellsToAllPairsDepth) {
+		this.cellsCreationDecider_createNewCellsToAllPairsDepth = cellsCreationDecider_createNewCellsToAllPairsDepth;
+	}
+
+	/**
+	 * <p>Getter for the field <code>cellsCreationDecider_createNewCellsToAllPairsDepth</code>.</p>
 	 *
 	 * @return a int.
 	 */
-	public int getObjectsCreationDecider_createNewObjectsToAllPairsDepth() {
-		return objectsCreationDecider_createNewObjectsToAllPairsDepth;
+	public int getCellsCreationDecider_createNewCellsToAllPairsDepth() {
+		return cellsCreationDecider_createNewCellsToAllPairsDepth;
 	}
 
 	/**
@@ -379,29 +379,29 @@ public class Config {
 	}
 
 	/**
-	 * <p>isKnowledge_relateOnlyObjectsOfSameTypes.</p>
+	 * <p>isKnowledge_relateOnlyCellsOfSameTypes.</p>
 	 *
 	 * @return a boolean.
 	 */
-	public boolean isKnowledge_relateOnlyObjectsOfSameTypes() {
-		return knowledge_relateOnlyObjectsOfSameTypes;
+	public boolean isKnowledge_relateOnlyCellsOfSameTypes() {
+		return knowledge_relateOnlyCellsOfSameTypes;
 	}
 	
 	/**
-	 * <p>Setter for the field <code>knowledge_relateOnlyObjectsOfSameTypes</code>.</p>
+	 * <p>Setter for the field <code>knowledge_relateOnlyCellsOfSameTypes</code>.</p>
 	 *
-	 * @param knowledge_relateOnlyObjectsOfSameTypes a boolean.
+	 * @param knowledge_relateOnlyCellsOfSameTypes a boolean.
 	 * @throws org.apache.commons.configuration.ConfigurationException if any.
 	 */
-	public void setKnowledge_relateOnlyObjectsOfSameTypes (
-			boolean knowledge_relateOnlyObjectsOfSameTypes) throws ConfigurationException {
-		if (isKnowledge_decideToRelateByObjectTypeOrAssocCost() == true & knowledge_relateOnlyObjectsOfSameTypes == true) {
+	public void setKnowledge_relateOnlyCellsOfSameTypes (
+			boolean knowledge_relateOnlyCellsOfSameTypes) throws ConfigurationException {
+		if (isKnowledge_decideToRelateByObjectTypeOrAssocCost() == true & knowledge_relateOnlyCellsOfSameTypes == true) {
 			throw new ConfigurationException(
 					"Nemuze byt soucasne knowledge.decideToRelateByObjectTypeOrAssocCost() == " +
-					"true & knowledge.relateOnlyObjectsOfSameTypes == true"
+					"true & knowledge.relateOnlyCellsOfSameTypes == true"
 			);
 		}
-		this.knowledge_relateOnlyObjectsOfSameTypes = knowledge_relateOnlyObjectsOfSameTypes;
+		this.knowledge_relateOnlyCellsOfSameTypes = knowledge_relateOnlyCellsOfSameTypes;
 	}
 
 	/**

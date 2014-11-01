@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Vector;
 
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
+import cz.semenko.word.persistent.Cell;
 
 /**
  * Tato trida ma reprezentovat myslenku. Myslenky jsou v mysleni - Knowledge.
@@ -25,7 +25,7 @@ import cz.semenko.word.persistent.Objects;
  * @version $Id: $Id
  */
 public class Thought implements Serializable {
-	private Objects activeObject; // Soucast myslenky
+	private Cell activeObject; // Soucast myslenky
 	private Vector<Associations> consequenceAssociations; // Toto jsou ty konektory dusledku
 	//private Vector<Thought> paralelThoughts; // Napriklad a-br a ab-r, nebo ko-cka, k-ocka, koc-ka, kock-a.
 		
@@ -37,10 +37,10 @@ public class Thought implements Serializable {
 	/**
 	 * <p>Constructor for Thought.</p>
 	 *
-	 * @param activeObject a {@link cz.semenko.word.persistent.Objects} object.
+	 * @param activeObject a {@link cz.semenko.word.persistent.Cell} object.
 	 * @param consequenceAssociations a {@link java.util.Vector} object.
 	 */
-	public Thought(Objects activeObject,
+	public Thought(Cell activeObject,
 			Vector<Associations> consequenceAssociations) {
 		super();
 		this.activeObject = activeObject;
@@ -50,18 +50,18 @@ public class Thought implements Serializable {
 	/**
 	 * <p>Getter for the field <code>activeObject</code>.</p>
 	 *
-	 * @return a {@link cz.semenko.word.persistent.Objects} object.
+	 * @return a {@link cz.semenko.word.persistent.Cell} object.
 	 */
-	public Objects getActiveObject() {
+	public Cell getActiveObject() {
 		return activeObject;
 	}
 
 	/**
 	 * <p>Setter for the field <code>activeObject</code>.</p>
 	 *
-	 * @param activeObject a {@link cz.semenko.word.persistent.Objects} object.
+	 * @param activeObject a {@link cz.semenko.word.persistent.Cell} object.
 	 */
-	public void setActiveObject(Objects activeObject) {
+	public void setActiveObject(Cell activeObject) {
 		this.activeObject = activeObject;
 	}
 

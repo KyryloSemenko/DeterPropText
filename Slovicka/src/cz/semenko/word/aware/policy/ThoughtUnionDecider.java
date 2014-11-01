@@ -76,7 +76,7 @@ public class ThoughtUnionDecider {
 	 */
 	public Vector<Integer> getPositionsToRelation(Vector<Thought> thoughts) throws Exception {
 		// Projit vsechny pary v celem thoughts2, zda nemaji assoc na nasledujici objekt
-		Vector<Integer> result = getAllObjectsToRelation(thoughts);
+		Vector<Integer> result = getAllCellsToRelation(thoughts);
 		// Zde osetrime pripad kdyz nekolik objektu za sebou konkuruji ve vytvoreni asociace.
 		Vector<Integer> doNotRelate = getDoNotRelate(thoughts, result);
 		// az ted je pospojujeme
@@ -90,24 +90,24 @@ public class ThoughtUnionDecider {
 
 	/**
 	 * Projit vsechny pary v celem thoughts2 a oznacit pro spojeni Thoughts,
-	 * ktere maji hloubku mensi nez objectsCreationDepth.
+	 * ktere maji hloubku mensi nez cellsCreationDepth.
 	 * Oznacuje pro spojeni i objekty z ruznych urovni TYPE
 	 * @param thoughts - samotna Myslenka
-	 * @param objectsCreationDepth
+	 * @param cellsCreationDepth
 	 * @return
 	 */
-	private Vector<Integer> getAllObjectsToRelation(Vector<Thought> thoughts) {
-		int objectsCreationDepth = config.getKnowledge_objectsCreationDepth();
-		Vector<Integer> objectsToRelation = new Vector<Integer>();
+	private Vector<Integer> getAllCellsToRelation(Vector<Thought> thoughts) {
+		int cellsCreationDepth = config.getKnowledge_cellsCreationDepth();
+		Vector<Integer> cellsToRelation = new Vector<Integer>();
 		for (int i = 0; i < thoughts.size()-1; i++) {
 			Thought nextThought = thoughts.get(i);
 			Thought nextFollThought = thoughts.get(i+1);
-			if (nextThought.getActiveObject().getType() < objectsCreationDepth 
-					&& nextFollThought.getActiveObject().getType() < objectsCreationDepth) {
-				objectsToRelation.add(i);
+			if (nextThought.getActiveObject().getType() < cellsCreationDepth 
+					&& nextFollThought.getActiveObject().getType() < cellsCreationDepth) {
+				cellsToRelation.add(i);
 			}
 		}
-		return objectsToRelation;
+		return cellsToRelation;
 	}
 
 	/**
@@ -115,22 +115,22 @@ public class ThoughtUnionDecider {
 	 * aby nepustila ke spojeni blizke pary objektu.
 	 * @param thoughts
 	 * @param decideToRelateByObjectTypeOrAssocCost true = objectType, false = associationCost
-	 * @param decideToRelateObjectsByHigherAssocCost
-	 * @param decideToRelateObjectsByHigherObjectType
-	 * @param objectsToRelation
+	 * @param decideToRelateCellsByHigherAssocCost
+	 * @param decideToRelateCellsByHigherObjectType
+	 * @param cellsToRelation
 	 * @return
 	 * @throws Exception
 	 */
 	private Vector<Integer> getDoNotRelate(Vector<Thought> thoughts,
-			Vector<Integer> objectsToRelation) throws Exception {
-		boolean relateOnlyObjectsOfSameTypes = config.isKnowledge_relateOnlyObjectsOfSameTypes();
+			Vector<Integer> cellsToRelation) throws Exception {
+		boolean relateOnlyCellsOfSameTypes = config.isKnowledge_relateOnlyCellsOfSameTypes();
 		boolean decideToRelateByObjectTypeOrAssocCost = config.isKnowledge_decideToRelateByObjectTypeOrAssocCost();
-		boolean decideToRelateObjectsByHigherAssocCost = config.isKnowledge_decideToRelateObjectsByHigherAssocCost();
-		boolean decideToRelateObjectsByHigherObjectType = config.isKnowledge_decideToRelateObjectsByHigherObjectType();
-		Vector<Integer> doNotRelate = new Vector<Integer>(); // zde budou polozky z objectsToRelation ktere se nemaji spojovat.
-		for (int i = 0; i < objectsToRelation.size()-1; i=i+2) {
-			Integer nextThoughtKey = objectsToRelation.get(i);
-			Integer nextThoughtFollowingKey = objectsToRelation.get(i+1);
+		boolean decideToRelateCellsByHigherAssocCost = config.isKnowledge_decideToRelateCellsByHigherAssocCost();
+		boolean decideToRelateCellsByHigherObjectType = config.isKnowledge_decideToRelateCellsByHigherObjectType();
+		Vector<Integer> doNotRelate = new Vector<Integer>(); // zde budou polozky z cellsToRelation ktere se nemaji spojovat.
+		for (int i = 0; i < cellsToRelation.size()-1; i=i+2) {
+			Integer nextThoughtKey = cellsToRelation.get(i);
+			Integer nextThoughtFollowingKey = cellsToRelation.get(i+1);
 			// Oznacit pro spojeni vsechny ktere maji assoc na nasled. objekt, nacist nove vznikle Thought a opakovat pokud budou nalezeny.
 			// Budou spojene dle pravidla definovaneho v promenne bud s vetsim anebo s mensim objektem.
 			if (nextThoughtFollowingKey - nextThoughtKey == 1) {
@@ -139,9 +139,9 @@ public class ThoughtUnionDecider {
 				Thought th3 = thoughts.get(nextThoughtFollowingKey+1);
 				/* Jestli parametr narizuje spojeni jen objektu, ktere maji stejny typ (jsou ve stejne vrstve),
 				 * nebudeme spojovat objekty s ruznym TYPE */
-				if (relateOnlyObjectsOfSameTypes) {
+				if (relateOnlyCellsOfSameTypes) {
 					boolean filteredByType = false; /* Jestli bude rozhodnuto dle parametru
-					relateOnlyObjectsOfSameTypes, neni co dale resit */ 
+					relateOnlyCellsOfSameTypes, neni co dale resit */ 
 					if (th1.getActiveObject().getType() != th2.getActiveObject().getType()) {
 						doNotRelate.add(nextThoughtKey);
 						filteredByType = true;
@@ -162,7 +162,7 @@ public class ThoughtUnionDecider {
 					if (firstObType+secondObType == secondObType+thirdObType) {
 						doNotRelate.add(nextThoughtFollowingKey);
 					}
-					if (decideToRelateObjectsByHigherObjectType) { 
+					if (decideToRelateCellsByHigherObjectType) { 
 						// TODO zkontrolovat zda skutecne spojuje dle uvedeneho parametru
 						int key = firstObType+secondObType < secondObType+thirdObType?nextThoughtKey:nextThoughtFollowingKey;
 						doNotRelate.add(key);
@@ -181,7 +181,7 @@ public class ThoughtUnionDecider {
 						// TODO muze i takhle: jestli COST u associaci stejna, pak rozhodovat na zaklade TYPE objektu
 						continue; // TODO v pripade jestli predchozi objectToRelation je vedle nasledujiciho, dat prednost jinemu spojeni.
 					}
-					if (decideToRelateObjectsByHigherAssocCost) {
+					if (decideToRelateCellsByHigherAssocCost) {
 						int key = firstAssocCost < secondAssocCost ? nextThoughtKey : nextThoughtFollowingKey;
 						doNotRelate.add(key);
 					} else {
@@ -192,7 +192,7 @@ public class ThoughtUnionDecider {
 			}
 		}
 		/** Nepusti ke spojeni pary objektu, ktere jsou za sebou v thoughts2 */
-		Vector<Integer> relatedPositions = (Vector<Integer>)objectsToRelation.clone();
+		Vector<Integer> relatedPositions = (Vector<Integer>)cellsToRelation.clone();
 		for (int i = 0; i < doNotRelate.size(); i++) {
 			relatedPositions.remove(doNotRelate.get(i));
 		}
@@ -212,24 +212,24 @@ public class ThoughtUnionDecider {
 	 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 	 * ktere vytvareji tyto spickove objekty.
 	 *
-	 * @param inputObjects an array of {@link java.lang.Long} objects.
+	 * @param inputCells an array of {@link java.lang.Long} cells.
 	 * @throws java.lang.Exception if any.
-	 * @return an array of {@link java.lang.Long} objects.
+	 * @return an array of {@link java.lang.Long} cells.
 	 */
-	public Long[] getTipsAndJoin(Long[] inputObjects) throws Exception {
+	public Long[] getTipsAndJoin(Long[] inputCells) throws Exception {
 		Layers layers = new Layers();
-		for (int i = 0; i < inputObjects.length; i++) {
-			layers.addId(inputObjects[i]);
+		for (int i = 0; i < inputCells.length; i++) {
+			layers.addId(inputCells[i]);
 		}
 		while (layers.hasLastLayerPairs()) {
 			int constant = layers.getCurrentConstant();
 			Vector<Long> layer = layers.getCurrentLayer();
-			Vector<Long> superiorLayer = fastMemory.getSuperiorObjectsId(layer, constant);
+			Vector<Long> superiorLayer = fastMemory.getSuperiorCellsId(layer, constant);
 			layers.setLastLayer(superiorLayer);
 		}
 		// Sestavime objekty od spicek dolu
-		Long[] result = layers.getHighlyObjects();
-		fastMemory.increaseAssociationsCostToObjectsId(result);
+		Long[] result = layers.getHighlyCells();
+		fastMemory.increaseAssociationsCostToCellsId(result);
 		return result;
 	}
 

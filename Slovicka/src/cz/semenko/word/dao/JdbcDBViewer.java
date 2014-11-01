@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
+import cz.semenko.word.persistent.Cell;
 
 /**
  * This DAO object create DB connection and
@@ -38,7 +38,7 @@ public class JdbcDBViewer implements DBViewer {
 	private PreparedStatement selectWordID;
 	private PreparedStatement selectRightNeighbours;
 	private PreparedStatement selectLeftNeighbours;
-	private PreparedStatement selectObjectsToAssociation;
+	private PreparedStatement selectCellsToAssociation;
 	private PreparedStatement selectObject;
 	private PreparedStatement selectLowCostOb;
 	private PreparedStatement selectObjectForAssoc;
@@ -48,10 +48,10 @@ public class JdbcDBViewer implements DBViewer {
 	private PreparedStatement selectSrc;
 	private PreparedStatement selectAssociation;
 	private PreparedStatement selectAssociations;
-	private PreparedStatement selectObjects;
+	private PreparedStatement selectCells;
 	private PreparedStatement selectTables;
 	private PreparedStatement insertNewCharacter;
-	private long lastIdObjectsTable;
+	private long lastIdCellsTable;
 	private long lastIdAssociationsTable;
 	
 	public static Logger logger = Logger.getLogger(JdbcDBViewer.class);
@@ -66,45 +66,45 @@ public class JdbcDBViewer implements DBViewer {
 	private void prepareStatements() {
 		try {
             selectWordSRC = connection.prepareStatement("SELECT src FROM " +
-            		"objects WHERE id = ?");
+            		"cells WHERE id = ?");
             selectRightNeighbours = connection.prepareStatement("SELECT tgt_id FROM " +
             		"associations WHERE src_id = ?");
             selectLeftNeighbours = connection.prepareStatement("SELECT src_id FROM " +
     				"associations WHERE tgt_id = ?");
-            selectObjectsToAssociation = connection.prepareStatement("SELECT src_id, tgt_id " +
+            selectCellsToAssociation = connection.prepareStatement("SELECT src_id, tgt_id " +
             		"FROM associations WHERE id = ?");
-            selectObject = connection.prepareStatement("SELECT src, type FROM objects " +
+            selectObject = connection.prepareStatement("SELECT src, type FROM cells " +
             		"WHERE id = ?"); 
             selectLowCostOb = connection.prepareStatement("SELECT id " +
             		"from associations where cost = 1 and id not in " +
-            		"(select id from OBJECTS WHERE TYPE = 1) " +
-            		"and id IN (select id from OBJECTS WHERE TYPE = ?)");
+            		"(select id from CELLS WHERE TYPE = 1) " +
+            		"and id IN (select id from CELLS WHERE TYPE = ?)");
             selectWordID = connection.prepareStatement("SELECT id FROM " +
-    			"objects WHERE src LIKE ?");
-		    selectObjectForAssoc = connection.prepareStatement("SELECT MIN(id) FROM objects WHERE " +
+    			"cells WHERE src LIKE ?");
+		    selectObjectForAssoc = connection.prepareStatement("SELECT MIN(id) FROM cells WHERE " +
 		    	"src LIKE (" +
-		    	"(SELECT src FROM objects where id = ?) || " +
-				"(SELECT src FROM objects where id = ?))");
-		    selectMaxLevel = connection.prepareStatement("SELECT MAX(type) FROM objects " +
+		    	"(SELECT src FROM cells where id = ?) || " +
+				"(SELECT src FROM cells where id = ?))");
+		    selectMaxLevel = connection.prepareStatement("SELECT MAX(type) FROM cells " +
 		    		"WHERE id = ? OR id = ?");
 		    insertAssociation = connection.prepareStatement("INSERT INTO associations (id, src_id, " +
 		    		"src_tbl, tgt_id, tgt_tbl, cost) VALUES (?, ?, ?, ?, ?, ?)");
 		    updateCostToAssoc = connection.prepareStatement("UPDATE associations SET cost = cost + 1 " +
 		    		"WHERE src_id = ? and tgt_id = ?");
-		    selectSrc = connection.prepareStatement("SELECT src FROM objects WHERE id = ?");
+		    selectSrc = connection.prepareStatement("SELECT src FROM cells WHERE id = ?");
 		    selectAssociation = connection.prepareStatement("SELECT id FROM associations " +
 		    		"where src_id = ? AND tgt_id = ?");
 		    selectAssociations = connection.prepareStatement("SELECT * FROM associations " +
 		    		"ORDER BY cost DESC");
-		    selectObjects = connection.prepareStatement("SELECT * FROM objects " +
+		    selectCells = connection.prepareStatement("SELECT * FROM cells " +
 		    		"WHERE id in (SELECT id FROM associations ORDER BY cost DESC FETCH NEXT ? ROWS ONLY)");
 		    selectTables = connection.prepareStatement("SELECT * FROM tables");
-		    insertNewCharacter = connection.prepareStatement("INSERT INTO objects (id, src, type) VALUES (?, ?, 1)");
+		    insertNewCharacter = connection.prepareStatement("INSERT INTO cells (id, src, type) VALUES (?, ?, 1)");
 		    // Get last ID from tables
-		    String sql = "SELECT MAX(id) FROM objects";
+		    String sql = "SELECT MAX(id) FROM cells";
 		    ResultSet rs = connection.createStatement().executeQuery(sql);
 		    if (rs.next()) {
-		    	lastIdObjectsTable = rs.getLong(1);
+		    	lastIdCellsTable = rs.getLong(1);
 		    }
 		    rs.close();
 		    String sql2 = "SELECT MAX(id) FROM associations";
@@ -114,7 +114,7 @@ public class JdbcDBViewer implements DBViewer {
 		    }
 		    rs2.close();
 		    // TODO smazat
-		    // System.out.println("lastIdAssociationsTable: " + lastIdAssociationsTable + "\nlastIdObjectsTable: " + lastIdObjectsTable);
+		    // System.out.println("lastIdAssociationsTable: " + lastIdAssociationsTable + "\nlastIdCellsTable: " + lastIdCellsTable);
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 			e.printStackTrace();
@@ -143,7 +143,7 @@ public class JdbcDBViewer implements DBViewer {
 		}
 		if (rs.next()) {
 			rs.close();
-			throw new Exception("Multiple objects was found: id=" + objId);
+			throw new Exception("Multiple cells was found: id=" + objId);
 		}
 		rs.close();
 		return result;
@@ -156,36 +156,36 @@ public class JdbcDBViewer implements DBViewer {
 	public String getSrc(Vector<Long> idVector) throws SQLException {
 		StringBuilder result = new StringBuilder();
 		//boolean goodProbability = false;
-		Map<Long, Objects> objects = new TreeMap<Long, Objects>();
+		Map<Long, Cell> cells = new TreeMap<Long, Cell>();
 		while (true) {
 			StringBuilder buff = new StringBuilder();
 			/* Ziskame objekty z idecek */
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
-				if (objects.containsKey(nextId) == false) {
+				if (cells.containsKey(nextId) == false) {
 					buff.append(nextId + COMMA);
 				}
 			}
 			if (buff.length() == 0) { // Jiz mame vsechny objekty s type, ktere maji neprazdne src
 				break;
 			}
-			buff.insert(0, "SELECT * FROM objects WHERE id IN (");
+			buff.insert(0, "SELECT * FROM cells WHERE id IN (");
 			buff.delete(buff.length()-1, buff.length());
 			buff.append(")");
 			ResultSet rs = connection.createStatement().executeQuery(buff.toString());
 			while (rs.next() == true) {
-				Objects ob = new Objects(
+				Cell ob = new Cell(
 						rs.getLong("id"), 
 						rs.getString("src"), 
 						rs.getLong("type"));
-				objects.put(ob.getId(), ob);
+				cells.put(ob.getId(), ob);
 			}
 			rs.close();
 			/* Pro ojekty vyssi nez typ, ktery jeste ma src, zjistime podobjekty */
 			StringBuilder selectAssocBuff = new StringBuilder();
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
-				Objects nextOb = objects.get(nextId);
+				Cell nextOb = cells.get(nextId);
 				if (nextOb == null) {
 					return ("SRC nenalezeno. ID=" + nextId);
 				}
@@ -230,7 +230,7 @@ public class JdbcDBViewer implements DBViewer {
 		}
 		for (int i = 0; i < idVector.size(); i++) {
 			Long nextId = idVector.get(i);
-			result.append(objects.get(nextId).getSrc());
+			result.append(cells.get(nextId).getSrc());
 		}
 		return result.toString();
 	}
@@ -273,37 +273,37 @@ public class JdbcDBViewer implements DBViewer {
 			Associations assoc = associations.get(i);
 			idVector.add(assoc.getTgtId());
 		}
-		Map<Long, Objects> objectsPool = new TreeMap<Long, Objects>();
+		Map<Long, Cell> cellsPool = new TreeMap<Long, Cell>();
 		Map<Long, Associations> associationsPool = new TreeMap<Long, Associations>();
 		while (true) {
 			StringBuilder selectBuff = new StringBuilder();
 			/* Ziskame objekty z idecek */
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
-				if (objectsPool.containsKey(nextId) == false) {
+				if (cellsPool.containsKey(nextId) == false) {
 					selectBuff.append(nextId + COMMA);
 				}
 			}
 			if (selectBuff.length() == 0) { // Jiz mame vsechny objekty s type, ktere maji neprazdne src
 				break;
 			}
-			selectBuff.insert(0, "SELECT * FROM objects WHERE id IN (");
+			selectBuff.insert(0, "SELECT * FROM cells WHERE id IN (");
 			selectBuff.delete(selectBuff.length()-1, selectBuff.length());
 			selectBuff.append(")");
 			ResultSet rs = connection.createStatement().executeQuery(selectBuff.toString());
 			while (rs.next() == true) {
-				Objects ob = new Objects(
+				Cell ob = new Cell(
 						rs.getLong("id"), 
 						rs.getString("src"), 
 						rs.getLong("type"));
-				objectsPool.put(ob.getId(), ob);
+				cellsPool.put(ob.getId(), ob);
 			}
 			rs.close();
 			/* Pro ojekty vyssi nez typ, ktery jeste ma src, zjistime podobjekty */
 			StringBuffer selectAssocBuff = new StringBuffer();
 			for (int i = 0; i < idVector.size(); i++) {
 				Long nextId = idVector.get(i);
-				Objects nextOb = objectsPool.get(nextId);
+				Cell nextOb = cellsPool.get(nextId);
 				if (nextOb == null) {
 					String message = "SRC nenalezeno. ID=" + nextId;
 					result.add(message);
@@ -320,7 +320,7 @@ public class JdbcDBViewer implements DBViewer {
 			idVector = getAssociationsFromPool(idVector,
 					associationsPool, selectAssocBuff);
 		}
-		result = getStringVectorFromPools(paramStringsMap, associations, objectsPool,
+		result = getStringVectorFromPools(paramStringsMap, associations, cellsPool,
 				associationsPool);
 		return result;
 	}
@@ -355,7 +355,7 @@ public class JdbcDBViewer implements DBViewer {
 	 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.
 	 * Dale nahore budou SRC s Asociacemi s vyssim COST
 	 * @param associations
-	 * @param objectsPool
+	 * @param cellsPool
 	 * @param associationsPool
 	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
 	 * @return pole Stringu SRC
@@ -364,7 +364,7 @@ public class JdbcDBViewer implements DBViewer {
 	public Vector<String> getStringVectorFromPools(
 			Map<Long, String> paramStringsMap, 
 			Vector<Associations> associations, 
-			Map<Long, Objects> objectsPool,
+			Map<Long, Cell> cellsPool,
 			Map<Long, Associations> associationsPool) {
 		
 		Vector<String> result = new Vector<String>();
@@ -372,21 +372,21 @@ public class JdbcDBViewer implements DBViewer {
 		for (int i = 0; i < associations.size(); i++) {
 			StringBuilder nextRes = new StringBuilder();
 			Long nextId = associations.get(i).getTgtId();
-			Vector<Long> objectsVector = new Vector<Long>();
-			objectsVector.add(nextId);
+			Vector<Long> cellsVector = new Vector<Long>();
+			cellsVector.add(nextId);
 			// Ziskame src pro srcId asociaci
 			String leftNeighbour = paramStringsMap.get(associations.get(i).getSrcId());
 			// Sestavime src
 			while(true) {
 				boolean isStringPrepared = true;
-				for (int k = 0; k < objectsVector.size(); k++) {
-					Objects nextOb = objectsPool.get(objectsVector.get(k));
+				for (int k = 0; k < cellsVector.size(); k++) {
+					Cell nextOb = cellsPool.get(cellsVector.get(k));
 					if (nextOb.getType() > 2) { // TODO definovat tuto hodnotu v konfiguraku
 						isStringPrepared = false;
 						Associations nextAssoc = associationsPool.get(nextOb.getId());
-						objectsVector.remove(k);
-						objectsVector.add(k, nextAssoc.getTgtId());
-						objectsVector.add(k, nextAssoc.getSrcId());
+						cellsVector.remove(k);
+						cellsVector.add(k, nextAssoc.getTgtId());
+						cellsVector.add(k, nextAssoc.getSrcId());
 						k++;
 					}
 				}
@@ -394,8 +394,8 @@ public class JdbcDBViewer implements DBViewer {
 					break;
 				}
 			}
-			for (int k = 0; k < objectsVector.size(); k++) {
-				Objects nextOb = objectsPool.get(objectsVector.get(k));
+			for (int k = 0; k < cellsVector.size(); k++) {
+				Cell nextOb = cellsPool.get(cellsVector.get(k));
 				if (nextOb.getType() <= 2) { // TODO definovat tuto hodnotu v konfiguraku
 					nextRes.append(nextOb.getSrc());
 				}
@@ -415,8 +415,8 @@ public class JdbcDBViewer implements DBViewer {
 			return null;
 		}
 		StringBuilder result = new StringBuilder();
-		selectObjectsToAssociation.setLong(1, lastAssoc);
-		ResultSet rs = selectObjectsToAssociation.executeQuery();
+		selectCellsToAssociation.setLong(1, lastAssoc);
+		ResultSet rs = selectCellsToAssociation.executeQuery();
 		ResultSet wordRS;
 		if (rs.next() == true) {
 			// first path
@@ -441,8 +441,8 @@ public class JdbcDBViewer implements DBViewer {
 			return null;
 		}
 		// third path
-		selectObjectsToAssociation.setLong(1, nextAssoc);
-		rs = selectObjectsToAssociation.executeQuery();
+		selectCellsToAssociation.setLong(1, nextAssoc);
+		rs = selectCellsToAssociation.executeQuery();
 		if (rs.next() == false) {
 			return null;
 		}
@@ -489,17 +489,17 @@ public class JdbcDBViewer implements DBViewer {
 //	public synchronized Vector<String> getRightNeighbours(String src) throws Exception {
 //		Vector<String> result = new Vector<String>();
 //		char[] inputChars = src.toCharArray();
-//		Long[] inputObjects = fastMemory.getObjects(inputChars);
-//		inputObjects = ThoughtUnionDecider.getInstance().getTipsAndJoin(inputObjects);
+//		Long[] inputCells = fastMemory.getCells(inputChars);
+//		inputCells = ThoughtUnionDecider.getInstance().getTipsAndJoin(inputCells);
 //		// Nejdrive najit tgt_id pro nejvyssi objekt, po neuspechu rozlozit objekt na dva
 //		// a najit pro posledni.
 //		StringBuilder selectBuff = new StringBuilder();
-//		if (inputObjects.length == 0) {
+//		if (inputCells.length == 0) {
 //			return result;
 //		}
 //		selectBuff.append("SELECT * FROM associations WHERE src_id IN (");
-//		for (int i = inputObjects.length - 1; i >= 0; i--) {
-//			selectBuff.append(inputObjects[i] + ",");
+//		for (int i = inputCells.length - 1; i >= 0; i--) {
+//			selectBuff.append(inputCells[i] + ",");
 //		}
 //		selectBuff.delete(selectBuff.length()-1, selectBuff.length());
 //		selectBuff.append(") ORDER BY COST DESC");
@@ -518,7 +518,7 @@ public class JdbcDBViewer implements DBViewer {
 //		}
 //		targetRS.close();
 //		if (targetAssociations.size() > 0) {
-//			Map<Long, String> paramStringsMap = getSrcToObjects(inputObjects);
+//			Map<Long, String> paramStringsMap = getSrcToCells(inputCells);
 //			result = getSrc(paramStringsMap, targetAssociations);
 //			return result;
 //		}
@@ -533,7 +533,7 @@ public class JdbcDBViewer implements DBViewer {
 //				selectObject.setLong(1, obID);
 //				ResultSet rsOb = selectObject.executeQuery();
 //				rsOb.next();
-//				Objects node = new Objects();
+//				Cell node = new Cell();
 //				node.setId(obID);
 //				node.setSrc((String)rsOb.getString("src"));
 //				node.setType((Long)rsOb.getLong("type"));
@@ -547,15 +547,15 @@ public class JdbcDBViewer implements DBViewer {
 
 	/**
 	 * Vytvori mapu ObjectID:Src
-	 * @param inputObjects Idecka objektu
+	 * @param inputCells Idecka objektu
 	 * @return Mapu textovych prezentaci objektu
 	 * @throws Exception 
 	 */
 	@Override
-	public Map<Long, String> getSrcToObjects(Long[] inputObjects) throws Exception {
+	public Map<Long, String> getSrcToCells(Long[] inputCells) throws Exception {
 		Map<Long, String> result = new TreeMap<Long, String>();
-		for (int i = 0; i < inputObjects.length; i++) {
-			Long nextId = inputObjects[i];
+		for (int i = 0; i < inputCells.length; i++) {
+			Long nextId = inputCells[i];
 			String src = getSrc(nextId);
 			result.put(nextId, src);
 		}		
@@ -566,8 +566,8 @@ public class JdbcDBViewer implements DBViewer {
 	 * @see cz.semenko.word.database.DBViewer#getLeftNeighbours(java.lang.String)
 	 */
 	@Override
-	public synchronized Vector<Objects> getLeftNeighbours(String src) throws SQLException {
-		Vector<Objects> result = new Vector<Objects>();
+	public synchronized Vector<Cell> getLeftNeighbours(String src) throws SQLException {
+		Vector<Cell> result = new Vector<Cell>();
 		selectWordID.setString(1, src);
 		ResultSet rs = selectWordID.executeQuery();
 		while (rs.next() == true) {
@@ -579,7 +579,7 @@ public class JdbcDBViewer implements DBViewer {
 				selectObject.setLong(1, obID);
 				ResultSet rsOb = selectObject.executeQuery();
 				rsOb.next();
-				Objects node = new Objects();
+				Cell node = new Cell();
 				node.setId(obID);
 				node.setSrc((String)rsOb.getString("src"));
 				node.setType((Long)rsOb.getLong("type"));
@@ -665,7 +665,7 @@ public class JdbcDBViewer implements DBViewer {
 //		level++;
 //		String tmp = buf.toString();
 //		tmp = tmp.replaceAll("'", "''");
-//		String insert = "INSERT INTO objects (src, type) VALUES ('"
+//		String insert = "INSERT INTO cells (src, type) VALUES ('"
 //			+ tmp + "', " + level + ")";
 //		Statement stmt = connection.createStatement();
 //		stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
@@ -688,7 +688,7 @@ public class JdbcDBViewer implements DBViewer {
 //		updateCostToAssoc.setLong(1, srcID);
 //		updateCostToAssoc.setLong(2, tgtID);
 //		if (updateCostToAssoc.executeUpdate() == 0) {
-//			// insert association to src and tgt objects
+//			// insert association to src and tgt cells
 //			insertAssociation.setLong(1, srcID);
 //			insertAssociation.setLong(2, srcTbl);
 //			insertAssociation.setLong(3, tgtID);
@@ -726,7 +726,7 @@ public class JdbcDBViewer implements DBViewer {
 //		String tmp = "";
 //		tmp = tmp.replaceAll("'", "''");
 //		// return old property id
-//		String sql = "select id from objects where type = " + objType +
+//		String sql = "select id from cells where type = " + objType +
 //		" and src LIKE '" + tmp + "'";
 //		Statement stmt = connection.createStatement();
 //		rs = stmt.executeQuery(sql);
@@ -734,7 +734,7 @@ public class JdbcDBViewer implements DBViewer {
 //			return rs.getLong("id");
 //		}
 //		// Else create a new one
-//		String insert = "INSERT INTO objects (src, type) VALUES ('"
+//		String insert = "INSERT INTO cells (src, type) VALUES ('"
 //			+ tmp + "', " + objType + ")";
 //		stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
 //		rs = stmt.getGeneratedKeys();
@@ -756,7 +756,7 @@ public class JdbcDBViewer implements DBViewer {
 //			if (str.equals("'")) {
 //				str = "''";
 //			}
-//			String insert = "INSERT INTO objects (src, type) VALUES ('"
+//			String insert = "INSERT INTO cells (src, type) VALUES ('"
 //				+ str + "', 1)";
 //			Statement stmt = connection.createStatement();
 //			stmt.execute(insert, Statement.RETURN_GENERATED_KEYS);
@@ -785,15 +785,15 @@ public class JdbcDBViewer implements DBViewer {
 	    connection.close();
 	}
 	/**
-	 * Odstrani prazdne radky v tabulkach associations a objects - posune radku nahoru
+	 * Odstrani prazdne radky v tabulkach associations a cells - posune radku nahoru
 	 * @throws SQLException 
 	 */
 	@Override
 	public void removeEmptyRows() throws SQLException {
 		// TODO prenest do konfiguraku. Definuje pocet updatu pro statement.
 		int rowsToStatement = 100;
-		// Smazat prazdne radky z Objects
-		String prepSt1 = "UPDATE objects SET id = ? WHERE id = ?";
+		// Smazat prazdne radky z Cell
+		String prepSt1 = "UPDATE cells SET id = ? WHERE id = ?";
 		String prepSt2 = "UPDATE associations SET obj_id = ? WHERE obj_id = ?";
 		String prepSt3 = "UPDATE associations SET src_id = ? WHERE src_id = ?";
 		String prepSt4 = "UPDATE associations SET tgt_id = ? WHERE tgt_id = ?";
@@ -802,9 +802,9 @@ public class JdbcDBViewer implements DBViewer {
 		preparedStatementStrings.add(prepSt2);
 		preparedStatementStrings.add(prepSt3);
 		preparedStatementStrings.add(prepSt4);
-		lastIdObjectsTable = removeEmptyRowsFromTable(rowsToStatement, 
-				lastIdObjectsTable,
-				"objects",
+		lastIdCellsTable = removeEmptyRowsFromTable(rowsToStatement, 
+				lastIdCellsTable,
+				"cells",
 				"id",
 				preparedStatementStrings);
 		// Smazat prazdne radky z Associations
@@ -902,18 +902,18 @@ public class JdbcDBViewer implements DBViewer {
 	    return lastExistsId;
 	}
 //	/**
-//	 * Vycisti tabulku Objects od praydnych radku
+//	 * Vycisti tabulku Cell od praydnych radku
 //	 * @param rowsToStatement
 //	 * @throws SQLException
 //	 
-//	private void removeEmptyRowsObjectsTable(int rowsToStatement)
+//	private void removeEmptyRowsCellsTable(int rowsToStatement)
 //			throws SQLException {
 //		// Pro urcity rozsah nalezne prazdne radky a neprazdne radky ktere podlehaji prenosu nahoru
 //		long startPos = 1;
 //		long stopPos = startPos + rowsToStatement;
-//		while (startPos < lastIdObjectsTable) {
+//		while (startPos < lastIdCellsTable) {
 //			System.out.println(startPos);
-//			String sql = "SELECT id FROM objects WHERE id >= " + startPos
+//			String sql = "SELECT id FROM cells WHERE id >= " + startPos
 //			+ " AND id < " + stopPos;
 //			ResultSet idRS = connection.createStatement().executeQuery(sql);
 //			//Map<Long, Long> toLift = new TreeMap<Long, Long>();
@@ -944,8 +944,8 @@ public class JdbcDBViewer implements DBViewer {
 //			// Doplnime exists, aby zaplnila cely rozsah rowsToStatement
 //			long tempStartPos = firstNonExistsId;
 //			long tempStopPos = stopPos;
-//			while (existsId.size() < rowsToStatement && tempStartPos < lastIdObjectsTable) {
-//				sql = "SELECT id FROM objects WHERE id >= " + tempStartPos
+//			while (existsId.size() < rowsToStatement && tempStartPos < lastIdCellsTable) {
+//				sql = "SELECT id FROM cells WHERE id >= " + tempStartPos
 //				+ " AND id < " + tempStopPos;
 //				ResultSet tempRS = connection.createStatement().executeQuery(sql);
 //				while (tempRS.next()) {
@@ -958,7 +958,7 @@ public class JdbcDBViewer implements DBViewer {
 //			Statement stmt = connection.createStatement();
 //			for (Iterator<Long> existsIter = existsId.iterator(); existsIter.hasNext(); ) {
 //				Long nextId = existsIter.next();
-//				String sqlStmt = "UPDATE objects SET id=" + firstNonExistsId
+//				String sqlStmt = "UPDATE cells SET id=" + firstNonExistsId
 //				+ " WHERE id=" + nextId;
 //				stmt.executeUpdate(sqlStmt);
 //				sqlStmt = "UPDATE associations SET obj_id=" + firstNonExistsId
@@ -977,10 +977,10 @@ public class JdbcDBViewer implements DBViewer {
 //			startPos = stopPos;
 //			stopPos = stopPos + rowsToStatement;
 //		}
-//		String sql = "SELECT MAX(id) FROM objects";
+//		String sql = "SELECT MAX(id) FROM cells";
 //	    ResultSet rs = connection.createStatement().executeQuery(sql);
 //	    if (rs.next()) {
-//	    	lastIdObjectsTable = rs.getLong(1);
+//	    	lastIdCellsTable = rs.getLong(1);
 //	    }
 //	}
 //*/
@@ -1000,50 +1000,50 @@ public class JdbcDBViewer implements DBViewer {
 	 * @throws SQLException 
 	 */
 	@Override
-	public void cleanMemoryFromRedundantObjects() throws SQLException {
+	public void cleanMemoryFromRedundantCells() throws SQLException {
 		int numRows = 200;
-		for (int i = 0; i <= lastIdObjectsTable; i = i + numRows) {
+		for (int i = 0; i <= lastIdCellsTable; i = i + numRows) {
 			// Overujeme postupne sadu po sade
 			StringBuilder ids = new StringBuilder();
-			Vector<Long> objectsIdVector = new Vector<Long>();
+			Vector<Long> cellsIdVector = new Vector<Long>();
 			for (int k = i; k < i + numRows; k++) {
 				ids.append(k + COMMA);
-				objectsIdVector.add((long)k);
+				cellsIdVector.add((long)k);
 			}
 			ids.delete(ids.length()-1, ids.length());
 			String sqlSelectAssoc = "SELECT * from ASSOCIATIONS where " +
 				"obj_id IN (" + ids.toString() + ") OR src_id IN (" + ids.toString()
 				+ ") OR tgt_id IN (" + ids.toString() + ")";
 			ResultSet selAssocRS = connection.createStatement().executeQuery(sqlSelectAssoc);
-			Vector<Long> usedObjects = new  Vector<Long>();
+			Vector<Long> usedCells = new  Vector<Long>();
 			// Ziskame vsechny objekty ktere se pouzivaji
 			while (selAssocRS.next()) {
 				Long objId = selAssocRS.getLong("obj_id");
 				Long srcId = selAssocRS.getLong("src_id");
 				Long tgtId = selAssocRS.getLong("tgt_id");
-				if (usedObjects.contains(objId) == false) {
-					usedObjects.add(objId);
+				if (usedCells.contains(objId) == false) {
+					usedCells.add(objId);
 				}
-				if (usedObjects.contains(srcId) == false) {
-					usedObjects.add(srcId);
+				if (usedCells.contains(srcId) == false) {
+					usedCells.add(srcId);
 				}
-				if (usedObjects.contains(tgtId) == false) {
-					usedObjects.add(tgtId);
+				if (usedCells.contains(tgtId) == false) {
+					usedCells.add(tgtId);
 				}
 			}
 			selAssocRS.close();
 			// Ziskame objekty k odstraneni
-			objectsIdVector.removeAll(usedObjects);
-			if (objectsIdVector.size() == 0) {
+			cellsIdVector.removeAll(usedCells);
+			if (cellsIdVector.size() == 0) {
 				continue;
 			}
-			StringBuilder objectsToRemove = new StringBuilder();
-			for (int k = 0; k < objectsIdVector.size(); k++) {
-				objectsToRemove.append(objectsIdVector.get(k) + COMMA);
+			StringBuilder cellsToRemove = new StringBuilder();
+			for (int k = 0; k < cellsIdVector.size(); k++) {
+				cellsToRemove.append(cellsIdVector.get(k) + COMMA);
 			}
-			objectsToRemove.delete(objectsToRemove.length()-1, objectsToRemove.length());
-			System.out.println(objectsToRemove.toString());
-			String sqlDelete = "DELETE FROM objects WHERE id IN (" + objectsToRemove.toString()
+			cellsToRemove.delete(cellsToRemove.length()-1, cellsToRemove.length());
+			System.out.println(cellsToRemove.toString());
+			String sqlDelete = "DELETE FROM cells WHERE id IN (" + cellsToRemove.toString()
 			+ ")";
 			connection.createStatement().executeUpdate(sqlDelete);
 		}		
@@ -1058,12 +1058,12 @@ public class JdbcDBViewer implements DBViewer {
 	}
 	
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#deleteObjects(java.util.Vector)
+	 * @see cz.semenko.word.database.DBViewer#deleteCells(java.util.Vector)
 	 */
 	@Override
-	public void deleteObjects(List<Long> objectsIdToDelete) throws SQLException {
-		StringBuilder sql = new StringBuilder("DELETE FROM objects WHERE id IN (");
-		for (Long nextId : objectsIdToDelete) {
+	public void deleteCells(List<Long> cellsIdToDelete) throws SQLException {
+		StringBuilder sql = new StringBuilder("DELETE FROM cells WHERE id IN (");
+		for (Long nextId : cellsIdToDelete) {
 			sql.append(nextId);
 			sql.append(COMMA);
 		}
@@ -1075,11 +1075,11 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#getNewObjects(java.util.Vector)
+	 * @see cz.semenko.word.database.DBViewer#getNewCells(java.util.Vector)
 	 */
 	@Override
-	public Vector<Objects> getNewObjects(Vector<Thought> thoughtPairsToUnion) throws Exception {
-		Vector<Objects> result = new Vector<Objects>();
+	public Vector<Cell> getNewCells(Vector<Thought> thoughtPairsToUnion) throws Exception {
+		Vector<Cell> result = new Vector<Cell>();
 		connection.setAutoCommit(false);
 		try {
 			StringBuilder buff = new StringBuilder();
@@ -1090,7 +1090,7 @@ public class JdbcDBViewer implements DBViewer {
 				numItems++;
 				Long type = th1.getActiveObject().getType() + th2.getActiveObject().getType();
 				// TODO odstranit po uspesnem testovani
-				if (type > config.getKnowledge_objectsCreationDepth() * 2) {
+				if (type > config.getKnowledge_cellsCreationDepth() * 2) {
 					throw new Exception ("Typ noveho objektu je vyssi nez je povoleno v konfiguracnim souboru." +
 							" Typ objektu = " + type + "\r\nThought 1 = " + th1 + "\r\nThought 2 = " + th2);
 				}
@@ -1099,14 +1099,14 @@ public class JdbcDBViewer implements DBViewer {
 					src = th1.getActiveObject().getSrc() + th2.getActiveObject().getSrc();
 					src = src.replaceAll("([^']|^)'([^']|$)", "$1''$2");
 				}
-				buff.append("(" + ++lastIdObjectsTable + ", '" + src + "', " + type + "), ");
-				result.add(new Objects(lastIdObjectsTable, src, type));
+				buff.append("(" + ++lastIdCellsTable + ", '" + src + "', " + type + "), ");
+				result.add(new Cell(lastIdCellsTable, src, type));
 			}
 			if (buff.length() == 0) {
 				return result;
 			}
 			buff.delete(buff.length() - 2, buff.length());
-			String sql = "INSERT INTO OBJECTS (id, src, type) VALUES " + buff.toString();
+			String sql = "INSERT INTO CELLS (id, src, type) VALUES " + buff.toString();
 			connection.createStatement().executeUpdate(sql);
 			connection.commit();
 		} catch (Exception e) {
@@ -1124,15 +1124,15 @@ public class JdbcDBViewer implements DBViewer {
 	 */
 	@Override
 	public Vector<Associations> insertAssociations(Vector<Thought> thoughtPairsToUnion,
-			Vector<Objects> newObjects) throws SQLException {
+			Vector<Cell> newCells) throws SQLException {
 		Vector<Associations> result = new Vector<Associations>();
-		Iterator<Objects> iter = newObjects.iterator();
+		Iterator<Cell> iter = newCells.iterator();
 		StringBuilder buff = new StringBuilder();
 		int numItems = 0;
 		for (int i = 0; i < thoughtPairsToUnion.size() - 1; i = i+2) {
 			Thought srcThought = thoughtPairsToUnion.get(i);
 			Thought tgtThought = thoughtPairsToUnion.get(i+1);
-			Objects ob = iter.next();
+			Cell ob = iter.next();
 			numItems++;
 			long id = ++lastIdAssociationsTable;
 			long src_id = srcThought.getActiveObject().getId();
@@ -1162,31 +1162,31 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#getNewPrimitiveObjects(java.util.Vector)
+	 * @see cz.semenko.word.database.DBViewer#getNewPrimitiveCells(java.util.Vector)
 	 */
 	@Override
-	public Vector<Objects> getNewPrimitiveObjects(Vector<Character> nonExistent) throws Exception {
-		Vector<Objects> result = new Vector<Objects>();
-		Map<Character, Objects> tempMapOfCharsToId = new TreeMap<Character, Objects>();
+	public Vector<Cell> getNewPrimitiveCells(Vector<Character> nonExistent) throws Exception {
+		Vector<Cell> result = new Vector<Cell>();
+		Map<Character, Cell> tempMapOfCharsToId = new TreeMap<Character, Cell>();
 		StringBuilder buff = new StringBuilder();
 		
 		for (int i = 0; i < nonExistent.size(); i++) {
 			// Neukladame do DB zdvojene a opakujici se znaky
 			Character nextCharacter = nonExistent.get(i);
 			if (tempMapOfCharsToId.containsKey(nextCharacter)) {
-				Objects ob = tempMapOfCharsToId.get(nextCharacter);
+				Cell ob = tempMapOfCharsToId.get(nextCharacter);
 				result.add(ob);
 				continue;
 			}
 			String character = nextCharacter.toString();
 			character = character.replaceAll("'", "''");
-			Objects ob = new Objects(++lastIdObjectsTable, nextCharacter.toString(), 1L);
-			buff.append("(" + lastIdObjectsTable + ", '" + character + "', 1), ");
+			Cell ob = new Cell(++lastIdCellsTable, nextCharacter.toString(), 1L);
+			buff.append("(" + lastIdCellsTable + ", '" + character + "', 1), ");
 			tempMapOfCharsToId.put(nextCharacter, ob);
 			result.add(ob);
 		}
 		buff.delete(buff.length() - 2, buff.length());
-		String sqlIns = "INSERT INTO objects (id, src, type) VALUES "; //(?, 1), (?, 1)...
+		String sqlIns = "INSERT INTO cells (id, src, type) VALUES "; //(?, 1), (?, 1)...
 		buff.insert(0, sqlIns);		
 		connection.createStatement().executeUpdate(buff.toString());		
 		return result;
@@ -1210,10 +1210,10 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#increaseAssociationsCostToObjectsId(java.lang.Long[])
+	 * @see cz.semenko.word.database.DBViewer#increaseAssociationsCostToCellsId(java.lang.Long[])
 	 */
 	@Override
-	public void increaseAssociationsCostToObjectsId(Long[] obIdArray) throws SQLException {
+	public void increaseAssociationsCostToCellsId(Long[] obIdArray) throws SQLException {
 		if (obIdArray.length == 0) {
 			return;
 		}
@@ -1230,11 +1230,11 @@ public class JdbcDBViewer implements DBViewer {
 	 * @see cz.semenko.word.database.DBViewer#getAllAssociations(java.util.Vector)
 	 */
 	@Override
-	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
+	public Vector<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
 		Vector<Associations> result = new Vector<Associations>();
 		StringBuilder buff = new StringBuilder();
-		for (int i = 0; i < objectsId.size(); i++) {
-			buff.append(objectsId.get(i) + ", ");
+		for (int i = 0; i < cellsId.size(); i++) {
+			buff.append(cellsId.get(i) + ", ");
 		}
 		if (buff.length() > 0) {
 			buff.delete(buff.length()-2, buff.length());
@@ -1259,10 +1259,10 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#getSuperiorObjectsId(java.util.Vector)
+	 * @see cz.semenko.word.database.DBViewer#getSuperiorCellsId(java.util.Vector)
 	 */
 	@Override
-	public Vector<Long> getSuperiorObjectsId(Vector<Long> pairsToFind) throws SQLException {
+	public Vector<Long> getSuperiorCellsId(Vector<Long> pairsToFind) throws SQLException {
 		Vector<Long> result = new Vector<Long>();
 		StringBuilder srcBuff = new StringBuilder();
 		StringBuilder tgtBuff = new StringBuilder();
@@ -1339,12 +1339,12 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	/** {@inheritDoc} */
-	public List<Objects> getPrimitiveObjects(List<Character> missingChars) throws SQLException {
-		List<Objects> result = new Vector<Objects>();
+	public List<Cell> getPrimitiveCells(List<Character> missingChars) throws SQLException {
+		List<Cell> result = new Vector<Cell>();
 		if (missingChars.size() == 0) {
 			return result;
 		}
-		String query = "SELECT * FROM objects " +
+		String query = "SELECT * FROM cells " +
     		"WHERE type = 1 AND src IN (";
 		StringBuilder param = new StringBuilder();
 		char singleQuote = '\'';
@@ -1362,7 +1362,7 @@ public class JdbcDBViewer implements DBViewer {
 				Long id = rs.getLong("id");
 				String src = rs.getString("src");
 				Long type = rs.getLong("type");
-				Objects nextOb = new Objects(id, src, type);
+				Cell nextOb = new Cell(id, src, type);
 				result.add(nextOb);
 			}
 			rs.close();
@@ -1375,9 +1375,9 @@ public class JdbcDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public List<Associations> getAllAssociationsUpToCost(List<Long> objectsId, int lowestCostForLeaving) throws SQLException {
+	public List<Associations> getAllAssociationsUpToCost(List<Long> cellsId, int lowestCostForLeaving) throws SQLException {
 		StringBuilder sql = new StringBuilder("SELECT * FROM associations WHERE obj_id IN (");
-		for (Long nextId : objectsId) {
+		for (Long nextId : cellsId) {
 			sql.append(nextId);
 			sql.append(COMMA);
 		}
@@ -1421,29 +1421,29 @@ public class JdbcDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Objects> getObjects(Vector<Long> missingObjectsId)
+	public Vector<Cell> getCells(Vector<Long> missingCellsId)
 			throws SQLException {
-		Vector<Objects> result = new Vector<Objects>();
-		result.setSize(missingObjectsId.size());
-		StringBuffer sql = new StringBuffer("SELECT * FROM objects WHERE id IN (");
-		for (int i = 0; i < missingObjectsId.size(); i++) {
-			sql.append(missingObjectsId.get(i) + ", ");
+		Vector<Cell> result = new Vector<Cell>();
+		result.setSize(missingCellsId.size());
+		StringBuffer sql = new StringBuffer("SELECT * FROM cells WHERE id IN (");
+		for (int i = 0; i < missingCellsId.size(); i++) {
+			sql.append(missingCellsId.get(i) + ", ");
 		}
 		sql.delete(sql.length()-2, sql.length());
 		sql.append(")");
 		ResultSet rs = connection.createStatement().executeQuery(sql.toString());
-		Map<Long, Objects> objectsMap = new TreeMap<Long, Objects>();
+		Map<Long, Cell> cellsMap = new TreeMap<Long, Cell>();
 		while (rs.next()) {
 			Long id = rs.getLong("id");
 			String src = rs.getString("src");
 			Long type = rs.getLong("type");
-			Objects ob = new Objects(id, src, type);
-			objectsMap.put(id, ob);
+			Cell ob = new Cell(id, src, type);
+			cellsMap.put(id, ob);
 		}
 		// Vyplni result
-		for (int i = 0; i < missingObjectsId.size(); i++) {
-			Long id = missingObjectsId.get(i);
-			result.set(i, objectsMap.get(id));
+		for (int i = 0; i < missingCellsId.size(); i++) {
+			Long id = missingCellsId.get(i);
+			result.set(i, cellsMap.get(id));
 		}
 		return result;
 	}

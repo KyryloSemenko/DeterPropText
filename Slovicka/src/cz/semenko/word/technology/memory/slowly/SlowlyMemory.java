@@ -11,7 +11,7 @@ import java.util.Vector;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
+import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.persistent.Tables;
 
 /**
@@ -39,22 +39,22 @@ public class SlowlyMemory {
 	 * @return a {@link java.util.Collection} object.
 	 */
 	public Collection<Associations> getAssociations() throws SQLException {
-		//int tablesAssociationsSize = Config.getConfig().getInt("fastMemory.tablesObjectsAndAssociationsSize");
+		//int tablesAssociationsSize = Config.getConfig().getInt("fastMemory.tablesCellsAndAssociationsSize");
 		Collection<Associations> result = new Vector<Associations>();
 		//Collection<Associations> result = DBViewer.getInstance().getAssociations(tablesAssociationsSize);
 		return result;
 	}
 
 	/**
-	 * <p>getObjects.</p>
+	 * <p>getCells.</p>
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public Collection<Objects> getObjects() throws SQLException {
-		//int tablesObjectsSize = Config.getConfig().getInt("fastMemory.tablesObjectsAndAssociationsSize");
-		Collection<Objects> result = new Vector<Objects>();
-		//Collection<Objects> result = DBViewer.getInstance().getObjects(tablesObjectsSize);
+	public Collection<Cell> getCells() throws SQLException {
+		//int tablesCellsSize = Config.getConfig().getInt("fastMemory.tablesCellsAndAssociationsSize");
+		Collection<Cell> result = new Vector<Cell>();
+		//Collection<Cell> result = DBViewer.getInstance().getCells(tablesCellsSize);
 		return result;
 	}
 	
@@ -82,29 +82,29 @@ public class SlowlyMemory {
 	 */
 	public Long[] getCharsId(Vector<Character> missingChars) throws Exception {
 		Long[] result = new Long[missingChars.size()];
-		List<Objects> primiteveObjects = dbViewer.getPrimitiveObjects((List<Character>)missingChars);
-		Map<String, Objects> primObjectsMap = new TreeMap<String, Objects>();
-		for (Objects ob : primiteveObjects) {
-			primObjectsMap.put(ob.getSrc(), ob);
+		List<Cell> primiteveCells = dbViewer.getPrimitiveCells((List<Character>)missingChars);
+		Map<String, Cell> primCellsMap = new TreeMap<String, Cell>();
+		for (Cell ob : primiteveCells) {
+			primCellsMap.put(ob.getSrc(), ob);
 		}
 		// Get nonexists caracters
 		Vector<Character> nonExistent = new Vector<Character>();// vector nenalezenych znaku
 		for (Character ch : missingChars) {
-			if (primObjectsMap.containsKey(Character.toString(ch)) == false) {
+			if (primCellsMap.containsKey(Character.toString(ch)) == false) {
 				nonExistent.add(ch);
 			}
 		}
 		if (nonExistent.size() > 0) {
 			// Doplni objekty ktere jeste nejsou v DB
 			// Ziskame klice vlozenych znaku
-			Vector<Objects> newObjects = dbViewer.getNewPrimitiveObjects(nonExistent);
-			for (Objects ob : newObjects) {
-				primObjectsMap.put(ob.getSrc(), ob);
+			Vector<Cell> newCells = dbViewer.getNewPrimitiveCells(nonExistent);
+			for (Cell ob : newCells) {
+				primCellsMap.put(ob.getSrc(), ob);
 			}
 		}
 		for (int i = 0; i < missingChars.size(); i++) {
 			String nextChar = Character.toString(missingChars.get(i));
-			result[i] = primObjectsMap.get(nextChar).getId();
+			result[i] = primCellsMap.get(nextChar).getId();
 		}
 		return result;
 	}
@@ -112,12 +112,12 @@ public class SlowlyMemory {
 	/**
 	 * Dostane z DB objekty dle zadanych ID. Nevytvari nove.
 	 *
-	 * @param missingObjectsId a {@link java.util.Vector} object.
+	 * @param missingCellsId a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 * @return a {@link java.util.Vector} object.
 	 */
-	public Vector<Objects> getObjects(Vector<Long> missingObjectsId) throws Exception {
-		return dbViewer.getObjects(missingObjectsId);
+	public Vector<Cell> getCells(Vector<Long> missingCellsId) throws Exception {
+		return dbViewer.getCells(missingCellsId);
 	}
 
 	/**
@@ -125,16 +125,16 @@ public class SlowlyMemory {
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
-	 * @return Objects
+	 * @return Cell
 	 * @throws java.lang.Exception if any.
 	 */
-	public Objects getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
-		Objects result = null;
+	public Cell getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
+		Cell result = null;
 		Vector<Thought> thoughtPairsToUnion = new Vector<Thought>();
 		thoughtPairsToUnion.add(srcThought);
 		thoughtPairsToUnion.add(tgtThought);
-		Vector<Objects> objects = getNewObjects(thoughtPairsToUnion);
-		result = objects.firstElement();
+		Vector<Cell> cells = getNewCells(thoughtPairsToUnion);
+		result = cells.firstElement();
 		return result;
 	}
 
@@ -166,8 +166,8 @@ public class SlowlyMemory {
 	 * @param obIdArray IDecka objektu obj_id v associations
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void increaseAssociationsCostToObjectsId(Long[] obIdArray) throws SQLException {
-		dbViewer.increaseAssociationsCostToObjectsId(obIdArray);
+	public void increaseAssociationsCostToCellsId(Long[] obIdArray) throws SQLException {
+		dbViewer.increaseAssociationsCostToCellsId(obIdArray);
 		
 	}
 
@@ -228,42 +228,42 @@ public class SlowlyMemory {
 	 * <p>insertAssociations.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
-	 * @param newObjects a {@link java.util.Vector} object.
+	 * @param newCells a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.sql.SQLException if any.
 	 */
 	public Vector<Associations> insertAssociations(
-			Vector<Thought> thoughtPairsToUnion, Vector<Objects> newObjects)
+			Vector<Thought> thoughtPairsToUnion, Vector<Cell> newCells)
 			throws SQLException {
 		/** Vytvori nove associations */
 		Vector<Associations> newAssociations = 
-			dbViewer.insertAssociations(thoughtPairsToUnion, newObjects);
+			dbViewer.insertAssociations(thoughtPairsToUnion, newCells);
 		return newAssociations;
 	}
 
 	/**
-	 * <p>getNewObjects.</p>
+	 * <p>getNewCells.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Objects> getNewObjects(Vector<Thought> thoughtPairsToUnion)
+	public Vector<Cell> getNewCells(Vector<Thought> thoughtPairsToUnion)
 			throws Exception {
-		/** Vytvori nove objects */
-		Vector<Objects> newObjects = dbViewer.getNewObjects(thoughtPairsToUnion);
-		return newObjects;
+		/** Vytvori nove cells */
+		Vector<Cell> newCells = dbViewer.getNewCells(thoughtPairsToUnion);
+		return newCells;
 	}
 
 	/**
 	 * Dohleda vsechny associations, ve kterych src_id == objectId z parametru.
 	 *
-	 * @param objectsId a {@link java.util.Vector} object.
+	 * @param cellsId a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 * @return a {@link java.util.Vector} object.
 	 */
-	public Vector<Associations> getAllAssociations(Vector<Long> objectsId) throws Exception {
-		Vector<Associations> result = dbViewer.getAllAssociations(objectsId);		
+	public Vector<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
+		Vector<Associations> result = dbViewer.getAllAssociations(cellsId);		
 		return result;
 	}
 
@@ -279,7 +279,7 @@ public class SlowlyMemory {
 	 * @return Vector id nadrazenych objektu nebo null-objektu.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public Vector<Long> getSuperiorObjectsId(Vector<Long> layer, int constant) throws SQLException {
+	public Vector<Long> getSuperiorCellsId(Vector<Long> layer, int constant) throws SQLException {
 		Vector<Long> pairsToFind = new Vector<Long>();
 		Vector<Integer> positionsOfNull = new Vector<Integer>();
 		for (int i = 0; i < layer.size()-constant; i++) {
@@ -292,13 +292,13 @@ public class SlowlyMemory {
 				positionsOfNull.add(i);
 			}
 		}
-		// get Superior objects from DB
-		Vector<Long> superiorObjectsId = dbViewer.getSuperiorObjectsId(pairsToFind);
+		// get Superior cells from DB
+		Vector<Long> superiorCellsId = dbViewer.getSuperiorCellsId(pairsToFind);
 		// doplnit null hodnoty pro zachovani struktury vysledku
 		for (int i = 0; i < positionsOfNull.size(); i++) {
-			superiorObjectsId.add(positionsOfNull.get(i), null);
+			superiorCellsId.add(positionsOfNull.get(i), null);
 			// TODO zkontrolovat zda spravne vyplnuje
 		}
-		return superiorObjectsId;
+		return superiorCellsId;
 	}
 }

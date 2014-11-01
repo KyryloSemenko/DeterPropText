@@ -229,7 +229,7 @@ public class Layers {
 	 *
 	 * @return array ID objektu.
 	 */
-	public Long[] getHighlyObjects() {
+	public Long[] getHighlyCells() {
 		Vector<Long> result = new Vector<Long>();
 		//removeLastLayer(); // Byla to chyba
 		Vector<Long> firstLayer = layers.get(0);

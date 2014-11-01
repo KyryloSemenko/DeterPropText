@@ -11,7 +11,7 @@ import org.hibernate.Session;
 
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
-import cz.semenko.word.persistent.Objects;
+import cz.semenko.word.persistent.Cell;
 
 /**
  * <p>HibernateDBViewer class.</p>
@@ -23,11 +23,11 @@ public class HibernateDBViewer implements DBViewer {
 
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSuperiorObjectsId(java.util.Vector)
+	 * @see cz.semenko.word.database.AbstractDBViewer#getSuperiorCellsId(java.util.Vector)
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Long> getSuperiorObjectsId(Vector<Long> pairsToFind)
+	public Vector<Long> getSuperiorCellsId(Vector<Long> pairsToFind)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
@@ -38,18 +38,18 @@ public class HibernateDBViewer implements DBViewer {
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Associations> getAllAssociations(Vector<Long> objectsId)
+	public Vector<Associations> getAllAssociations(Vector<Long> cellsId)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#increaseAssociationsCostToObjectsId(java.lang.Long[])
+	 * @see cz.semenko.word.database.AbstractDBViewer#increaseAssociationsCostToCellsId(java.lang.Long[])
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public void increaseAssociationsCostToObjectsId(Long[] obIdArray)
+	public void increaseAssociationsCostToCellsId(Long[] obIdArray)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		
@@ -67,17 +67,17 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getNewPrimitiveObjects(java.util.Vector)
+	 * @see cz.semenko.word.database.AbstractDBViewer#getNewPrimitiveCells(java.util.Vector)
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Objects> getNewPrimitiveObjects(Vector<Character> nonExistent)
+	public Vector<Cell> getNewPrimitiveCells(Vector<Character> nonExistent)
 			throws Exception {
-		Vector<Objects> result = new Vector<Objects>();
+		Vector<Cell> result = new Vector<Cell>();
 		Session sess = getSession();
-		Query q = sess.createQuery("from Objects where src in (:param)");
+		Query q = sess.createQuery("from Cell where src in (:param)");
 		q.setParameterList("param", nonExistent);
-		result = (Vector<Objects>)q.list();
+		result = (Vector<Cell>)q.list();
 		return result;
 	}
 
@@ -87,39 +87,39 @@ public class HibernateDBViewer implements DBViewer {
 	/** {@inheritDoc} */
 	@Override
 	public Vector<Associations> insertAssociations(
-			Vector<Thought> thoughtPairsToUnion, Vector<Objects> newObjects)
+			Vector<Thought> thoughtPairsToUnion, Vector<Cell> newCells)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getNewObjects(java.util.Vector)
+	 * @see cz.semenko.word.database.AbstractDBViewer#getNewCells(java.util.Vector)
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Objects> getNewObjects(Vector<Thought> thoughtPairsToUnion)
+	public Vector<Cell> getNewCells(Vector<Thought> thoughtPairsToUnion)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#deleteObjects(java.util.Vector)
+	 * @see cz.semenko.word.database.AbstractDBViewer#deleteCells(java.util.Vector)
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public void deleteObjects(List<Long> idVector) {
+	public void deleteCells(List<Long> idVector) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#cleanMemoryFromRedundantObjects()
+	 * @see cz.semenko.word.database.AbstractDBViewer#cleanMemoryFromRedundantCells()
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public void cleanMemoryFromRedundantObjects() throws SQLException {
+	public void cleanMemoryFromRedundantCells() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -180,17 +180,17 @@ public class HibernateDBViewer implements DBViewer {
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Objects> getLeftNeighbours(String src) throws SQLException {
+	public Vector<Cell> getLeftNeighbours(String src) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrcToObjects(java.lang.Long[])
+	 * @see cz.semenko.word.database.AbstractDBViewer#getSrcToCells(java.lang.Long[])
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Map<Long, String> getSrcToObjects(Long[] inputObjects)
+	public Map<Long, String> getSrcToCells(Long[] inputCells)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
@@ -224,7 +224,7 @@ public class HibernateDBViewer implements DBViewer {
 	@Override
 	public Vector<String> getStringVectorFromPools(
 			Map<Long, String> paramStringsMap,
-			Vector<Associations> associations, Map<Long, Objects> objectsPool,
+			Vector<Associations> associations, Map<Long, Cell> cellsPool,
 			Map<Long, Associations> associationsPool) {
 		// TODO Auto-generated method stub
 		return null;
@@ -295,13 +295,13 @@ public class HibernateDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public List<Objects> getPrimitiveObjects(List<Character> missingChars) {
+	public List<Cell> getPrimitiveCells(List<Character> missingChars) {
 		List<String> missingStrings = new Vector<String>();
 		for (int i = 0; i < missingChars.size(); i++) {
 			missingStrings.add(Character.toString(missingChars.get(i)));
 		}
 		Session session = getSession();
-		Query q = session.createQuery("from Objects where src in (:param) and type = 1");
+		Query q = session.createQuery("from Cell where src in (:param) and type = 1");
 		q.setParameterList("param", missingStrings);
 		return q.list();
 	}
@@ -334,11 +334,11 @@ public class HibernateDBViewer implements DBViewer {
 	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Associations> getAllAssociationsUpToCost(List<Long> objectsId,
+	public List<Associations> getAllAssociationsUpToCost(List<Long> cellsId,
 			int lowestCostForLeaving) {
 		Session s = getSession();
-		Query q = s.createQuery("from Associations where cost < :lowestCost and id in (:objectsId)")
-			.setParameterList("objectsId", objectsId)
+		Query q = s.createQuery("from Associations where cost < :lowestCost and id in (:cellsId)")
+			.setParameterList("cellsId", cellsId)
 			.setParameter("lowestCost", (long)lowestCostForLeaving);
 		return (List<Associations>)q.list();
 	}
@@ -355,7 +355,7 @@ public class HibernateDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public Vector<Objects> getObjects(Vector<Long> missingObjectsId)
+	public Vector<Cell> getCells(Vector<Long> missingCellsId)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
