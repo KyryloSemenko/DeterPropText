@@ -3,7 +3,10 @@ package cz.semenko.word.persistent;
 import org.apache.log4j.Logger;
 
 /**
- * Objects  class is data transfer object. Represent a connection of two Associations.
+ * Objects class is data transfer object. It represents a connection of two Associations or single sign (character).<br>
+ * When it represents a single sign, it's type is 1.<br>
+ * When it represents a {@link Associations} of two {@link Objects}, it's type is higher than 1.<br>
+ * For example Objects "a" (type 1) and Objects "b" (type 1) creates Associations and a new Objects "ab" (type 2).
  * @author Kyrylo Semenko
  *
  */
