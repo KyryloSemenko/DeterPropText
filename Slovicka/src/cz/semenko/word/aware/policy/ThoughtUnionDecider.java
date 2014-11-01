@@ -103,7 +103,7 @@ public class ThoughtUnionDecider {
 			Thought nextThought = thoughts.get(i);
 			Thought nextFollThought = thoughts.get(i+1);
 			if (nextThought.getActiveObject().getType() < objectsCreationDepth 
-					&&nextFollThought.getActiveObject().getType() < objectsCreationDepth) {
+					&& nextFollThought.getActiveObject().getType() < objectsCreationDepth) {
 				objectsToRelation.add(i);
 			}
 		}
