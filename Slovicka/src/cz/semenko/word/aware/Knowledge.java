@@ -38,25 +38,12 @@ public class Knowledge {
 	 */
 	public Knowledge() {}
 	
-	public void setFastMemory(FastMemory fastMemory) {
-		this.fastMemory = fastMemory;
-	}
-
-	public void setConfig(Config config) {
-		this.config = config;
-	}
-
-	public void setObjectsCreationDecider(
-			ObjectsCreationDecider objectsCreationDecider) {
-		this.objectsCreationDecider = objectsCreationDecider;
-	}
-
-	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {
-		this.thoughtsSaver = thoughtsSaver;
-	}
-
-	public void setThoughtUnionDecider(ThoughtUnionDecider thoughtUnionDecider) {
-		this.thoughtUnionDecider = thoughtUnionDecider;
+	/**
+	 * Predicts of the continuation of the text.
+	 * @param inputObjects array of {@link Objects} of first type - signs.
+	 */
+	public void predict(Long[] inputObjects) {
+		
 	}
 	
 	/**
@@ -69,7 +56,7 @@ public class Knowledge {
 		thoughts = attachToExistingThoughts(thoughts, inputObjects);
 		// Provest dohledani v DB. Pak vytvaret nove objekty do takove hloubky, jak je to
 		// definovano v konfiguracni promenne.
-		thoughts = getThoughtsToSomeDepth(thoughts, inputObjects.length);
+		thoughts = getThoughtsToSomeDepth(thoughts);
 		// Odkazat objekty na sebe vzajemne (svazat je logicky). Jak daleko a jak dlouho
 		// budou objekty o sobe vedet bude definovano v configuracnich promennych.
 		//TODO: thoughts = createLogicalRelations(thoughts);
@@ -106,8 +93,7 @@ public class Knowledge {
 		Sestavit Thoughts pro nove objekty.
 		Nahradit Spojene Thoughts novymi Thoughts.			
 	*/
-	private Vector<Thought> getThoughtsToSomeDepth(Vector<Thought> thoughts2,
-			int tailLenght) throws Exception {
+	private Vector<Thought> getThoughtsToSomeDepth(Vector<Thought> thoughts2) throws Exception {
 		while (true) {
 			/** Ziskame seznam pozici prvku v thoughts2 pro spojeni.*/
 			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(thoughts2);
@@ -350,5 +336,26 @@ public class Knowledge {
 	
 	public Vector<Thought> getThoughts() {
 		return thoughts;
+	}
+	
+	public void setFastMemory(FastMemory fastMemory) {
+		this.fastMemory = fastMemory;
+	}
+
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
+	public void setObjectsCreationDecider(
+			ObjectsCreationDecider objectsCreationDecider) {
+		this.objectsCreationDecider = objectsCreationDecider;
+	}
+
+	public void setThoughtsSaver(ThoughtsSaver thoughtsSaver) {
+		this.thoughtsSaver = thoughtsSaver;
+	}
+
+	public void setThoughtUnionDecider(ThoughtUnionDecider thoughtUnionDecider) {
+		this.thoughtUnionDecider = thoughtUnionDecider;
 	}
 }
