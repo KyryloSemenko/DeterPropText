@@ -1,6 +1,8 @@
 package cz.semenko.word.aware;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -39,15 +41,17 @@ public class Knowledge {
 	public Knowledge() {}
 	
 	/**
-	 * Predicts of the continuation of the text.
-	 * @param inputCells array of {@link Cell} of first type - signs.
+	 * Predicts a continuation of a text.
+	 * @param cell - last cell that has been read
 	 */
-	public void predict(Long[] inputCells) {
-		
+	private List<Cell> predict(Cell cell) {
+		List<Cell> result = new ArrayList<Cell>();
+		// TODO naimplementovat. Spravovat logiku dle patternu MVC nebo Chain of responsibility.
+		return result;
 	}
 	
 	/**
-	 * Rekurzivni metoda ktera vyhledava jiz zname objekty, vytvari nove, nastavuje COST
+	 * Metoda ktera vyhledava jiz zname objekty, vytvari nove, nastavuje COST
 	 * u znamych Associations. Behem zpracovani vstupnich objektu tato metoda ovlivnuje
 	 * stav Knowledge - vedomi.
 	 */
