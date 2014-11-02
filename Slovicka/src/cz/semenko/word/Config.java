@@ -4,6 +4,9 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
+import cz.semenko.word.aware.Knowledge;
+import cz.semenko.word.persistent.Cell;
+
 /**
  * Singleton. Access to program configuration.
  *
@@ -21,8 +24,9 @@ public class Config {
 	private int fastMemory_tablesCellSize = 0;
 	/** Velikost tabulky Associations v cache FastMemory */
 	private int fastMemory_tablesAssociationsSize = 0;
-	/** Maximalni pocet objektu, ktere aware zdruzuje do obecnejsi formy */
-	private int knowledge_cellsCreationDepth = 0;
+	/** While {@link Knowledge} decides to create a new {@link Cell} from two close Cells, it compare these Cells {@link Cell#type} with this configuration property. <br>
+	 * If one of Cell has Type higher then configuration parameter, then new Cell will not created. */
+	private int knowledge_relateCellsUpToType = 0;
 	/** Maximalni velikost aware - delka vektoru myslenek */
 	private int knowledge_knowledgeSize = 0;
 	/** Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
@@ -87,7 +91,7 @@ public class Config {
 				throw new ConfigurationException(msg);
 			}
 			setFastMemory_tablesAssociationsSize(conf.getInt("fastMemory.tablesAssociationsSize"));
-			setKnowledge_cellsCreationDepth(conf.getInt("knowledge.cellsCreationDepth"));
+			setKnowledge_relateCellsUpToType(conf.getInt("knowledge.relateCellsUpToType"));
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
 			setKnowledge_decideToRelateByCellTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByCellTypeOrAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
@@ -187,21 +191,21 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field {@link Config#knowledge_cellsCreationDepth}.</p>
+	 * <p>Getter for the field {@link Config#knowledge_relateCellsUpToType}.</p>
 	 *
 	 * @return a int.
 	 */
-	public int getKnowledge_cellsCreationDepth() {
-		return knowledge_cellsCreationDepth;
+	public int getKnowledge_relateCellsUpToType() {
+		return knowledge_relateCellsUpToType;
 	}
 
 	/**
-	 * <p>Setter for the field {@link Config#knowledge_cellsCreationDepth} .</p>
+	 * <p>Setter for the field {@link Config#knowledge_relateCellsUpToType} .</p>
 	 *
-	 * @param knowledgeCellsCreationDepth a int.
+	 * @param relateCellsUpToType a int.
 	 */
-	public void setKnowledge_cellsCreationDepth(int knowledgeCellsCreationDepth) {
-		knowledge_cellsCreationDepth = knowledgeCellsCreationDepth;
+	public void setKnowledge_relateCellsUpToType(int relateCellsUpToType) {
+		knowledge_relateCellsUpToType = relateCellsUpToType;
 	}
 
 	/**
