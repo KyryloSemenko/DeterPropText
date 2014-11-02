@@ -163,7 +163,7 @@ public class SlowlyMemory {
 	/**
 	 * Zvysi o jednicku COST asociaci v DB.
 	 *
-	 * @param obIdArray IDecka objektu obj_id v associations
+	 * @param obIdArray IDecka objektu cell_id v associations
 	 * @throws java.sql.SQLException if any.
 	 */
 	public void increaseAssociationsCostToCellsId(Long[] obIdArray) throws SQLException {
@@ -199,7 +199,7 @@ public class SlowlyMemory {
 			ResultSet rs = dbViewer.executeQuery(sql);
 			while (rs.next()) {
 				Long id = rs.getLong("id");
-				Long objId = rs.getLong("obj_id");
+				Long objId = rs.getLong("cell_id");
 				Long srcId = rs.getLong("src_id");
 				Long srcTable = rs.getLong("src_tbl");
 				Long tgtId = rs.getLong("tgt_id");

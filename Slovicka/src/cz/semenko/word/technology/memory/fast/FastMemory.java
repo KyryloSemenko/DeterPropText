@@ -272,10 +272,10 @@ public class FastMemory {
 	}
 
 	/**
-	 * Zvysi COST u asociaci, ktere maji obj_id z parametru jak v DB,
+	 * Zvysi COST u asociaci, ktere maji cell_id z parametru jak v DB,
 	 * tak i v cache
 	 *
-	 * increase the associations COST, which are obj_id parameter of both DB
+	 * increase the associations COST, which are cell_id parameter of both DB
 	 * as well as in cash
 	 *
 	 * @param arrayOfCellsId - array of Cell ID

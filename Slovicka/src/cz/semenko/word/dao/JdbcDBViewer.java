@@ -196,8 +196,8 @@ public class JdbcDBViewer implements DBViewer {
 			if (selectAssocBuff.length() == 0) { // Jiz vsechny objekty maji neprazdne src
 				break;
 			}
-			selectAssocBuff.insert(0, "SELECT obj_id, src_id, tgt_id FROM associations " +
-					"WHERE obj_id IN (");
+			selectAssocBuff.insert(0, "SELECT cell_id, src_id, tgt_id FROM associations " +
+					"WHERE cell_id IN (");
 			selectAssocBuff.delete(selectAssocBuff.length()-1, selectAssocBuff.length());
 			selectAssocBuff.append(")");
 			ResultSet assocRS = connection.createStatement().executeQuery(selectAssocBuff.toString());
@@ -205,7 +205,7 @@ public class JdbcDBViewer implements DBViewer {
 			while(assocRS.next()) {
 				Associations assoc = new Associations(
 						null, 
-						assocRS.getLong("obj_id"), 
+						assocRS.getLong("cell_id"), 
 						assocRS.getLong("src_id"),
 						null, 
 						assocRS.getLong("tgt_id"), 
@@ -329,15 +329,15 @@ public class JdbcDBViewer implements DBViewer {
 	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
 			Map<Long, Associations> associationsPool,
 			StringBuffer selectAssocBuff) throws SQLException {
-		selectAssocBuff.insert(0, "SELECT obj_id, src_id, tgt_id FROM associations " +
-				"WHERE obj_id IN (");
+		selectAssocBuff.insert(0, "SELECT cell_id, src_id, tgt_id FROM associations " +
+				"WHERE cell_id IN (");
 		selectAssocBuff.delete(selectAssocBuff.length()-1, selectAssocBuff.length());
 		selectAssocBuff.append(")");
 		ResultSet assocRS = connection.createStatement().executeQuery(selectAssocBuff.toString());
 		while(assocRS.next()) {
 			Associations assoc = new Associations(
 					null, 
-					assocRS.getLong("obj_id"), 
+					assocRS.getLong("cell_id"), 
 					assocRS.getLong("src_id"),
 					null, 
 					assocRS.getLong("tgt_id"), 
@@ -507,7 +507,7 @@ public class JdbcDBViewer implements DBViewer {
 //		Map<Long, Associations> targetAssociations = new TreeMap<Long, Associations>();
 //		while(targetRS.next()) {
 //			Long id = targetRS.getLong("id");
-//			Long objId = targetRS.getLong("obj_id");
+//			Long objId = targetRS.getLong("cell_id");
 //			Long srcId = targetRS.getLong("src_id");
 //			Long srcTable = targetRS.getLong("src_tbl");
 //			Long tgtId = targetRS.getLong("tgt_id");
@@ -794,7 +794,7 @@ public class JdbcDBViewer implements DBViewer {
 		int rowsToStatement = 100;
 		// Smazat prazdne radky z Cell
 		String prepSt1 = "UPDATE cells SET id = ? WHERE id = ?";
-		String prepSt2 = "UPDATE associations SET obj_id = ? WHERE obj_id = ?";
+		String prepSt2 = "UPDATE associations SET cell_id = ? WHERE cell_id = ?";
 		String prepSt3 = "UPDATE associations SET src_id = ? WHERE src_id = ?";
 		String prepSt4 = "UPDATE associations SET tgt_id = ? WHERE tgt_id = ?";
 		Vector<String> preparedStatementStrings = new Vector<String>();
@@ -961,8 +961,8 @@ public class JdbcDBViewer implements DBViewer {
 //				String sqlStmt = "UPDATE cells SET id=" + firstNonExistsId
 //				+ " WHERE id=" + nextId;
 //				stmt.executeUpdate(sqlStmt);
-//				sqlStmt = "UPDATE associations SET obj_id=" + firstNonExistsId
-//				+ " WHERE obj_id=" + nextId;
+//				sqlStmt = "UPDATE associations SET cell_id=" + firstNonExistsId
+//				+ " WHERE cell_id=" + nextId;
 //				stmt.executeUpdate(sqlStmt);
 //				sqlStmt = "UPDATE associations SET src_id=" + firstNonExistsId
 //				+ " WHERE src_id=" + nextId;
@@ -1012,13 +1012,13 @@ public class JdbcDBViewer implements DBViewer {
 			}
 			ids.delete(ids.length()-1, ids.length());
 			String sqlSelectAssoc = "SELECT * from ASSOCIATIONS where " +
-				"obj_id IN (" + ids.toString() + ") OR src_id IN (" + ids.toString()
+				"cell_id IN (" + ids.toString() + ") OR src_id IN (" + ids.toString()
 				+ ") OR tgt_id IN (" + ids.toString() + ")";
 			ResultSet selAssocRS = connection.createStatement().executeQuery(sqlSelectAssoc);
 			Vector<Long> usedCells = new  Vector<Long>();
 			// Ziskame vsechny objekty ktere se pouzivaji
 			while (selAssocRS.next()) {
-				Long objId = selAssocRS.getLong("obj_id");
+				Long objId = selAssocRS.getLong("cell_id");
 				Long srcId = selAssocRS.getLong("src_id");
 				Long tgtId = selAssocRS.getLong("tgt_id");
 				if (usedCells.contains(objId) == false) {
@@ -1140,7 +1140,7 @@ public class JdbcDBViewer implements DBViewer {
 			long tgt_id = tgtThought.getActiveCell().getId();
 			long tgt_tbl = 1L;
 			long cost = 0L;
-			Long obj_id = ob.getId();
+			Long cell_id = ob.getId();
 			buff.append("(" 
 					+ id + ", "
 					+ src_id + ", " 
@@ -1148,14 +1148,14 @@ public class JdbcDBViewer implements DBViewer {
 					+ tgt_id + ", "
 					+ tgt_tbl + ", "
 					+ cost + ", "
-					+ obj_id + "), ");
-			result.add(new Associations(id, obj_id, src_id, src_tbl, tgt_id, tgt_tbl, cost));
+					+ cell_id + "), ");
+			result.add(new Associations(id, cell_id, src_id, src_tbl, tgt_id, tgt_tbl, cost));
 		}
 		if (buff.length() == 0) {
 			return result;
 		}
 		buff.delete(buff.length()-2, buff.length());
-		String sql = "INSERT INTO associations (id, src_id, src_tbl, tgt_id, tgt_tbl, cost, obj_id) " + 
+		String sql = "INSERT INTO associations (id, src_id, src_tbl, tgt_id, tgt_tbl, cost, cell_id) " + 
 		"VALUES " + buff.toString();
 		connection.createStatement().executeUpdate(sql);
 		return result;
@@ -1217,7 +1217,7 @@ public class JdbcDBViewer implements DBViewer {
 		if (obIdArray.length == 0) {
 			return;
 		}
-		StringBuilder updateCostSql = new StringBuilder("UPDATE associations SET cost=cost+1 WHERE obj_id IN (");
+		StringBuilder updateCostSql = new StringBuilder("UPDATE associations SET cost=cost+1 WHERE cell_id IN (");
 		for (int i = 0; i < obIdArray.length; i++) {
 			updateCostSql.append(obIdArray[i] + ", ");
 		}
@@ -1245,7 +1245,7 @@ public class JdbcDBViewer implements DBViewer {
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		while (rs.next()) {
 			Long id = rs.getLong("id");
-			Long objId = rs.getLong("obj_id");
+			Long objId = rs.getLong("cell_id");
 			Long srcId = rs.getLong("src_id");
 			Long srcTable = rs.getLong("src_tbl");
 			Long tgtId = rs.getLong("tgt_id");
@@ -1274,7 +1274,7 @@ public class JdbcDBViewer implements DBViewer {
 		}
 		srcBuff.deleteCharAt(srcBuff.length()-1);
 		tgtBuff.deleteCharAt(tgtBuff.length()-1);
-		String sql = "SELECT obj_id, src_id, tgt_id FROM associations " +
+		String sql = "SELECT cell_id, src_id, tgt_id FROM associations " +
 				"WHERE src_id IN (" + srcBuff.toString() + ") AND " +
 				"tgt_id IN (" + tgtBuff.toString() + ")";
 		ResultSet rs = connection.createStatement().executeQuery(sql);
@@ -1282,7 +1282,7 @@ public class JdbcDBViewer implements DBViewer {
 		while (rs.next()) {
 			Long srcId = rs.getLong("src_id");
 			Long tgtId = rs.getLong("tgt_id");
-			Long objId = rs.getLong("obj_id");
+			Long objId = rs.getLong("cell_id");
 			rsVector.add(new long[]{objId, srcId, tgtId});
 		}
 		rs.close();
@@ -1325,7 +1325,7 @@ public class JdbcDBViewer implements DBViewer {
 		List<Associations> result = new Vector<Associations>();
 		while(rs.next()) {
 			Long id = rs.getLong("id");
-			Long objId = rs.getLong("obj_id");
+			Long objId = rs.getLong("cell_id");
 			Long srcId = rs.getLong("src_id");
 			Long srcTable = rs.getLong("src_tbl");
 			Long tgtId = rs.getLong("tgt_id");
@@ -1376,7 +1376,7 @@ public class JdbcDBViewer implements DBViewer {
 	/** {@inheritDoc} */
 	@Override
 	public List<Associations> getAllAssociationsUpToCost(List<Long> cellsId, int lowestCostForLeaving) throws SQLException {
-		StringBuilder sql = new StringBuilder("SELECT * FROM associations WHERE obj_id IN (");
+		StringBuilder sql = new StringBuilder("SELECT * FROM associations WHERE cell_id IN (");
 		for (Long nextId : cellsId) {
 			sql.append(nextId);
 			sql.append(COMMA);
@@ -1391,7 +1391,7 @@ public class JdbcDBViewer implements DBViewer {
 		rs = connection.createStatement().executeQuery(sql.toString());
 		while(rs.next()) {
 			Long id = rs.getLong("id");
-			Long objId = rs.getLong("obj_id");
+			Long objId = rs.getLong("cell_id");
 			Long srcId = rs.getLong("src_id");
 			Long srcTable = rs.getLong("src_tbl");
 			Long tgtId = rs.getLong("tgt_id");
@@ -1467,7 +1467,7 @@ public class JdbcDBViewer implements DBViewer {
 			long tgtId = rs.getLong("tgt_id");
 			long tgtTable = rs.getLong("tgt_tbl");
 			long cost = rs.getLong("cost");
-			Long objId = rs.getLong("obj_id");
+			Long objId = rs.getLong("cell_id");
 			result = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
 			i++;
 		}
