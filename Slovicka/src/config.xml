@@ -35,12 +35,12 @@
 		<knowledgeSize>100</knowledgeSize>
 
 		<!-- Zda maji byt spojovany jen objekty stejneho typu. Jestli true,
-		parametr decideToRelateByObjectTypeOrAssocCost musi byt false. -->
+		parametr decideToRelateByCellTypeOrAssocCost musi byt false. -->
 		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
 		<!-- Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
 		true - Budou spojeny dle velikosti type objektu,
 		false - budou spojeny dle velikosti cost associaci -->
-		<decideToRelateByObjectTypeOrAssocCost>false</decideToRelateByObjectTypeOrAssocCost>
+		<decideToRelateByCellTypeOrAssocCost>false</decideToRelateByCellTypeOrAssocCost>
 		<!-- Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
 		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
 		je nastaven na true, nebo bc kdyz parameter je nastaven na false  -->

@@ -28,7 +28,7 @@ public class Config {
 	/** Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
 		true - Budou spojeny dle velikosti type objektu,
 		false - budou spojeny dle velikosti cost associaci */
-	private boolean knowledge_decideToRelateByObjectTypeOrAssocCost = false;
+	private boolean knowledge_decideToRelateByCellTypeOrAssocCost = false;
 	/** Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
 		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
 		je nastaven na true, nebo bc kdyz parameter je nastaven na false */
@@ -56,7 +56,7 @@ public class Config {
 	private boolean fastMemory_alwaysSearchToAssociationsDeepInTheMemory = false;
 	/** Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam. Viz. {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} */
 	private boolean fastMemory_searchToAssociationsAtAllElements = false;
-	/** Zda maji byt spojovany jen objekty stejneho typu. Jestli true, parametr decideToRelateByObjectTypeOrAssocCost musi byt false. */
+	/** Zda maji byt spojovany jen objekty stejneho typu. Jestli true, parametr decideToRelateByCellTypeOrAssocCost musi byt false. */
 	private boolean knowledge_relateOnlyCellsOfSameTypes = false;
 	/** Ukladat do souboru pospojovane objekty behem cteni nebo ne */
 	private boolean knowledge_saveThoughtsToFile = false;
@@ -89,7 +89,7 @@ public class Config {
 			setFastMemory_tablesAssociationsSize(conf.getInt("fastMemory.tablesAssociationsSize"));
 			setKnowledge_cellsCreationDepth(conf.getInt("knowledge.cellsCreationDepth"));
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
-			setKnowledge_decideToRelateByObjectTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByObjectTypeOrAssocCost"));
+			setKnowledge_decideToRelateByCellTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByCellTypeOrAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherCellType(conf.getBoolean("knowledge.decideToRelateCellsByHigherCellType"));
 			setKnowledge_relateOnlyCellsOfSameTypes(conf.getBoolean("knowledge.relateOnlyCellsOfSameTypes"));
@@ -223,22 +223,22 @@ public class Config {
 	}
 
 	/**
-	 * <p>See {@link Config#knowledge_decideToRelateByObjectTypeOrAssocCost}.</p>
+	 * <p>See {@link Config#knowledge_decideToRelateByCellTypeOrAssocCost}.</p>
 	 *
 	 * @return a boolean.
 	 */
-	public boolean isKnowledge_decideToRelateByObjectTypeOrAssocCost() {
-		return knowledge_decideToRelateByObjectTypeOrAssocCost;
+	public boolean isKnowledge_decideToRelateByCellTypeOrAssocCost() {
+		return knowledge_decideToRelateByCellTypeOrAssocCost;
 	}
 
 	/**
-	 * <p>Setter for the field {@link Config#knowledge_decideToRelateByObjectTypeOrAssocCost}.</p>
+	 * <p>Setter for the field {@link Config#knowledge_decideToRelateByCellTypeOrAssocCost}.</p>
 	 *
-	 * @param knowledge_decideToRelateByObjectTypeOrAssocCost a boolean.
+	 * @param knowledge_decideToRelateByCellTypeOrAssocCost a boolean.
 	 */
-	public void setKnowledge_decideToRelateByObjectTypeOrAssocCost(
-			boolean knowledge_decideToRelateByObjectTypeOrAssocCost) {
-		this.knowledge_decideToRelateByObjectTypeOrAssocCost = knowledge_decideToRelateByObjectTypeOrAssocCost;
+	public void setKnowledge_decideToRelateByCellTypeOrAssocCost(
+			boolean knowledge_decideToRelateByCellTypeOrAssocCost) {
+		this.knowledge_decideToRelateByCellTypeOrAssocCost = knowledge_decideToRelateByCellTypeOrAssocCost;
 	}
 
 	/**
@@ -372,9 +372,9 @@ public class Config {
 	 */
 	public void setKnowledge_relateOnlyCellsOfSameTypes (
 			boolean knowledge_relateOnlyCellsOfSameTypes) throws ConfigurationException {
-		if (isKnowledge_decideToRelateByObjectTypeOrAssocCost() == true & knowledge_relateOnlyCellsOfSameTypes == true) {
+		if (isKnowledge_decideToRelateByCellTypeOrAssocCost() == true & knowledge_relateOnlyCellsOfSameTypes == true) {
 			throw new ConfigurationException(
-					"Nemuze byt soucasne knowledge.decideToRelateByObjectTypeOrAssocCost() == " +
+					"Nemuze byt soucasne knowledge.decideToRelateByCellTypeOrAssocCost() == " +
 					"true & knowledge.relateOnlyCellsOfSameTypes == true"
 			);
 		}

@@ -114,15 +114,15 @@ public interface DBViewer {
 	public int getMaxLevel(Long srcID, Long tgtID) throws Exception;
 
 	/**
-	 * <p>getObject.</p>
+	 * <p>getCell.</p>
 	 *
-	 * @param srcObjectID a {@link java.lang.Long} object.
-	 * @param tgtObjectID a {@link java.lang.Long} object.
+	 * @param srcCellID a {@link java.lang.Long} object.
+	 * @param tgtCellID a {@link java.lang.Long} object.
 	 * @param synteticProperty a {@link java.lang.Long} object.
 	 * @return a {@link java.lang.Long} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Long getObject(Long srcObjectID, Long tgtObjectID,
+	public Long getCell(Long srcCellID, Long tgtCellID,
 			Long synteticProperty) throws Exception;
 
 	/**
@@ -148,12 +148,12 @@ public interface DBViewer {
 	/**
 	 * <p>getSrcAndTgt.</p>
 	 *
-	 * @param srcObject a {@link java.lang.Long} object.
-	 * @param tgtObject a {@link java.lang.Long} object.
+	 * @param srcCell a {@link java.lang.Long} object.
+	 * @param tgtCell a {@link java.lang.Long} object.
 	 * @return a {@link java.lang.String} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public String getSrcAndTgt(Long srcObject, Long tgtObject)
+	public String getSrcAndTgt(Long srcCell, Long tgtCell)
 			throws Exception;
 
 	/**

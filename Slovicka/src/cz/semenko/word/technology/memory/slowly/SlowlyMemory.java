@@ -128,7 +128,7 @@ public class SlowlyMemory {
 	 * @return Cell
 	 * @throws java.lang.Exception if any.
 	 */
-	public Cell getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
+	public Cell getNewCell(Thought srcThought, Thought tgtThought) throws Exception {
 		Cell result = null;
 		Vector<Thought> thoughtPairsToUnion = new Vector<Thought>();
 		thoughtPairsToUnion.add(srcThought);
@@ -189,8 +189,8 @@ public class SlowlyMemory {
 			int pos = notFoundPositions.get(i);
 			Thought th1 = thoughtsPairToUnion.get(pos);
 			Thought th2 = thoughtsPairToUnion.get(pos+1);
-			buff.append("(src_id = " + th1.getActiveObject().getId() + " AND tgt_id = "
-					+ th2.getActiveObject().getId() + ") OR ");
+			buff.append("(src_id = " + th1.getActiveCell().getId() + " AND tgt_id = "
+					+ th2.getActiveCell().getId() + ") OR ");
 		}
 		Vector<Associations> tempAssociations = new Vector<Associations>();
 		if (buff.length() > 0) {
@@ -215,8 +215,8 @@ public class SlowlyMemory {
 			Thought th2 = thoughtsPairToUnion.get(i+1);
 			for (int k = 0; k < tempAssociations.size(); k++) {
 				Associations nextAssoc = tempAssociations.get(k);
-				if (nextAssoc.getSrcId() == th1.getActiveObject().getId() 
-						&& nextAssoc.getTgtId() == th2.getActiveObject().getId()) {
+				if (nextAssoc.getSrcId() == th1.getActiveCell().getId() 
+						&& nextAssoc.getTgtId() == th2.getActiveCell().getId()) {
 					result.set(((i + 1) / 2), nextAssoc);
 				}
 			}			

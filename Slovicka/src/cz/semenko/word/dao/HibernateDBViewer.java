@@ -165,11 +165,11 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getObject(java.lang.Long, java.lang.Long, java.lang.Long)
+	 * @see cz.semenko.word.database.AbstractDBViewer#getCell(java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public Long getObject(Long srcObjectID, Long tgtObjectID,
+	public Long getCell(Long srcCellID, Long tgtCellID,
 			Long synteticProperty) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
@@ -201,7 +201,7 @@ public class HibernateDBViewer implements DBViewer {
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public String getSrcAndTgt(Long srcObject, Long tgtObject) throws Exception {
+	public String getSrcAndTgt(Long srcCell, Long tgtCell) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

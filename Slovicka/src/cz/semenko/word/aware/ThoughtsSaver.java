@@ -44,7 +44,7 @@ public class ThoughtsSaver {
 	 * @param id
 	 * @throws IOException 
 	 */
-	public void saveObjectId(Long id) throws IOException {
+	public void saveCellId(Long id) throws IOException {
 		bw.append(id + ";");		
 	}
 
@@ -56,7 +56,7 @@ public class ThoughtsSaver {
 	public void saveThoughts(Vector<Thought> thoughts) throws IOException {
 		StringBuffer buff = new StringBuffer();
 		for (int i = 0; i < thoughts.size(); i++) {
-			buff.append(thoughts.get(i).getActiveObject().getId() + ";");
+			buff.append(thoughts.get(i).getActiveCell().getId() + ";");
 		}
 		bw.append(buff);
 		bw.flush();

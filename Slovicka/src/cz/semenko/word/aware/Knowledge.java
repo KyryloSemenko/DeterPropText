@@ -248,7 +248,7 @@ public class Knowledge {
 			int num = thoughts2.size() - maxKnowledgeSize;
 			for (int i = 0; i < num; i++) {
 				if (saveThoughtsToFile) {
-					thoughtsSaver.saveObjectId(thoughts2.get(0).getActiveObject().getId());
+					thoughtsSaver.saveCellId(thoughts2.get(0).getActiveCell().getId());
 				}
 				thoughts2.remove(0);
 			}

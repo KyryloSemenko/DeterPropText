@@ -58,8 +58,8 @@ private Config config;
 		for (int i = 0; i < thoughts.size()-1; i++) {
 			Thought th = thoughts.get(i);
 			Thought nextTh = thoughts.get(i+1);
-			if (th.getActiveObject().getType() <= createNewCellsToAllPairsDepth 
-					&& nextTh.getActiveObject().getType() <= createNewCellsToAllPairsDepth) {
+			if (th.getActiveCell().getType() <= createNewCellsToAllPairsDepth 
+					&& nextTh.getActiveCell().getType() <= createNewCellsToAllPairsDepth) {
 				thoughtsPairToUnion.add(th);
 				thoughtsPairToUnion.add(nextTh);
 			}			

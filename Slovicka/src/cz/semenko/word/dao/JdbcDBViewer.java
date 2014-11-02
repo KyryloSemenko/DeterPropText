@@ -39,9 +39,9 @@ public class JdbcDBViewer implements DBViewer {
 	private PreparedStatement selectRightNeighbours;
 	private PreparedStatement selectLeftNeighbours;
 	private PreparedStatement selectCellsToAssociation;
-	private PreparedStatement selectObject;
+	private PreparedStatement selectCell;
 	private PreparedStatement selectLowCostOb;
-	private PreparedStatement selectObjectForAssoc;
+	private PreparedStatement selectCellForAssoc;
 	private PreparedStatement selectMaxLevel;
 	private PreparedStatement insertAssociation;
 	private PreparedStatement updateCostToAssoc;
@@ -73,7 +73,7 @@ public class JdbcDBViewer implements DBViewer {
     				"associations WHERE tgt_id = ?");
             selectCellsToAssociation = connection.prepareStatement("SELECT src_id, tgt_id " +
             		"FROM associations WHERE id = ?");
-            selectObject = connection.prepareStatement("SELECT src, type FROM cells " +
+            selectCell = connection.prepareStatement("SELECT src, type FROM cells " +
             		"WHERE id = ?"); 
             selectLowCostOb = connection.prepareStatement("SELECT id " +
             		"from associations where cost = 1 and id not in " +
@@ -81,7 +81,7 @@ public class JdbcDBViewer implements DBViewer {
             		"and id IN (select id from CELLS WHERE TYPE = ?)");
             selectWordID = connection.prepareStatement("SELECT id FROM " +
     			"cells WHERE src LIKE ?");
-		    selectObjectForAssoc = connection.prepareStatement("SELECT MIN(id) FROM cells WHERE " +
+		    selectCellForAssoc = connection.prepareStatement("SELECT MIN(id) FROM cells WHERE " +
 		    	"src LIKE (" +
 		    	"(SELECT src FROM cells where id = ?) || " +
 				"(SELECT src FROM cells where id = ?))");
@@ -463,16 +463,16 @@ public class JdbcDBViewer implements DBViewer {
 	 * @see cz.semenko.word.database.DBViewer#getSrcAndTgt(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public synchronized String getSrcAndTgt(Long srcObject, Long tgtObject) throws Exception {
+	public synchronized String getSrcAndTgt(Long srcCell, Long tgtCell) throws Exception {
 		String result;
-		selectWordSRC.setLong(1, srcObject);
+		selectWordSRC.setLong(1, srcCell);
 		ResultSet rs = selectWordSRC.executeQuery();
 		if (rs.next() == true) {
 			result = rs.getString("src");
 		} else {
 			result = "NULL";
 		}
-		selectWordSRC.setLong(1, tgtObject);
+		selectWordSRC.setLong(1, tgtCell);
 		rs = selectWordSRC.executeQuery();
 		if (rs.next() == true) {
 			result = result.concat("|" + rs.getString("src"));
@@ -530,8 +530,8 @@ public class JdbcDBViewer implements DBViewer {
 //			ResultSet rsRightNe = selectRightNeighbours.executeQuery();
 //			while (rsRightNe.next() == true) {
 //				Long obID = rsRightNe.getLong(1);
-//				selectObject.setLong(1, obID);
-//				ResultSet rsOb = selectObject.executeQuery();
+//				selectCell.setLong(1, obID);
+//				ResultSet rsOb = selectCell.executeQuery();
 //				rsOb.next();
 //				Cell node = new Cell();
 //				node.setId(obID);
@@ -546,7 +546,7 @@ public class JdbcDBViewer implements DBViewer {
 //	}
 
 	/**
-	 * Vytvori mapu ObjectID:Src
+	 * Vytvori mapu CellID:Src
 	 * @param inputCells Idecka objektu
 	 * @return Mapu textovych prezentaci objektu
 	 * @throws Exception 
@@ -576,8 +576,8 @@ public class JdbcDBViewer implements DBViewer {
 			ResultSet rsLeftNe = selectLeftNeighbours.executeQuery();
 			while (rsLeftNe.next() == true) {
 				Long obID = rsLeftNe.getLong(1);
-				selectObject.setLong(1, obID);
-				ResultSet rsOb = selectObject.executeQuery();
+				selectCell.setLong(1, obID);
+				ResultSet rsOb = selectCell.executeQuery();
 				rsOb.next();
 				Cell node = new Cell();
 				node.setId(obID);
@@ -592,23 +592,23 @@ public class JdbcDBViewer implements DBViewer {
 	}
 	
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#getObject(java.lang.Long, java.lang.Long, java.lang.Long)
+	 * @see cz.semenko.word.database.DBViewer#getCell(java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public Long getObject(Long srcObjectID, Long tgtObjectID, Long synteticProperty) throws Exception {
+	public Long getCell(Long srcCellID, Long tgtCellID, Long synteticProperty) throws Exception {
 		Long id = null;
-		selectObjectForAssoc.setLong(1, srcObjectID);
-		selectObjectForAssoc.setLong(2, tgtObjectID);
-		ResultSet rs = selectObjectForAssoc.executeQuery();
+		selectCellForAssoc.setLong(1, srcCellID);
+		selectCellForAssoc.setLong(2, tgtCellID);
+		ResultSet rs = selectCellForAssoc.executeQuery();
 		rs.next();
 		if ((id = rs.getLong(1)) > 0) {
 			// Increase used association cost
-			updateCostToAssoc.setLong(1, srcObjectID);
-			updateCostToAssoc.setLong(2, tgtObjectID);
+			updateCostToAssoc.setLong(1, srcCellID);
+			updateCostToAssoc.setLong(2, tgtCellID);
 			if (updateCostToAssoc.executeUpdate() == 0) {
-				insertAssociation.setLong(1, srcObjectID);
+				insertAssociation.setLong(1, srcCellID);
 				insertAssociation.setLong(2, 1);
-				insertAssociation.setLong(3, tgtObjectID);
+				insertAssociation.setLong(3, tgtCellID);
 				insertAssociation.setLong(4, 1);
 				insertAssociation.setLong(5, 1);
 				insertAssociation.execute();
@@ -653,7 +653,7 @@ public class JdbcDBViewer implements DBViewer {
 		return 0;
 	}
 //	/*
-//	public Long getNewObject(Long srcID, Long tgtID, StringBuilder buf, Long synteticProperty) throws Exception {
+//	public Long getNewCell(Long srcID, Long tgtID, StringBuilder buf, Long synteticProperty) throws Exception {
 //		final int SRC_TBL = 1; // change when multiple tables module will be adding.
 //		final int TGT_TBL = 1;
 //		ResultSet rs = null;
@@ -720,7 +720,7 @@ public class JdbcDBViewer implements DBViewer {
 //	 * @return
 //	 * @throws Exception
 //	 
-//	public Long getNewSyntheticObject(int objType) throws Exception {
+//	public Long getNewSyntheticCell(int objType) throws Exception {
 //		ResultSet rs = null;
 //		//String tmp = Thought.getDescription(objType);
 //		String tmp = "";
@@ -1088,7 +1088,7 @@ public class JdbcDBViewer implements DBViewer {
 				Thought th1 = thoughtPairsToUnion.get(i);
 				Thought th2 = thoughtPairsToUnion.get(i+1);
 				numItems++;
-				Long type = th1.getActiveObject().getType() + th2.getActiveObject().getType();
+				Long type = th1.getActiveCell().getType() + th2.getActiveCell().getType();
 				// TODO odstranit po uspesnem testovani
 				if (type > config.getKnowledge_cellsCreationDepth() * 2) {
 					throw new Exception ("Typ noveho objektu je vyssi nez je povoleno v konfiguracnim souboru." +
@@ -1096,7 +1096,7 @@ public class JdbcDBViewer implements DBViewer {
 				}
 				String src = "";
 				if (type < 3) {
-					src = th1.getActiveObject().getSrc() + th2.getActiveObject().getSrc();
+					src = th1.getActiveCell().getSrc() + th2.getActiveCell().getSrc();
 					src = src.replaceAll("([^']|^)'([^']|$)", "$1''$2");
 				}
 				buff.append("(" + ++lastIdCellsTable + ", '" + src + "', " + type + "), ");
@@ -1135,9 +1135,9 @@ public class JdbcDBViewer implements DBViewer {
 			Cell ob = iter.next();
 			numItems++;
 			long id = ++lastIdAssociationsTable;
-			long src_id = srcThought.getActiveObject().getId();
+			long src_id = srcThought.getActiveCell().getId();
 			long src_tbl = 1L; // TODO pridat moznost ukladani do vice tabulek a databazi
-			long tgt_id = tgtThought.getActiveObject().getId();
+			long tgt_id = tgtThought.getActiveCell().getId();
 			long tgt_tbl = 1L;
 			long cost = 0L;
 			Long obj_id = ob.getId();
@@ -1453,8 +1453,8 @@ public class JdbcDBViewer implements DBViewer {
 	public Associations getAssociation(Thought srcThought, Thought tgtThought)
 			throws SQLException {
 		Associations result = null;
-		String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveObject().getId()
-			+ " AND tgt_id = " + tgtThought.getActiveObject().getId();
+		String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveCell().getId()
+			+ " AND tgt_id = " + tgtThought.getActiveCell().getId();
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		int i = 0;
 		while (rs.next()) {

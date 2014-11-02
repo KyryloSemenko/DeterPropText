@@ -25,7 +25,7 @@ import cz.semenko.word.persistent.Cell;
  * @version $Id: $Id
  */
 public class Thought implements Serializable {
-	private Cell activeObject; // Soucast myslenky
+	private Cell activeCell; // Soucast myslenky
 	private Vector<Associations> consequenceAssociations; // Toto jsou ty konektory dusledku
 	//private Vector<Thought> paralelThoughts; // Napriklad a-br a ab-r, nebo ko-cka, k-ocka, koc-ka, kock-a.
 		
@@ -37,32 +37,32 @@ public class Thought implements Serializable {
 	/**
 	 * <p>Constructor for Thought.</p>
 	 *
-	 * @param activeObject a {@link cz.semenko.word.persistent.Cell} object.
-	 * @param consequenceAssociations a {@link java.util.Vector} object.
+	 * @param activeCell a {@link cz.semenko.word.persistent.Cell} Cell.
+	 * @param consequenceAssociations a {@link java.util.Vector} Cell.
 	 */
-	public Thought(Cell activeObject,
+	public Thought(Cell activeCell,
 			Vector<Associations> consequenceAssociations) {
 		super();
-		this.activeObject = activeObject;
+		this.activeCell = activeCell;
 		this.consequenceAssociations = consequenceAssociations;
 	}
 
 	/**
-	 * <p>Getter for the field <code>activeObject</code>.</p>
+	 * <p>Getter for the field <code>activeCell</code>.</p>
 	 *
 	 * @return a {@link cz.semenko.word.persistent.Cell} object.
 	 */
-	public Cell getActiveObject() {
-		return activeObject;
+	public Cell getActiveCell() {
+		return activeCell;
 	}
 
 	/**
-	 * <p>Setter for the field <code>activeObject</code>.</p>
+	 * <p>Setter for the field <code>activeCell</code>.</p>
 	 *
-	 * @param activeObject a {@link cz.semenko.word.persistent.Cell} object.
+	 * @param activeCell a {@link cz.semenko.word.persistent.Cell} object.
 	 */
-	public void setActiveObject(Cell activeObject) {
-		this.activeObject = activeObject;
+	public void setActiveCell(Cell activeCell) {
+		this.activeCell = activeCell;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class Thought implements Serializable {
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "Thought[activeObject=" + activeObject
+		return "Thought[activeCell=" + activeCell
 				+ ", consequenceAssociations:\n\t" + consequenceAssociations + "]\n";
 	}
 
@@ -104,7 +104,7 @@ public class Thought implements Serializable {
 		}
 		for (int i = 0; i < vector.size(); i++) {
 			Associations nextAss = vector.get(i);
-			if (nextAss.getTgtId().compareTo(th2.getActiveObject().getId()) == 0) {
+			if (nextAss.getTgtId().compareTo(th2.getActiveCell().getId()) == 0) {
 				return nextAss;
 			}
 		}

@@ -102,8 +102,8 @@ public class ThoughtUnionDecider {
 		for (int i = 0; i < thoughts.size()-1; i++) {
 			Thought nextThought = thoughts.get(i);
 			Thought nextFollThought = thoughts.get(i+1);
-			if (nextThought.getActiveObject().getType() < cellsCreationDepth 
-					&& nextFollThought.getActiveObject().getType() < cellsCreationDepth) {
+			if (nextThought.getActiveCell().getType() < cellsCreationDepth 
+					&& nextFollThought.getActiveCell().getType() < cellsCreationDepth) {
 				cellsToRelation.add(i);
 			}
 		}
@@ -114,7 +114,7 @@ public class ThoughtUnionDecider {
 	 * Rozhodnout ktere objekty nespojovat. Konkurence. Tato metoda je rekurzivni, 
 	 * aby nepustila ke spojeni blizke pary objektu.
 	 * @param thoughts
-	 * @param decideToRelateByObjectTypeOrAssocCost true = objectType, false = associationCost
+	 * @param decideToRelateByCellTypeOrAssocCost true = objectType, false = associationCost
 	 * @param decideToRelateCellsByHigherAssocCost
 	 * @param decideToRelateCellsByHigherCellType
 	 * @param cellsToRelation
@@ -124,7 +124,7 @@ public class ThoughtUnionDecider {
 	private Vector<Integer> getDoNotRelate(Vector<Thought> thoughts,
 			Vector<Integer> cellsToRelation) throws Exception {
 		boolean relateOnlyCellsOfSameTypes = config.isKnowledge_relateOnlyCellsOfSameTypes();
-		boolean decideToRelateByObjectTypeOrAssocCost = config.isKnowledge_decideToRelateByObjectTypeOrAssocCost();
+		boolean decideToRelateByCellTypeOrAssocCost = config.isKnowledge_decideToRelateByCellTypeOrAssocCost();
 		boolean decideToRelateCellsByHigherAssocCost = config.isKnowledge_decideToRelateCellsByHigherAssocCost();
 		boolean decideToRelateCellsByHigherCellType = config.isKnowledge_decideToRelateCellsByHigherCellType();
 		Vector<Integer> doNotRelate = new Vector<Integer>(); // zde budou polozky z cellsToRelation ktere se nemaji spojovat.
@@ -142,11 +142,11 @@ public class ThoughtUnionDecider {
 				if (relateOnlyCellsOfSameTypes) {
 					boolean filteredByType = false; /* Jestli bude rozhodnuto dle parametru
 					relateOnlyCellsOfSameTypes, neni co dale resit */ 
-					if (th1.getActiveObject().getType() != th2.getActiveObject().getType()) {
+					if (th1.getActiveCell().getType() != th2.getActiveCell().getType()) {
 						doNotRelate.add(nextThoughtKey);
 						filteredByType = true;
 					}
-					if (th2.getActiveObject().getType() != th3.getActiveObject().getType()) {
+					if (th2.getActiveCell().getType() != th3.getActiveCell().getType()) {
 						doNotRelate.add(nextThoughtFollowingKey);
 						filteredByType = true;
 					}
@@ -155,10 +155,10 @@ public class ThoughtUnionDecider {
 					}
 				}
 				// musime zvolit, zda spojovat s mensim nebo vetsim objektem, nebo podle hodnoty cost v assoc.
-				if (decideToRelateByObjectTypeOrAssocCost) { // Rozhodovat dle typu objektu
-					long firstObType = th1.getActiveObject().getType();
-					long secondObType = th2.getActiveObject().getType();
-					long thirdObType = th3.getActiveObject().getType();
+				if (decideToRelateByCellTypeOrAssocCost) { // Rozhodovat dle typu objektu
+					long firstObType = th1.getActiveCell().getType();
+					long secondObType = th2.getActiveCell().getType();
+					long thirdObType = th3.getActiveCell().getType();
 					if (firstObType+secondObType == secondObType+thirdObType) {
 						doNotRelate.add(nextThoughtFollowingKey);
 					}

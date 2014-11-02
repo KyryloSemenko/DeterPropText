@@ -90,7 +90,7 @@ public class FastMemory {
 		Long[] result = new Long[chars.length];
 		char ch;
 		Cell object;
-		Cell tempObject;
+		Cell tempCell;
 		// dohleda idecka znaku v cellsTableCollection
 		lab:
 		for (int i = 0; i < chars.length; i++) {
@@ -101,9 +101,9 @@ public class FastMemory {
 					result[i] = object.getId();
 					// Posunout object o jednu pozici nahoru jestli neni jiz nahore
 					if (k > 0) {
-						tempObject = localCellsTable.get(k - 1);
+						tempCell = localCellsTable.get(k - 1);
 						localCellsTable.set(k - 1, object);
-						localCellsTable.set(k, tempObject);
+						localCellsTable.set(k, tempCell);
 					}
 					continue lab;
 				}
@@ -124,17 +124,17 @@ public class FastMemory {
 			for (int i = 0; i < result.length; i++) {
 				if (result[i] == null) {
 					result[i] = findingChars[pos];
-					Cell newObject = new Cell(findingChars[pos], missingChars.get(pos).toString(), 1L);
+					Cell newCell = new Cell(findingChars[pos], missingChars.get(pos).toString(), 1L);
 					// Jestli objekt jiz existuje v localCellsTable, znamena to ze jde o zdvojena nebo opakujici se pismena. Nezvedame je nahoru.
-					if (localCellsTable.contains(newObject)) {
+					if (localCellsTable.contains(newCell)) {
 						pos++;
 						continue;
 					}
 					if (localCellsTable.size() < tableCellsSize) { // doplni na zacatek localO nalezeny Cell.
-						localCellsTable.add(0, newObject);
+						localCellsTable.add(0, newCell);
 					} else {
 						// vlozi na zacatek vektora sadu z posledniho cteni, napriklad osum poslednich misto starych zaznamu
-						localCellsTable.add(0, newObject);
+						localCellsTable.add(0, newCell);
 						localCellsTable.setSize(config.getFastMemory_tablesCellSize());
 					}
 					pos++;
@@ -206,17 +206,17 @@ public class FastMemory {
 		return result;
 	}
 
-	/* Viz. Memory getNewObject(...) */
+	/* Viz. Memory getNewCell(...) */
 	/**
-	 * <p>getNewObject.</p>
+	 * <p>getNewCell.</p>
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @return a {@link cz.semenko.word.persistent.Cell} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Cell getNewObject(Thought srcThought, Thought tgtThought) throws Exception {
-		Cell result = slowlyMemory.getNewObject(srcThought, tgtThought);
+	public Cell getNewCell(Thought srcThought, Thought tgtThought) throws Exception {
+		Cell result = slowlyMemory.getNewCell(srcThought, tgtThought);
 		// pridat object na konec kolekce
 		Vector<Cell> vector = new Vector<Cell>();
 		vector.add(result);
@@ -240,17 +240,17 @@ public class FastMemory {
 		Associations result = null;
 		for (int i = 0; i < assocVector.size(); i++) {
 			result = assocVector.get(i);
-			if (result.getTgtId().compareTo(tgtThought.getActiveObject().getId()) == 0) {
+			if (result.getTgtId().compareTo(tgtThought.getActiveCell().getId()) == 0) {
 				return result;
 			}
 		}
 		// Kdyz asociace nenalezena, dohledat Association v Memory
 		assocVector = (Vector<Associations>)associationsCollection;
-		long srcObjectId = srcThought.getActiveObject().getId();
-		long tgtObjectId = tgtThought.getActiveObject().getId();
+		long srcCellId = srcThought.getActiveCell().getId();
+		long tgtCellId = tgtThought.getActiveCell().getId();
 		for (int i = 0; i < assocVector.size(); i++) {
 			Associations nextAssoc = assocVector.get(i);
-			if (nextAssoc.getSrcId() == srcObjectId && nextAssoc.getTgtId() == tgtObjectId) {
+			if (nextAssoc.getSrcId() == srcCellId && nextAssoc.getTgtId() == tgtCellId) {
 				if (i > 0) { // Zvednout o jednu pozici pouzitou Associations
 					Associations tempAssoc = assocVector.get(i-1);
 					assocVector.set(i-1, nextAssoc);
@@ -354,8 +354,8 @@ public class FastMemory {
 			Thought th2 = thoughtsPairToUnion.get(i+1);
 			for (int k = 0; k < tempAssocTable.size(); k++) {
 				Associations nextAssoc = tempAssocTable.get(k);
-				if (nextAssoc.getSrcId() == th1.getActiveObject().getId() 
-						&& nextAssoc.getTgtId() == th2.getActiveObject().getId()) {
+				if (nextAssoc.getSrcId() == th1.getActiveCell().getId() 
+						&& nextAssoc.getTgtId() == th2.getActiveCell().getId()) {
 					result.set((i+1) / 2, nextAssoc);
 					// Zvednout pozici nalezene Associations o elevate
 					if (k - elevate > 0) {
@@ -435,7 +435,7 @@ public class FastMemory {
 		Vector<Cell> activeCells = new Vector<Cell>();
 		for (int i = 0; i < newThoughts.size(); i++) {
 			Thought nextThought = newThoughts.get(i);
-			activeCells.add(nextThought.getActiveObject());
+			activeCells.add(nextThought.getActiveCell());
 		}
 		// Prida nove Cell do FastMemory
 		addCells(activeCells);
@@ -577,12 +577,12 @@ public class FastMemory {
 		Vector<Long> vector = new Vector<Long>();
 		vector.add(objId);
 		Vector<Cell> cellsVector = getCells(vector);
-		Cell activeObject = null;
+		Cell activeCell = null;
 		if (cellsVector.size() > 0) {
-			activeObject = cellsVector.firstElement();
+			activeCell = cellsVector.firstElement();
 		}
 		Vector<Associations> consequenceAssociations = getAllAssociations(vector);
-		return new Thought(activeObject, consequenceAssociations);
+		return new Thought(activeCell, consequenceAssociations);
 	}
 	
 	/**
