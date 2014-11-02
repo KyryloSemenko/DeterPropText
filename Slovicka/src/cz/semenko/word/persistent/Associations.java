@@ -8,7 +8,7 @@ package cz.semenko.word.persistent;
 public class Associations {
 	private Long id;
 	/** Each Association has its own Cell. Reference to created Cell */
-	private Long objId;
+	private Long cellId;
 	/** ID of source Cells */
 	private Long srcId;
 	/** Table ID of source Cell */
@@ -25,11 +25,11 @@ public class Associations {
 	 */
 	public Associations() {}
 
-	public Associations(Long id, Long objId, Long srcId, Long srcTable, Long tgtId,
+	public Associations(Long id, Long cellId, Long srcId, Long srcTable, Long tgtId,
 			Long tgtTable, Long cost) {
 		super();
 		this.id = id;
-		this.objId = objId;
+		this.cellId = cellId;
 		this.srcId = srcId;
 		this.srcTable = srcTable;
 		this.tgtId = tgtId;
@@ -54,7 +54,7 @@ public class Associations {
 	@Override
 	public String toString() {
 		return ("\nid=" + id
-				+ "\t\tobjId=" + objId
+				+ "\t\tcellId=" + cellId
 				+ "\t\tsrcId=" + srcId
 				+ "\t\tsrcTable=" + srcTable
 				+ "\t\ttgtId=" + tgtId
@@ -111,10 +111,10 @@ public class Associations {
 	}
 
 	public Long getObjId() {
-		return objId;
+		return cellId;
 	}
 
-	public void setObjId(Long objId) {
-		this.objId = objId;
+	public void setObjId(Long cellId) {
+		this.cellId = cellId;
 	}
 }

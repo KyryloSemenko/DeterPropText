@@ -189,11 +189,11 @@ public interface DBViewer {
 	/**
 	 * <p>getSrc.</p>
 	 *
-	 * @param objId a {@link java.lang.Long} object.
+	 * @param cellId a {@link java.lang.Long} object.
 	 * @return a {@link java.lang.String} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public String getSrc(Long objId) throws Exception;
+	public String getSrc(Long cellId) throws Exception;
 
 	/**
 	 * <p>executeQuery.</p>

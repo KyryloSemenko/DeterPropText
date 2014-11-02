@@ -573,9 +573,9 @@ public class FastMemory {
 	 */
 	public Thought getThought(Thought th1, Thought th2) throws Exception {
 		Associations ass = th1.getAssociation(th2);
-		Long objId = ass.getObjId();
+		Long cellId = ass.getObjId();
 		Vector<Long> vector = new Vector<Long>();
-		vector.add(objId);
+		vector.add(cellId);
 		Vector<Cell> cellsVector = getCells(vector);
 		Cell activeCell = null;
 		if (cellsVector.size() > 0) {

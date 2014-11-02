@@ -278,7 +278,7 @@ public class HibernateDBViewer implements DBViewer {
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public String getSrc(Long objId) throws Exception {
+	public String getSrc(Long cellId) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

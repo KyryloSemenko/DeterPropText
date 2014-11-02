@@ -8,7 +8,7 @@
             <column name="ID" />
             <generator class="assigned" />
         </id>
-        <property name="objId" type="java.lang.Long">
+        <property name="cellId" type="java.lang.Long">
             <column name="OBJ_ID" />
         </property>
         <property name="srcId" type="java.lang.Long">

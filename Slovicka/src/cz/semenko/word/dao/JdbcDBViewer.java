@@ -131,9 +131,9 @@ public class JdbcDBViewer implements DBViewer {
 	/* (non-Javadoc)
 	 * @see cz.semenko.word.database.DBViewer#getSrc(java.lang.Long)
 	 */
-	public String getSrc(Long objId) throws Exception {
+	public String getSrc(Long cellId) throws Exception {
 		String result = null;
-		selectSrc.setLong(1, objId);
+		selectSrc.setLong(1, cellId);
 		ResultSet rs = selectSrc.executeQuery();
 		if (rs.next() == false) {
 			rs.close();
@@ -143,7 +143,7 @@ public class JdbcDBViewer implements DBViewer {
 		}
 		if (rs.next()) {
 			rs.close();
-			throw new Exception("Multiple cells was found: id=" + objId);
+			throw new Exception("Multiple cells was found: id=" + cellId);
 		}
 		rs.close();
 		return result;
@@ -507,13 +507,13 @@ public class JdbcDBViewer implements DBViewer {
 //		Map<Long, Associations> targetAssociations = new TreeMap<Long, Associations>();
 //		while(targetRS.next()) {
 //			Long id = targetRS.getLong("id");
-//			Long objId = targetRS.getLong("cell_id");
+//			Long cellId = targetRS.getLong("cell_id");
 //			Long srcId = targetRS.getLong("src_id");
 //			Long srcTable = targetRS.getLong("src_tbl");
 //			Long tgtId = targetRS.getLong("tgt_id");
 //			Long tgtTable = targetRS.getLong("tgt_tbl");
 //			Long cost = targetRS.getLong("cost");
-//			Associations assoc = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+//			Associations assoc = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
 //			targetAssociations.put(id, assoc);
 //		}
 //		targetRS.close();
@@ -1018,11 +1018,11 @@ public class JdbcDBViewer implements DBViewer {
 			Vector<Long> usedCells = new  Vector<Long>();
 			// Ziskame vsechny objekty ktere se pouzivaji
 			while (selAssocRS.next()) {
-				Long objId = selAssocRS.getLong("cell_id");
+				Long cellId = selAssocRS.getLong("cell_id");
 				Long srcId = selAssocRS.getLong("src_id");
 				Long tgtId = selAssocRS.getLong("tgt_id");
-				if (usedCells.contains(objId) == false) {
-					usedCells.add(objId);
+				if (usedCells.contains(cellId) == false) {
+					usedCells.add(cellId);
 				}
 				if (usedCells.contains(srcId) == false) {
 					usedCells.add(srcId);
@@ -1245,13 +1245,13 @@ public class JdbcDBViewer implements DBViewer {
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		while (rs.next()) {
 			Long id = rs.getLong("id");
-			Long objId = rs.getLong("cell_id");
+			Long cellId = rs.getLong("cell_id");
 			Long srcId = rs.getLong("src_id");
 			Long srcTable = rs.getLong("src_tbl");
 			Long tgtId = rs.getLong("tgt_id");
 			Long tgtTable = rs.getLong("tgt_tbl");
 			Long cost = rs.getLong("cost");
-			Associations ass = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+			Associations ass = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
 			result.add(ass);
 		}
 		rs.close();
@@ -1282,8 +1282,8 @@ public class JdbcDBViewer implements DBViewer {
 		while (rs.next()) {
 			Long srcId = rs.getLong("src_id");
 			Long tgtId = rs.getLong("tgt_id");
-			Long objId = rs.getLong("cell_id");
-			rsVector.add(new long[]{objId, srcId, tgtId});
+			Long cellId = rs.getLong("cell_id");
+			rsVector.add(new long[]{cellId, srcId, tgtId});
 		}
 		rs.close();
 		// vyplnit result
@@ -1325,13 +1325,13 @@ public class JdbcDBViewer implements DBViewer {
 		List<Associations> result = new Vector<Associations>();
 		while(rs.next()) {
 			Long id = rs.getLong("id");
-			Long objId = rs.getLong("cell_id");
+			Long cellId = rs.getLong("cell_id");
 			Long srcId = rs.getLong("src_id");
 			Long srcTable = rs.getLong("src_tbl");
 			Long tgtId = rs.getLong("tgt_id");
 			Long tgtTable = rs.getLong("tgt_tbl");
 			Long cost = rs.getLong("cost");
-			Associations assoc = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+			Associations assoc = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
 			result.add(assoc);
 		}
 		rs.close();
@@ -1391,13 +1391,13 @@ public class JdbcDBViewer implements DBViewer {
 		rs = connection.createStatement().executeQuery(sql.toString());
 		while(rs.next()) {
 			Long id = rs.getLong("id");
-			Long objId = rs.getLong("cell_id");
+			Long cellId = rs.getLong("cell_id");
 			Long srcId = rs.getLong("src_id");
 			Long srcTable = rs.getLong("src_tbl");
 			Long tgtId = rs.getLong("tgt_id");
 			Long tgtTable = rs.getLong("tgt_tbl");
 			Long cost = rs.getLong("cost");
-			Associations assoc = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+			Associations assoc = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
 			result.add(assoc);
 		}
 		rs.close();		
@@ -1467,8 +1467,8 @@ public class JdbcDBViewer implements DBViewer {
 			long tgtId = rs.getLong("tgt_id");
 			long tgtTable = rs.getLong("tgt_tbl");
 			long cost = rs.getLong("cost");
-			Long objId = rs.getLong("cell_id");
-			result = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+			Long cellId = rs.getLong("cell_id");
+			result = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
 			i++;
 		}
 		return result;

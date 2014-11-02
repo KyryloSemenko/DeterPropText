@@ -199,13 +199,13 @@ public class SlowlyMemory {
 			ResultSet rs = dbViewer.executeQuery(sql);
 			while (rs.next()) {
 				Long id = rs.getLong("id");
-				Long objId = rs.getLong("cell_id");
+				Long cellId = rs.getLong("cell_id");
 				Long srcId = rs.getLong("src_id");
 				Long srcTable = rs.getLong("src_tbl");
 				Long tgtId = rs.getLong("tgt_id");
 				Long tgtTable = rs.getLong("tgt_tbl");
 				Long cost = rs.getLong("cost");
-				Associations nextAssoc = new Associations(id, objId, srcId, srcTable, tgtId, tgtTable, cost);
+				Associations nextAssoc = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
 				tempAssociations.add(nextAssoc);
 			}
 		}
