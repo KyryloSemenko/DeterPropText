@@ -15,7 +15,7 @@
 		<searchToAssociationsAtAllElements>true</searchToAssociationsAtAllElements>
 	</fastMemory>
 	<knowledge>
-		<cellsCreationDepth>68</cellsCreationDepth>
+		<relateCellsUpToType>68</relateCellsUpToType>
 		<knowledgeSize>100</knowledgeSize>
 		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
 		<decideToRelateByCellTypeOrAssocCost>false</decideToRelateByCellTypeOrAssocCost>
