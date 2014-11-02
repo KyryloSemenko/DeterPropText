@@ -1,75 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- Configuration file for application. Description of each property is explained in cz.semenko.word.Config -->
 <config>
 	<application>
 		<name>DeterPropText</name>
 	</application>
 	<dataProvider>
-		<!-- Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani -->
-		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- 512 - 1 sek., 4 - 26 sek. --> 
+		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- Tested: 512 - 1 sek., 4 - 26 sek. --> 
 	</dataProvider>
 	<fastMemory>
-		<!-- Velikost tabulky Tables v cache FastMemory -->
 		<tablesTableSize>400</tablesTableSize>
-		<!-- Velikost tabulky Cell v cache FastMemory -->
 		<tablesCellsSize>400</tablesCellsSize>
-		<!-- Velikost tabulky Associations v cache FastMemory -->
 		<tablesAssociationsSize>400</tablesAssociationsSize>
-		<!--
-		* Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani.
-		* Melke - hledat jen ve FastMemory.
-		* 	nehledat kdyz ve FastMemory nalezena aspon jedna Association.
-		* 	Kdyz aspon jedna chybi -
-		* 		dohledat associations u vsech prvku,
-		* 		nebo
-		* 		dohledat associations jen u chybejicich prvku.
-		* Hluboke - dohledat vzdy v SlowlyMemory.  -->
 		<alwaysSearchToAssociationsDeepInTheMemory>true</alwaysSearchToAssociationsDeepInTheMemory>
-		<!-- Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam.
-		viz. alwaysSearchToAssociationsDeepInTheMemory -->
 		<searchToAssociationsAtAllElements>true</searchToAssociationsAtAllElements>
 	</fastMemory>
 	<knowledge>
-		<!-- Maximalni pocet objektu, ktere aware zdruzuje do obecnejsi formy -->
 		<cellsCreationDepth>68</cellsCreationDepth>
-		<!-- Maximalni velikost aware - delka vektoru myslenek -->
 		<knowledgeSize>100</knowledgeSize>
-
-		<!-- Zda maji byt spojovany jen objekty stejneho typu. Jestli true,
-		parametr decideToRelateByCellTypeOrAssocCost musi byt false. -->
 		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
-		<!-- Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
-		true - Budou spojeny dle velikosti type objektu,
-		false - budou spojeny dle velikosti cost associaci -->
 		<decideToRelateByCellTypeOrAssocCost>false</decideToRelateByCellTypeOrAssocCost>
-		<!-- Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
-		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
-		je nastaven na true, nebo bc kdyz parameter je nastaven na false  -->
 		<decideToRelateCellsByHigherCellType>true</decideToRelateCellsByHigherCellType>
-		<!-- Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,
-		potom budou spojovany objekty dle velikosti hodnot asociaci.
-		true - budou spojovany objekty s vyssi hodnotou asociaci
-		false - budou spojovany objekty s nizsi hodnotou asociaci -->
 		<decideToRelateCellsByHigherAssocCost>true</decideToRelateCellsByHigherAssocCost>
-		<!-- Ukladat do souboru pospojovane objekty behem cteni nebo ne -->
 		<saveThoughtsToFile>true</saveThoughtsToFile>
 	</knowledge>
 	<cellsCreationDecider>
-		<!-- Vytvaret nove objekty pro veskere nove nactene Thought nebo ne. Mozna se to 
-		vyplati na zacatecnych fazich zaskoleni systemu. -->
 		<createNewCellsToAllPairs>true</createNewCellsToAllPairs>
-		<!-- Jak hluboko vytvaret nove objekty pro nove nactene Thought. To znamena
-		pro objekty jakeho Type jeste provadet vytvareni spoju. -->
 		<createNewCellsToAllPairsDepth>1</createNewCellsToAllPairsDepth>
 	</cellsCreationDecider>
 	<thoughtsSaver>
-		<!-- Cesta a nazev souboru pro ulozeni idecek spojenzch objektu behem cteni vstupniho souboru -->
 		<filePathToSaveThoughts>
 			C:\Users\k\Prace\Projects\Slovicka\slovickaWorkspace\Slovicka\Data-out\ulozenaIdeckaBehemZpracovani.txt
 		</filePathToSaveThoughts>
 	</thoughtsSaver>
 	<memoryCleaner>
-		<!-- Behem vycisteni pameti (spanku) budou odstraneny asociace a jejich objekty, ktere maji 
-		nizsi COST -->
 		<lowestCostForLeaving>2</lowestCostForLeaving>
 	</memoryCleaner>
 </config>
