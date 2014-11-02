@@ -56,8 +56,15 @@ public class KnowledgeTest {
 		Knowledge knowledge = ctx.getBean(Knowledge.class);
 		FastMemory memory = ctx.getBean(FastMemory.class);
 		Config config = ctx.getBean(Config.class);
-		config.setKnowledge_cellsCreationDepth(5);
-		config.setCellsCreationDecider_createNewCellsToAllPairsDepth(5);
+		config.setKnowledge_relateThoughtsUpToCellType(5);
+		config.setCellsCreationDecider_createNewCellsToAllPairsDepth(2);
+		try {
+			Long[] testData = memory.getCells("abcdefg".toCharArray());
+			knowledge.remember(testData);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 		} catch (Exception e) {

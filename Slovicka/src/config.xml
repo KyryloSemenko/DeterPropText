@@ -15,7 +15,7 @@
 		<searchToAssociationsAtAllElements>true</searchToAssociationsAtAllElements>
 	</fastMemory>
 	<knowledge>
-		<relateCellsUpToType>68</relateCellsUpToType>
+		<relateThoughtsUpToCellType>68</relateThoughtsUpToCellType>
 		<knowledgeSize>100</knowledgeSize>
 		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
 		<decideToRelateByCellTypeOrAssocCost>false</decideToRelateByCellTypeOrAssocCost>
@@ -24,7 +24,6 @@
 		<saveThoughtsToFile>true</saveThoughtsToFile>
 	</knowledge>
 	<cellsCreationDecider>
-		<createNewCellsToAllPairs>true</createNewCellsToAllPairs>
 		<createNewCellsToAllPairsDepth>1</createNewCellsToAllPairsDepth>
 	</cellsCreationDecider>
 	<thoughtsSaver>

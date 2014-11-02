@@ -26,7 +26,7 @@ public class Config {
 	private int fastMemory_tablesAssociationsSize = 0;
 	/** While {@link Knowledge} decides to create a new {@link Cell} from two close Cells, it compare these Cells {@link Cell#type} with this configuration property. <br>
 	 * If one of Cell has Type higher then configuration parameter, then new Cell will not created. */
-	private int knowledge_relateCellsUpToType = 0;
+	private int knowledge_relateThoughtsUpToCellType = 0;
 	/** Maximalni velikost aware - delka vektoru myslenek */
 	private int knowledge_knowledgeSize = 0;
 	/** Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
@@ -42,11 +42,7 @@ public class Config {
 		true - budou spojovany objekty s vyssi hodnotou asociaci
 		false - budou spojovany objekty s nizsi hodnotou asociaci */
 	private boolean knowledge_decideToRelateCellsByHigherAssocCost = false;
-	/** Vytvaret nove objekty pro veskere nove nactene Thought nebo ne. Mozna se to 
-		vyplati na zacatecnych fazich zaskoleni systemu. */
-	private boolean cellsCreationDecider_createNewCellsToAllPairs = false;
-	/** Jak hluboko vytvaret nove objekty pro nove nactene Thought. To znamena
-		pro objekty jakeho Type jeste provadet vytvareni spoju. */
+	/** A new {@link Cell} will be created, when its parents has {@link Cell#type} less or equal to this parameter. */
 	private int cellsCreationDecider_createNewCellsToAllPairsDepth = 0;
 	/** Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani.
 	* Melke - hledat jen ve FastMemory.
@@ -91,13 +87,12 @@ public class Config {
 				throw new ConfigurationException(msg);
 			}
 			setFastMemory_tablesAssociationsSize(conf.getInt("fastMemory.tablesAssociationsSize"));
-			setKnowledge_relateCellsUpToType(conf.getInt("knowledge.relateCellsUpToType"));
+			setKnowledge_relateThoughtsUpToCellType(conf.getInt("knowledge.relateThoughtsUpToCellType"));
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
 			setKnowledge_decideToRelateByCellTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByCellTypeOrAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherCellType(conf.getBoolean("knowledge.decideToRelateCellsByHigherCellType"));
 			setKnowledge_relateOnlyCellsOfSameTypes(conf.getBoolean("knowledge.relateOnlyCellsOfSameTypes"));
-			setCellsCreationDecider_createNewCellsToAllPairs(conf.getBoolean("cellsCreationDecider.createNewCellsToAllPairs"));
 			setCellsCreationDecider_createNewCellsToAllPairsDepth(conf.getInt("cellsCreationDecider.createNewCellsToAllPairsDepth"));
 			setFastMemory_alwaysSearchToAssociationsDeepInTheMemory(conf.getBoolean("fastMemory.alwaysSearchToAssociationsDeepInTheMemory"));
 			setFastMemory_searchToAssociationsAtAllElements(conf.getBoolean("fastMemory.searchToAssociationsAtAllElements"));
@@ -191,21 +186,21 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field {@link Config#knowledge_relateCellsUpToType}.</p>
+	 * <p>Getter for the field {@link Config#knowledge_relateThoughtsUpToCellType}.</p>
 	 *
 	 * @return a int.
 	 */
-	public int getKnowledge_relateCellsUpToType() {
-		return knowledge_relateCellsUpToType;
+	public int getKnowledge_relateThoughtsUpToCellType() {
+		return knowledge_relateThoughtsUpToCellType;
 	}
 
 	/**
-	 * <p>Setter for the field {@link Config#knowledge_relateCellsUpToType} .</p>
+	 * <p>Setter for the field {@link Config#knowledge_relateThoughtsUpToCellType} .</p>
 	 *
-	 * @param relateCellsUpToType a int.
+	 * @param relateThoughtsUpToCellType a int.
 	 */
-	public void setKnowledge_relateCellsUpToType(int relateCellsUpToType) {
-		knowledge_relateCellsUpToType = relateCellsUpToType;
+	public void setKnowledge_relateThoughtsUpToCellType(int relateThoughtsUpToCellType) {
+		knowledge_relateThoughtsUpToCellType = relateThoughtsUpToCellType;
 	}
 
 	/**
@@ -281,25 +276,6 @@ public class Config {
 	public void setKnowledge_decideToRelateCellsByHigherAssocCost(
 			boolean knowledge_decideToRelateCellsByHigherAssocCost) {
 		this.knowledge_decideToRelateCellsByHigherAssocCost = knowledge_decideToRelateCellsByHigherAssocCost;
-	}
-
-	/**
-	 * <p>See {@link Config#cellsCreationDecider_createNewCellsToAllPairs}.</p>
-	 *
-	 * @return a boolean.
-	 */
-	public boolean isCellsCreationDecider_createNewCellsToAllPairs() {
-		return cellsCreationDecider_createNewCellsToAllPairs;
-	}
-
-	/**
-	 * <p>Setter for the field {@link Config#cellsCreationDecider_createNewCellsToAllPairs}.</p>
-	 *
-	 * @param cellsCreationDecider_createNewCellsToAllPairs a boolean.
-	 */
-	public void setCellsCreationDecider_createNewCellsToAllPairs(
-			boolean cellsCreationDecider_createNewCellsToAllPairs) {
-		this.cellsCreationDecider_createNewCellsToAllPairs = cellsCreationDecider_createNewCellsToAllPairs;
 	}
 
 	/**

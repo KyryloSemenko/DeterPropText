@@ -278,20 +278,20 @@ public class FastMemory {
 	 * increase the associations COST, which are obj_id parameter of both DB
 	 * as well as in cash
 	 *
-	 * @param obIdArray - array of Cell ID
+	 * @param arrayOfCellsId - array of Cell ID
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void increaseAssociationsCostToCellsId(Long[] obIdArray) throws SQLException {
+	public void increaseAssociationsCostToCellsId(Long[] arrayOfCellsId) throws SQLException {
 		Vector<Associations> localAssocTable = (Vector<Associations>)associationsCollection;
 		for (int i = 0; i < localAssocTable.size(); i++) {
 			Associations nextAssoc = localAssocTable.get(i);
-			for (int k = 0; k < obIdArray.length; k++) {
-				if (nextAssoc.getObjId() == obIdArray[k]) {
+			for (int k = 0; k < arrayOfCellsId.length; k++) {
+				if (nextAssoc.getObjId() == arrayOfCellsId[k]) {
 					nextAssoc.setCost(nextAssoc.getCost() + 1);
 				}
 			}
 		}
-		slowlyMemory.increaseAssociationsCostToCellsId(obIdArray);
+		slowlyMemory.increaseAssociationsCostToCellsId(arrayOfCellsId);
 	}
 
 	/**

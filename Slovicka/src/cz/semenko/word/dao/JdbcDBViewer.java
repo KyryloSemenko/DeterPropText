@@ -1090,7 +1090,7 @@ public class JdbcDBViewer implements DBViewer {
 				numItems++;
 				Long type = th1.getActiveCell().getType() + th2.getActiveCell().getType();
 				// TODO odstranit po uspesnem testovani
-				if (type > config.getKnowledge_cellsCreationDepth() * 2) {
+				if (type > config.getKnowledge_relateThoughtsUpToCellType() * 2) {
 					throw new Exception ("Typ noveho objektu je vyssi nez je povoleno v konfiguracnim souboru." +
 							" Typ objektu = " + type + "\r\nThought 1 = " + th1 + "\r\nThought 2 = " + th2);
 				}

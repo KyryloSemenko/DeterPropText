@@ -4,15 +4,17 @@ import org.apache.log4j.Logger;
 
 /**
  * Cell class is data transfer object. It represents a connection of two Associations or single sign (character).<br>
- * When it represents a single sign, it's type is 1.<br>
- * When it represents a {@link Associations} of two {@link Cell}, it's type is higher than 1.<br>
- * For example Cell "a" (type 1) and Cell "b" (type 1) creates Associations and a new Cell "ab" (type 2).
+ * 
  * @author Kyrylo Semenko
  *
  */
 public class Cell {
 	private Long id;
 	private String src;
+	/** When Cell represents a single sign, its type is 1.<br>
+	 * When it represents a {@link Associations} of two {@link Cell} objects, its type is higher than 1.<br>
+	 * For example Cell "a" (type 1) and Cell "b" (type 1) creates new Cell "ab" (type 2).
+	 **/
 	private Long type;
 	Logger logger = Logger.getLogger(Cell.class);
 	

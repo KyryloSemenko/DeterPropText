@@ -75,8 +75,8 @@ public class ThoughtUnionDecider {
 	 * @throws java.lang.Exception if any.
 	 */
 	public Vector<Integer> getPositionsToRelation(Vector<Thought> thoughts) throws Exception {
-		// Projit vsechny pary v celem thoughts2, zda nemaji assoc na nasledujici objekt
-		Vector<Integer> result = getAllCellsToRelation(thoughts);
+		// Find pairs of Thoughts to create new Cells
+		Vector<Integer> result = getAllPositionsToRelation(thoughts);
 		// Zde osetrime pripad kdyz nekolik objektu za sebou konkuruji ve vytvoreni asociace.
 		Vector<Integer> doNotRelate = getDoNotRelate(thoughts, result);
 		// az ted je pospojujeme
@@ -89,21 +89,17 @@ public class ThoughtUnionDecider {
 	
 
 	/**
-	 * Projit vsechny pary v celem thoughts2 a oznacit pro spojeni Thoughts,
-	 * ktere maji hloubku mensi nez cellsCreationDepth.
-	 * Oznacuje pro spojeni i objekty z ruznych urovni TYPE
-	 * @param thoughts - samotna Myslenka
-	 * @param cellsCreationDepth
-	 * @return
+	 * Find out {@link Thought} which could create relation with its right neighbours
+	 * @param thoughts - Vector of {@link Thought} objects
+	 * @return positions of elements in thoughts Vector which could create relation
 	 */
-	private Vector<Integer> getAllCellsToRelation(Vector<Thought> thoughts) {
-		int cellsCreationDepth = config.getKnowledge_cellsCreationDepth();
+	private Vector<Integer> getAllPositionsToRelation(Vector<Thought> thoughts) {
+		int relateThoughtsUpToCellType = config.getKnowledge_relateThoughtsUpToCellType();
 		Vector<Integer> cellsToRelation = new Vector<Integer>();
 		for (int i = 0; i < thoughts.size()-1; i++) {
 			Thought nextThought = thoughts.get(i);
 			Thought nextFollThought = thoughts.get(i+1);
-			if (nextThought.getActiveCell().getType() < cellsCreationDepth 
-					&& nextFollThought.getActiveCell().getType() < cellsCreationDepth) {
+			if (nextThought.getActiveCell().getType() <= relateThoughtsUpToCellType && nextFollThought.getActiveCell().getType() <= relateThoughtsUpToCellType) {
 				cellsToRelation.add(i);
 			}
 		}
@@ -192,6 +188,7 @@ public class ThoughtUnionDecider {
 			}
 		}
 		/** Nepusti ke spojeni pary objektu, ktere jsou za sebou v thoughts2 */
+		@SuppressWarnings("unchecked")
 		Vector<Integer> relatedPositions = (Vector<Integer>)cellsToRelation.clone();
 		for (int i = 0; i < doNotRelate.size(); i++) {
 			relatedPositions.remove(doNotRelate.get(i));

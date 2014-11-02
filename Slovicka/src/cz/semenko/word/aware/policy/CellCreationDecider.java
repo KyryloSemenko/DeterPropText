@@ -46,10 +46,6 @@ private Config config;
 	public Vector<Integer> getPositionsToCreateNewCells(
 			Vector<Thought> thoughts) throws Exception {
 		Vector<Integer> result = new Vector<Integer>();
-		boolean isCreateNewCellsToAllPairs = config.isCellsCreationDecider_createNewCellsToAllPairs();
-		if (isCreateNewCellsToAllPairs == false) {
-			return result;
-		}
 
 		int createNewCellsToAllPairsDepth = config.getCellsCreationDecider_createNewCellsToAllPairsDepth();
 		// Dohledat vsechny mozne kombinace pro spojeni
