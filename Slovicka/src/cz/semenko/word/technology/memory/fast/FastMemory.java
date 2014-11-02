@@ -120,7 +120,7 @@ public class FastMemory {
 			Long[] findingChars = slowlyMemory.getCharsId(missingChars);			
 			// doplni chybejici znaky v result z findingChars
 			int pos = 0;
-			int tableCellsSize = config.getFastMemory_tablesCellsSize();
+			int tableCellsSize = config.getFastMemory_tablesCellSize();
 			for (int i = 0; i < result.length; i++) {
 				if (result[i] == null) {
 					result[i] = findingChars[pos];
@@ -135,7 +135,7 @@ public class FastMemory {
 					} else {
 						// vlozi na zacatek vektora sadu z posledniho cteni, napriklad osum poslednich misto starych zaznamu
 						localCellsTable.add(0, newObject);
-						localCellsTable.setSize(config.getFastMemory_tablesCellsSize());
+						localCellsTable.setSize(config.getFastMemory_tablesCellSize());
 					}
 					pos++;
 				}
@@ -273,7 +273,7 @@ public class FastMemory {
 
 	/**
 	 * Zvysi COST u asociaci, ktere maji obj_id z parametru jak v DB,
-	 * tak i v cashe
+	 * tak i v cache
 	 *
 	 * increase the associations COST, which are obj_id parameter of both DB
 	 * as well as in cash
@@ -295,7 +295,7 @@ public class FastMemory {
 	}
 
 	/**
-	 * Zvysi COST associaci o jednicku jak v DB, tak i v cashe
+	 * Zvysi COST associaci o jednicku jak v DB, tak i v cache
 	 *
 	 * COST Associations will increase by one in both the DB and in Cash
 	 *
@@ -330,7 +330,7 @@ public class FastMemory {
 	/**
 	 * Dohleda associations. Nevytvari nove.
 	 * Zvedne nahoru nalezene.
-	 * Nenalezene dohleda v SlowlyMemory a prida k FastMemory cashe.
+	 * Nenalezene dohleda v SlowlyMemory a prida k FastMemory cache.
 	 *
 	 * Find associations. Does not create new.
 	 * He picks up finding.
@@ -414,13 +414,13 @@ public class FastMemory {
 		
 		Vector<Associations> newAssociations = slowlyMemory.insertAssociations(
 				thoughtPairsToUnion, newCells);
-		// Prida nove associations k FastMemory cashe
+		// Prida nove associations k FastMemory cache
 		getAssociations(thoughtPairsToUnion);
 		
 		// Prida nove associations do FastMemory
 		addAssociations(newAssociations);
 		
-		// Prida aktivni objekty do FastMemory cashe
+		// Prida aktivni objekty do FastMemory cache
 		addCells(newThoughts);
 		
 		// TODO vymyslit test
@@ -557,7 +557,7 @@ public class FastMemory {
 				;
 			}
 		}
-		int maxCellsSize = config.getFastMemory_tablesCellsSize();
+		int maxCellsSize = config.getFastMemory_tablesCellSize();
 		if (tempCells.size() > maxCellsSize) {
 			tempCells.setSize(maxCellsSize);
 		}
@@ -586,8 +586,8 @@ public class FastMemory {
 	}
 	
 	/**
-	 * Dohleda vsechny objekty. Nevytvari nove. Zvedne pozici objektu v cashe jestli existuje.
-	 * Prida object do cashe jestli neexistuje.
+	 * Dohleda vsechny objekty. Nevytvari nove. Zvedne pozici objektu v cache jestli existuje.
+	 * Prida object do cache jestli neexistuje.
 	 *
 	 * @param inputCells an array of {@link java.lang.Long} cells.
 	 * @throws java.lang.Exception if any.
@@ -620,8 +620,8 @@ public class FastMemory {
 	}
 	
 	/**
-	 * Dohleda vsechny asociace. Nevytvari nove. Zvedne pozici asociace v cashe jestli existuje.
-	 * Prida asociaci do cashe jestli neexistuje.
+	 * Dohleda vsechny asociace. Nevytvari nove. Zvedne pozici asociace v cache jestli existuje.
+	 * Prida asociaci do cache jestli neexistuje.
 	 *
 	 * @param cells a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.

@@ -8,17 +8,17 @@
 		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- 512 - 1 sek., 4 - 26 sek. --> 
 	</dataProvider>
 	<fastMemory>
-		<!-- Velikost tabulky Tables v cashe FastMemory -->
+		<!-- Velikost tabulky Tables v cache FastMemory -->
 		<tablesTableSize>400</tablesTableSize>
-		<!-- Velikost tabulek Cells v cashe FastMemory -->
+		<!-- Velikost tabulky Cell v cache FastMemory -->
 		<tablesCellsSize>400</tablesCellsSize>
-		<!-- Velikost tabulek Associations v cashe FastMemory -->
+		<!-- Velikost tabulky Associations v cache FastMemory -->
 		<tablesAssociationsSize>400</tablesAssociationsSize>
 		<!--
-		* Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani,
+		* Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani.
 		* Melke - hledat jen ve FastMemory.
-		* 	uspokojit se, kdyz ve FastMemory nalezena aspon jedna Association,
-		* 	kdyz aspon jedna chybi - 
+		* 	nehledat kdyz ve FastMemory nalezena aspon jedna Association.
+		* 	Kdyz aspon jedna chybi -
 		* 		dohledat associations u vsech prvku,
 		* 		nebo
 		* 		dohledat associations jen u chybejicich prvku.
@@ -44,7 +44,7 @@
 		<!-- Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
 		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
 		je nastaven na true, nebo bc kdyz parameter je nastaven na false  -->
-		<decideToRelateCellsByHigherObjectType>true</decideToRelateCellsByHigherObjectType>
+		<decideToRelateCellsByHigherCellType>true</decideToRelateCellsByHigherCellType>
 		<!-- Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,
 		potom budou spojovany objekty dle velikosti hodnot asociaci.
 		true - budou spojovany objekty s vyssi hodnotou asociaci
@@ -72,11 +72,4 @@
 		nizsi COST -->
 		<lowestCostForLeaving>2</lowestCostForLeaving>
 	</memoryCleaner>
-	<!-- Known classes: JdbcDBViewer and HibernateDBViewer 
-	Deprecated. Misto teto konfigurace bude pouzita konfigurace Springu
-	<dbviewer>
-		<dbViewerClassName>
-			cz.semenko.word.database.JdbcDBViewer
-		</dbViewerClassName>
-	</dbviewer>-->
 </config>

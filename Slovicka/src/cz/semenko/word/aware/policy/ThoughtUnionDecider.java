@@ -116,7 +116,7 @@ public class ThoughtUnionDecider {
 	 * @param thoughts
 	 * @param decideToRelateByObjectTypeOrAssocCost true = objectType, false = associationCost
 	 * @param decideToRelateCellsByHigherAssocCost
-	 * @param decideToRelateCellsByHigherObjectType
+	 * @param decideToRelateCellsByHigherCellType
 	 * @param cellsToRelation
 	 * @return
 	 * @throws Exception
@@ -126,7 +126,7 @@ public class ThoughtUnionDecider {
 		boolean relateOnlyCellsOfSameTypes = config.isKnowledge_relateOnlyCellsOfSameTypes();
 		boolean decideToRelateByObjectTypeOrAssocCost = config.isKnowledge_decideToRelateByObjectTypeOrAssocCost();
 		boolean decideToRelateCellsByHigherAssocCost = config.isKnowledge_decideToRelateCellsByHigherAssocCost();
-		boolean decideToRelateCellsByHigherObjectType = config.isKnowledge_decideToRelateCellsByHigherObjectType();
+		boolean decideToRelateCellsByHigherCellType = config.isKnowledge_decideToRelateCellsByHigherCellType();
 		Vector<Integer> doNotRelate = new Vector<Integer>(); // zde budou polozky z cellsToRelation ktere se nemaji spojovat.
 		for (int i = 0; i < cellsToRelation.size()-1; i=i+2) {
 			Integer nextThoughtKey = cellsToRelation.get(i);
@@ -162,7 +162,7 @@ public class ThoughtUnionDecider {
 					if (firstObType+secondObType == secondObType+thirdObType) {
 						doNotRelate.add(nextThoughtFollowingKey);
 					}
-					if (decideToRelateCellsByHigherObjectType) { 
+					if (decideToRelateCellsByHigherCellType) { 
 						// TODO zkontrolovat zda skutecne spojuje dle uvedeneho parametru
 						int key = firstObType+secondObType < secondObType+thirdObType?nextThoughtKey:nextThoughtFollowingKey;
 						doNotRelate.add(key);

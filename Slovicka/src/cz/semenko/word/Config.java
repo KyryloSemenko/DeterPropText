@@ -11,26 +11,59 @@ import org.apache.log4j.Logger;
  * @version $Id: $Id
  */
 public class Config {
+	/** Business name of application */
 	private String application_name = null;
-	private String dbCon_dbURL = null;
-	private String dbCon_derbyJarServerStart = null;
-	private String dbCon_derbyJarServerStop = null;
+	/** Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani */
 	private int dataProvider_numCharsReadsFromInput = 0;
+	/** Velikost tabulky Tables v cache FastMemory */
 	private int fastMemory_tablesTableSize = 0;
-	private int fastMemory_tablesCellsSize = 0;
+	/** Velikost tabulky Cell v cache FastMemory */
+	private int fastMemory_tablesCellSize = 0;
+	/** Velikost tabulky Associations v cache FastMemory */
 	private int fastMemory_tablesAssociationsSize = 0;
+	/** Maximalni pocet objektu, ktere aware zdruzuje do obecnejsi formy */
 	private int knowledge_cellsCreationDepth = 0;
+	/** Maximalni velikost aware - delka vektoru myslenek */
 	private int knowledge_knowledgeSize = 0;
+	/** Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
+		true - Budou spojeny dle velikosti type objektu,
+		false - budou spojeny dle velikosti cost associaci */
 	private boolean knowledge_decideToRelateByObjectTypeOrAssocCost = false;
+	/** Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
+		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
+		je nastaven na true, nebo bc kdyz parameter je nastaven na false */
 	private boolean knowledge_decideToRelateCellsByHigherCellType = false;
+	/** Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,
+		potom budou spojovany objekty dle velikosti hodnot asociaci.
+		true - budou spojovany objekty s vyssi hodnotou asociaci
+		false - budou spojovany objekty s nizsi hodnotou asociaci */
 	private boolean knowledge_decideToRelateCellsByHigherAssocCost = false;
+	/** Vytvaret nove objekty pro veskere nove nactene Thought nebo ne. Mozna se to 
+		vyplati na zacatecnych fazich zaskoleni systemu. */
 	private boolean cellsCreationDecider_createNewCellsToAllPairs = false;
+	/** Jak hluboko vytvaret nove objekty pro nove nactene Thought. To znamena
+		pro objekty jakeho Type jeste provadet vytvareni spoju. */
 	private int cellsCreationDecider_createNewCellsToAllPairsDepth = 0;
+	/** Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani.
+	* Melke - hledat jen ve FastMemory.
+	* 	nehledat kdyz ve FastMemory nalezena aspon jedna Association.
+	* 	Kdyz aspon jedna chybi -
+	* 		dohledat associations u vsech prvku,
+	* 		nebo
+	* 		dohledat associations jen u chybejicich prvku.
+	* Hluboke - dohledat vzdy v SlowlyMemory.
+	**/
 	private boolean fastMemory_alwaysSearchToAssociationsDeepInTheMemory = false;
+	/** Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam. Viz. {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} */
 	private boolean fastMemory_searchToAssociationsAtAllElements = false;
+	/** Zda maji byt spojovany jen objekty stejneho typu. Jestli true, parametr decideToRelateByObjectTypeOrAssocCost musi byt false. */
 	private boolean knowledge_relateOnlyCellsOfSameTypes = false;
+	/** Ukladat do souboru pospojovane objekty behem cteni nebo ne */
 	private boolean knowledge_saveThoughtsToFile = false;
+	/** Cesta a nazev souboru pro ulozeni idecek spojenzch objektu behem cteni vstupniho souboru */
 	private String thoughtsSaver_filePathToSaveThoughts;
+	/** Behem vycisteni pameti (spanku) budou odstraneny asociace a jejich objekty, ktere maji 
+		nizsi COST */
 	private int memoryCleaner_lowestCostForLeaving;
 	
 	private static XMLConfiguration conf;
@@ -45,13 +78,10 @@ public class Config {
 			conf = new XMLConfiguration("config.xml");
 			// Naplnit privatni promenne
 			application_name = conf.getString("application.name");
-			dbCon_dbURL = conf.getString("dbCon.dbURL");
-			dbCon_derbyJarServerStart = conf.getString("dbCon.derbyJarServerStart");
-			dbCon_derbyJarServerStop = conf.getString("dbCon.derbyJarServerStop");
 			dataProvider_numCharsReadsFromInput = conf.getInt("dataProvider.numCharsReadsFromInput");
 			fastMemory_tablesTableSize = conf.getInt("fastMemory.tablesTableSize");
-			fastMemory_tablesCellsSize = conf.getInt("fastMemory.tablesCellsSize");
-			if(dataProvider_numCharsReadsFromInput > fastMemory_tablesCellsSize) {
+			fastMemory_tablesCellSize = conf.getInt("fastMemory.tablesCellsSize");
+			if(dataProvider_numCharsReadsFromInput > fastMemory_tablesCellSize) {
 				String msg = "Configuration parameter dataProvider.numCharsReadsFromInput must not be greater then fastMemory.tablesCellsSize";
 				System.out.println(msg);
 				throw new ConfigurationException(msg);
@@ -61,7 +91,7 @@ public class Config {
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
 			setKnowledge_decideToRelateByObjectTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByObjectTypeOrAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
-			setKnowledge_decideToRelateCellsByHigherObjectType(conf.getBoolean("knowledge.decideToRelateCellsByHigherObjectType"));
+			setKnowledge_decideToRelateCellsByHigherCellType(conf.getBoolean("knowledge.decideToRelateCellsByHigherCellType"));
 			setKnowledge_relateOnlyCellsOfSameTypes(conf.getBoolean("knowledge.relateOnlyCellsOfSameTypes"));
 			setCellsCreationDecider_createNewCellsToAllPairs(conf.getBoolean("cellsCreationDecider.createNewCellsToAllPairs"));
 			setCellsCreationDecider_createNewCellsToAllPairsDepth(conf.getInt("cellsCreationDecider.createNewCellsToAllPairsDepth"));
@@ -81,7 +111,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>dataProvider_numCharsReadsFromInput</code>.</p>
+	 * <p>Getter for the field {@link Config#dataProvider_numCharsReadsFromInput}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -90,7 +120,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>dataProvider_numCharsReadsFromInput</code>.</p>
+	 * <p>Setter for the field {@link Config#dataProvider_numCharsReadsFromInput}.</p>
 	 *
 	 * @param dataProviderNumCharsReadsFromInput a int.
 	 */
@@ -100,7 +130,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>fastMemory_tablesTableSize</code>.</p>
+	 * <p>Getter for the field {@link Config#fastMemory_tablesTableSize}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -109,7 +139,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>fastMemory_tablesTableSize</code>.</p>
+	 * <p>Setter for the field {@link Config#fastMemory_tablesTableSize}.</p>
 	 *
 	 * @param fastMemoryTablesTableSize a int.
 	 */
@@ -118,80 +148,27 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>fastMemory_tablesCellsSize</code>.</p>
+	 * <p>Getter for the field {@link Config#fastMemory_tablesCellSize}.</p>
 	 *
 	 * @return a int.
 	 */
-	public int getFastMemory_tablesCellsSize() {
-		return fastMemory_tablesCellsSize;
+	public int getFastMemory_tablesCellSize() {
+		return fastMemory_tablesCellSize;
 	}
 
 	/**
-	 * <p>Setter for the field <code>fastMemory_tablesCellsSize</code>.</p>
+	 * <p>Setter for the field {@link Config#fastMemory_tablesCellSize}.</p>
 	 *
-	 * @param fastMemoryTablesCellsSize a int.
+	 * @param fastMemoryTablesCellSize a int.
 	 */
-	public void setFastMemory_tablesCellsSize(
-			int fastMemoryTablesCellsSize) {
-		fastMemory_tablesCellsSize = fastMemoryTablesCellsSize;
+	public void setFastMemory_tablesCellSize(
+			int fastMemoryTablesCellSize) {
+		fastMemory_tablesCellSize = fastMemoryTablesCellSize;
 	}
 
-	/**
-	 * <p>Getter for the field <code>dbCon_dbURL</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getDbCon_dbURL() {
-		return dbCon_dbURL;
-	}
 
 	/**
-	 * <p>Setter for the field <code>dbCon_dbURL</code>.</p>
-	 *
-	 * @param dbConDbURL a {@link java.lang.String} object.
-	 */
-	public void setDbCon_dbURL(String dbConDbURL) {
-		dbCon_dbURL = dbConDbURL;
-	}
-
-	/**
-	 * <p>Getter for the field <code>dbCon_derbyJarServerStart</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getDbCon_derbyJarServerStart() {
-		return dbCon_derbyJarServerStart;
-	}
-
-	/**
-	 * <p>Setter for the field <code>dbCon_derbyJarServerStart</code>.</p>
-	 *
-	 * @param dbConDerbyJarServerStart a {@link java.lang.String} object.
-	 */
-	public void setDbCon_derbyJarServerStart(String dbConDerbyJarServerStart) {
-		dbCon_derbyJarServerStart = dbConDerbyJarServerStart;
-	}
-
-	/**
-	 * <p>Getter for the field <code>dbCon_derbyJarServerStop</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getDbCon_derbyJarServerStop() {
-		return dbCon_derbyJarServerStop;
-	}
-
-	/**
-	 * <p>Setter for the field <code>dbCon_derbyJarServerStop</code>.</p>
-	 *
-	 * @param dbConDerbyJarServerStop a {@link java.lang.String} object.
-	 */
-	public void setDbCon_derbyJarServerStop(String dbConDerbyJarServerStop) {
-		dbCon_derbyJarServerStop = dbConDerbyJarServerStop;
-	}
-
-	/**
-	 * <p>Setter for the field <code>fastMemory_tablesAssociationsSize</code>.</p>
+	 * <p>Setter for the field {@link Config#fastMemory_tablesAssociationsSize}.</p>
 	 *
 	 * @param fastMemory_tablesAssociationsSize a int.
 	 */
@@ -201,7 +178,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>fastMemory_tablesAssociationsSize</code>.</p>
+	 * <p>Getter for the field {@link Config#fastMemory_tablesAssociationsSize}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -210,7 +187,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>knowledge_cellsCreationDepth</code>.</p>
+	 * <p>Getter for the field {@link Config#knowledge_cellsCreationDepth}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -219,7 +196,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_cellsCreationDepth</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_cellsCreationDepth} .</p>
 	 *
 	 * @param knowledgeCellsCreationDepth a int.
 	 */
@@ -228,7 +205,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>knowledge_knowledgeSize</code>.</p>
+	 * <p>Getter for the field {@link Config#knowledge_knowledgeSize}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -237,7 +214,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_knowledgeSize</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_knowledgeSize}.</p>
 	 *
 	 * @param knowledgeKnowledgeSize a int.
 	 */
@@ -246,7 +223,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>isKnowledge_decideToRelateByObjectTypeOrAssocCost.</p>
+	 * <p>See {@link Config#knowledge_decideToRelateByObjectTypeOrAssocCost}.</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -255,7 +232,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_decideToRelateByObjectTypeOrAssocCost</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_decideToRelateByObjectTypeOrAssocCost}.</p>
 	 *
 	 * @param knowledge_decideToRelateByObjectTypeOrAssocCost a boolean.
 	 */
@@ -265,26 +242,26 @@ public class Config {
 	}
 
 	/**
-	 * <p>isKnowledge_decideToRelateCellsByHigherObjectType.</p>
+	 * <p>See {@link Config#knowledge_decideToRelateCellsByHigherCellType}.</p>
 	 *
 	 * @return a boolean.
 	 */
-	public boolean isKnowledge_decideToRelateCellsByHigherObjectType() {
+	public boolean isKnowledge_decideToRelateCellsByHigherCellType() {
 		return knowledge_decideToRelateCellsByHigherCellType;
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_decideToRelateCellsByHigherCellType</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_decideToRelateCellsByHigherCellType}.</p>
 	 *
 	 * @param knowledge_decideToRelateCellsByHigherCellType a boolean.
 	 */
-	public void setKnowledge_decideToRelateCellsByHigherObjectType(
-			boolean knowledge_decideToRelateCellsByHigherObjectType) {
-		this.knowledge_decideToRelateCellsByHigherCellType = knowledge_decideToRelateCellsByHigherObjectType;
+	public void setKnowledge_decideToRelateCellsByHigherCellType(
+			boolean knowledge_decideToRelateCellsByHigherCellType) {
+		this.knowledge_decideToRelateCellsByHigherCellType = knowledge_decideToRelateCellsByHigherCellType;
 	}
 
 	/**
-	 * <p>isKnowledge_decideToRelateCellsByHigherAssocCost.</p>
+	 * <p>See {@link Config#knowledge_decideToRelateCellsByHigherAssocCost}.</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -293,7 +270,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>knowledge_decideToRelateCellsByHigherAssocCost</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_decideToRelateCellsByHigherAssocCost}.</p>
 	 *
 	 * @param knowledge_decideToRelateCellsByHigherAssocCost a boolean.
 	 */
@@ -303,7 +280,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>isCellsCreationDecider_createNewCellsToAllPairs.</p>
+	 * <p>See {@link Config#cellsCreationDecider_createNewCellsToAllPairs}.</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -312,7 +289,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>cellsCreationDecider_createNewCellsToAllPairs</code>.</p>
+	 * <p>Setter for the field {@link Config#cellsCreationDecider_createNewCellsToAllPairs}.</p>
 	 *
 	 * @param cellsCreationDecider_createNewCellsToAllPairs a boolean.
 	 */
@@ -322,7 +299,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>cellsCreationDecider_createNewCellsToAllPairsDepth</code>.</p>
+	 * <p>Setter for the field {@link Config#cellsCreationDecider_createNewCellsToAllPairsDepth}.</p>
 	 *
 	 * @param cellsCreationDecider_createNewCellsToAllPairsDepth a int.
 	 */
@@ -332,7 +309,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>cellsCreationDecider_createNewCellsToAllPairsDepth</code>.</p>
+	 * <p>Getter for the field {@link Config#cellsCreationDecider_createNewCellsToAllPairsDepth}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -341,7 +318,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>isFastMemory_alwaysSearchToAssociationsDeepInTheMemory.</p>
+	 * <p>See {@link Config#isFastMemory_alwaysSearchToAssociationsDeepInTheMemory}</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -350,7 +327,7 @@ public class Config {
 	}
 	
 	/**
-	 * <p>Setter for the field <code>fastMemory_alwaysSearchToAssociationsDeepInTheMemory</code>.</p>
+	 * <p>Setter for the field {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory}.</p>
 	 *
 	 * @param fastMemory_alwaysSearchToAssociationsDeepInTheMemory a boolean.
 	 */
@@ -360,7 +337,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>isFastMemory_searchToAssociationsAtAllElements.</p>
+	 * <p>See {@link Config#fastMemory_searchToAssociationsAtAllElements}.</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -369,7 +346,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Setter for the field <code>fastMemory_searchToAssociationsAtAllElements</code>.</p>
+	 * <p>Setter for the field {@link Config#fastMemory_searchToAssociationsAtAllElements}.</p>
 	 *
 	 * @param fastMemory_searchToAssociationsAtAllElements a boolean.
 	 */
@@ -379,7 +356,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>isKnowledge_relateOnlyCellsOfSameTypes.</p>
+	 * <p>See {@link Config#knowledge_relateOnlyCellsOfSameTypes}.</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -388,7 +365,7 @@ public class Config {
 	}
 	
 	/**
-	 * <p>Setter for the field <code>knowledge_relateOnlyCellsOfSameTypes</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_relateOnlyCellsOfSameTypes}.</p>
 	 *
 	 * @param knowledge_relateOnlyCellsOfSameTypes a boolean.
 	 * @throws org.apache.commons.configuration.ConfigurationException if any.
@@ -405,7 +382,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>isKnowledge_saveThoughtsToFile.</p>
+	 * <p>See {@link Config#knowledge_saveThoughtsToFile}.</p>
 	 *
 	 * @return a boolean.
 	 */
@@ -413,7 +390,7 @@ public class Config {
 		return knowledge_saveThoughtsToFile;
 	}
 	/**
-	 * <p>Setter for the field <code>knowledge_saveThoughtsToFile</code>.</p>
+	 * <p>Setter for the field {@link Config#knowledge_saveThoughtsToFile}.</p>
 	 *
 	 * @param knowledge_saveThoughtsToFile a boolean.
 	 */
@@ -422,7 +399,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>thoughtsSaver_filePathToSaveThoughts</code>.</p>
+	 * <p>Getter for the field {@link Config#thoughtsSaver_filePathToSaveThoughts}.</p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -430,7 +407,7 @@ public class Config {
 		return thoughtsSaver_filePathToSaveThoughts;
 	}
 	/**
-	 * <p>Setter for the field <code>thoughtsSaver_filePathToSaveThoughts</code>.</p>
+	 * <p>Setter for the field {@link Config#thoughtsSaver_filePathToSaveThoughts}.</p>
 	 *
 	 * @param param a {@link java.lang.String} object.
 	 */
@@ -439,7 +416,7 @@ public class Config {
 	}
 
 	/**
-	 * <p>Getter for the field <code>memoryCleaner_lowestCostForLeaving</code>.</p>
+	 * <p>Getter for the field {@link Config#memoryCleaner_lowestCostForLeaving}.</p>
 	 *
 	 * @return a int.
 	 */
@@ -447,7 +424,7 @@ public class Config {
 		return memoryCleaner_lowestCostForLeaving;
 	}
 	/**
-	 * <p>Setter for the field <code>memoryCleaner_lowestCostForLeaving</code>.</p>
+	 * <p>Setter for the field {@link Config#memoryCleaner_lowestCostForLeaving}.</p>
 	 *
 	 * @param memoryCleaner_lowestCostForLeaving a int.
 	 */

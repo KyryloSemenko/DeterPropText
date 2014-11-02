@@ -151,7 +151,7 @@ public class SlowlyMemory {
 	}
 
 	/**
-	 * Zvysi COST associaci o jednicku jak v DB, tak i v cashe
+	 * Zvysi COST associaci o jednicku jak v DB, tak i v cache
 	 *
 	 * @param associationsId - IDecka associaci v kterych se ma zvednout ID
 	 * @throws java.lang.Exception if any.
@@ -275,7 +275,7 @@ public class SlowlyMemory {
 	 * v konstante (prvni-treti..., prvni-sedmy..., prvni-...). Mohou obsahovat null.
 	 *
 	 * Vzhledem k tomu, ze se jedna o rychle dohledani i s moznosti neuplne
-	 * informace, nebudeme pouzivat Memory pro ulozeni objektu a associaci v cashe.
+	 * informace, nebudeme pouzivat Memory pro ulozeni objektu a associaci v cache.
 	 * @return Vector id nadrazenych objektu nebo null-objektu.
 	 * @throws java.sql.SQLException if any.
 	 */
