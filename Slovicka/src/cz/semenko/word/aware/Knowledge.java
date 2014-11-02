@@ -232,7 +232,7 @@ public class Knowledge {
 		}
 		// pospojovat jiz existujici pary
 		newThoughts = recognizeKnownThoughts(newThoughts);
-		thoughts2.addAll(newThoughts);
+		thoughts2.addAll(newThoughts); 
 		// Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
 		Vector<Integer> positionsToCreateNewCells = cellsCreationDecider.getPositionsToCreateNewCells(thoughts2);
 		// Vytvorime nove cells a associations
