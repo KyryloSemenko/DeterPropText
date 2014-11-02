@@ -1074,7 +1074,7 @@ public class JdbcDBViewer implements DBViewer {
 		
 	}
 
-	/* (non-Javadoc)
+	/* 
 	 * @see cz.semenko.word.database.DBViewer#getNewCells(java.util.Vector)
 	 */
 	@Override
@@ -1095,7 +1095,7 @@ public class JdbcDBViewer implements DBViewer {
 							" Typ objektu = " + type + "\r\nThought 1 = " + th1 + "\r\nThought 2 = " + th2);
 				}
 				String src = "";
-				if (type < 3) {
+				if (type < 100) {
 					src = th1.getActiveCell().getSrc() + th2.getActiveCell().getSrc();
 					src = src.replaceAll("([^']|^)'([^']|$)", "$1''$2");
 				}
