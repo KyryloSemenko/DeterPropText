@@ -230,8 +230,7 @@ public class Knowledge {
 		newThoughts = recognizeKnownThoughts(newThoughts);
 		thoughts2.addAll(newThoughts);
 		// Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
-		Vector<Integer> positionsToCreateNewCells = 
-			cellsCreationDecider.getPositionsToCreateNewCells(thoughts2);
+		Vector<Integer> positionsToCreateNewCells = cellsCreationDecider.getPositionsToCreateNewCells(thoughts2);
 		// Vytvorime nove cells a associations
 		Vector<Thought> thoughtPairsToMerge = new Vector<Thought>();
 		for (int i = 0; i < positionsToCreateNewCells.size(); i++) {

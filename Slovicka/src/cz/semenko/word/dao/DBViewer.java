@@ -86,7 +86,7 @@ public interface DBViewer {
 			throws SQLException;
 
 	/**
-	 * <p>getNewCells.</p>
+	 * <p>Create {@link java.util.Vector} of new {@link Cell} objects and save it to database.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.

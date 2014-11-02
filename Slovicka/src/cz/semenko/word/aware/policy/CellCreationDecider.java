@@ -43,8 +43,7 @@ private Config config;
 	 * 
 	 * @throws Exception 
 	 */
-	public Vector<Integer> getPositionsToCreateNewCells(
-			Vector<Thought> thoughts) throws Exception {
+	public Vector<Integer> getPositionsToCreateNewCells(Vector<Thought> thoughts) throws Exception {
 		Vector<Integer> result = new Vector<Integer>();
 
 		int createNewCellsToAllPairsDepth = config.getCellsCreationDecider_createNewCellsToAllPairsDepth();

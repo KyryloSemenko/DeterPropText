@@ -3,6 +3,8 @@
  */
 package test.unit.java.cz.semenko.word.aware;
 
+import static org.junit.Assert.fail;
+
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,8 +30,7 @@ public class KnowledgeTest {
 	}
 
 	/**
-	 * Při čtení aplikace předpovídá budoucí text. <br>
-	 * During reading application predicts future text. <br>
+	 * Application predicts future text during a reading. <br>
 	 */
 	@Test
 	public final void testRemember() {
@@ -48,8 +49,7 @@ public class KnowledgeTest {
 	}
 	
 	/**
-	 * Při čtení textu, COST associations roste jen do výše definované v konfiguraci.<br>
-	 * During reading of the text, association's COST increase up to configuration parameter value only.<br>
+	 * During a reading of a text, associations COST increase up to configuration parameter value only.<br>
 	 */
 	@Test
 	public final void testCostIncrease() {
@@ -61,14 +61,9 @@ public class KnowledgeTest {
 		try {
 			Long[] testData = memory.getCells("abcdefg".toCharArray());
 			knowledge.remember(testData);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		try {
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			fail(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
