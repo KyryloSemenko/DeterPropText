@@ -20,8 +20,8 @@ import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
  * and later management system configuration parameters.
  * It's a DB cache and serves to reduce the number of requests to the database.
  * So that should contain the same data and have the same structure as the DB.
- * <p>Class diagram</>
- * 
+ * <p>Class diagram</p>
+ * <img src="doc-files\class_diagram_FastMemory.png" />
  *
  * @author Kyrylo Semenko
  */
