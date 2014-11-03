@@ -24,6 +24,8 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
  * <p>Vedomi.<br>
  * Misto kde se roji myslenky. Lisi se od podvedomi tim, ze muze aktivovat ciny, akce.
  * Lisi se od podvedomi tim, ze zpracovava vice verohodnejsi myslenky nebo scenare.
+ * <p>Class diagram</p>
+ * <img src="doc-files\class_diagram_Knowledge.png"/>
  * 
  * @author Kyrylo Semenko
  */

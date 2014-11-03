@@ -20,9 +20,10 @@ import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
  * and later management system configuration parameters.
  * It's a DB cache and serves to reduce the number of requests to the database.
  * So that should contain the same data and have the same structure as the DB.
+ * <p>Class diagram</>
+ * 
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class FastMemory {
 	private Collection<Tables> tablesCollection;
