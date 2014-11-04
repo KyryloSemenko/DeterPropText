@@ -22,7 +22,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<!-- DAO TODO spojit se slowlyMemory -->
+	<!-- DAO TODO spojit se slowMemory -->
 	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
 		<constructor-arg ref="dbConnector" />
 		<property name="config" ref="config" />

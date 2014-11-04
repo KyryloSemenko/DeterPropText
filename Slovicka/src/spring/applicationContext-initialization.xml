@@ -17,7 +17,7 @@
     </bean>
 	
 	<!-- DAO -->
-	<bean id="slowlyMemory" 
+	<bean id="slowMemory" 
 		class="cz.semenko.word.technology.memory.slowly.SlowMemory" 
 		depends-on="dbViewer">
 			<constructor-arg ref="dbViewer" />
@@ -25,8 +25,8 @@
 	
 	<!-- Cashovaci pamet -->
 	<bean id="fastMemory"
-		class="cz.semenko.word.technology.memory.fast.FastMemory" depends-on="slowlyMemory">
-			<constructor-arg ref="slowlyMemory" />
+		class="cz.semenko.word.technology.memory.fast.FastMemory" depends-on="slowMemory">
+			<constructor-arg ref="slowMemory" />
 			<property name="config" ref="config" />
 	</bean>
 	
