@@ -11,10 +11,10 @@ import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.persistent.Tables;
-import cz.semenko.word.technology.memory.slowly.SlowlyMemory;
+import cz.semenko.word.technology.memory.slowly.SlowMemory;
 
 /**
- * Singleton. FastMemory is cached on. SlowlyMemory is saved in DB.
+ * Singleton. FastMemory is cached on. SlowMemory is saved in DB.
  *
  * The size of fast memory is set in first configuration parameter;
  * and later management system configuration parameters.
@@ -49,16 +49,16 @@ public class FastMemory {
 	 * 	<li>new elements are added to the beginning of the collection.
 	 */
 	private Collection<Associations> associationsCollection;
-	private SlowlyMemory slowlyMemory;
+	private SlowMemory slowlyMemory;
 	private Config config;
 	
 	/**
 	 * Constructor
 	 *
 	 * @throws java.sql.SQLException if any.
-	 * @param slowlyMemory a {@link cz.semenko.word.technology.memory.slowly.SlowlyMemory} object.
+	 * @param slowlyMemory a {@link cz.semenko.word.technology.memory.slowly.SlowMemory} object.
 	 */
-	public FastMemory(SlowlyMemory slowlyMemory) throws SQLException {
+	public FastMemory(SlowMemory slowlyMemory) throws SQLException {
 		this.slowlyMemory = slowlyMemory;
 		associationsCollection = slowlyMemory.getAssociations();
 		cellsCollection = slowlyMemory.getCells();
@@ -75,10 +75,10 @@ public class FastMemory {
 	}
 
 	/**
-	 * Najde idecka masivu znaku. Jestli ne, tak sahne na SlowlyMemory.
+	 * Najde idecka masivu znaku. Jestli ne, tak sahne na SlowMemory.
 	 * Seradi elementy v cellsTableCollection dle vyuzivanosti.
 	 *
-	 * Finds ID of solid characters. If not, feel the SlowlyMemory.
+	 * Finds ID of solid characters. If not, feel the SlowMemory.
 	 * Sorts the elements in cellsTableCollection by frequency utilized.
 	 *
 	 * @return array of Id
@@ -153,11 +153,11 @@ public class FastMemory {
 	}
 
 	/**
-	 * Najde Objekts pro Vektor IDecek. Jestli ne, tak sahne na SlowlyMemory.
+	 * Najde Objekts pro Vektor IDecek. Jestli ne, tak sahne na SlowMemory.
 	 * Pri hledani rozbali objekty do prvniho Levelu a zkusi najit podobnost.
 	 * Seradi elementy v cellsTableCollection dle vyuzivanosti.
 	 *
-	 * Find the Objekts to ID vector. If not, feel the SlowlyMemory.
+	 * Find the Objekts to ID vector. If not, feel the SlowMemory.
 	 * When searching, expand the first level and try to find similarities.
 	 * Sorts the elements in cellsTableCollection by used frequency.
 	 *
@@ -189,12 +189,12 @@ public class FastMemory {
 			missingCellsId.add(cellsId.get(i));
 		}
 		if (missingCellsId.size() > 0) { // dohlesat objekty v DB
-			Vector<Cell> cellsFromSlowlyMemory = slowlyMemory.getCells(missingCellsId);
+			Vector<Cell> cellsFromSlowMemory = slowlyMemory.getCells(missingCellsId);
 			// Vyplnit chybejici objekty v result, doplnit cellsTableCollection
 			int pos = 0;
 			for (int i = 0; i < result.size(); i++) {
 				if (result.get(i) == null) {
-					result.set(i, cellsFromSlowlyMemory.get(pos));
+					result.set(i, cellsFromSlowMemory.get(pos));
 					pos++;
 				}
 			}
@@ -226,9 +226,9 @@ public class FastMemory {
 	}
 
 	/**
-	 * Dohleda Association ve FastMemory. Jestli nenajde, zkusi najit ve SlowlyMemory.
+	 * Dohleda Association ve FastMemory. Jestli nenajde, zkusi najit ve SlowMemory.
 	 *
-	 * Supervision Association in FastMemory. If not found, try to find the SlowlyMemory.
+	 * Supervision Association in FastMemory. If not found, try to find the SlowMemory.
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
@@ -260,7 +260,7 @@ public class FastMemory {
 				return nextAssoc;
 			}
 		}
-		// Nenalezeno. Zkusit najit v SlowlyMemory
+		// Nenalezeno. Zkusit najit v SlowMemory
 		result = slowlyMemory.getAssociation(srcThought, tgtThought);
 		if (result == null) {
 			return null;
@@ -331,11 +331,11 @@ public class FastMemory {
 	/**
 	 * Dohleda associations. Nevytvari nove.
 	 * Zvedne nahoru nalezene.
-	 * Nenalezene dohleda v SlowlyMemory a prida k FastMemory cache.
+	 * Nenalezene dohleda v SlowMemory a prida k FastMemory cache.
 	 *
 	 * Find associations. Does not create new.
 	 * He picks up finding.
-	 * Found in the supervisors and adding SlowlyMemory FastMemory Cash.
+	 * Found in the supervisors and adding SlowMemory FastMemory Cash.
 	 *
 	 * @param thoughtsPairToUnion a {@link java.util.Vector} object.
 	 * @return Vector<Associations> Nenalezene pozice obsahuji null
@@ -371,20 +371,20 @@ public class FastMemory {
 		if (notFoundPositions.size() == 0) {
 			return result;
 		}
-		// dohledat associations v SlowlyMemory
-		Vector<Associations> assocFromSlowlyMemory = 
+		// dohledat associations v SlowMemory
+		Vector<Associations> assocFromSlowMemory = 
 			slowlyMemory.getAssociations(thoughtsPairToUnion, notFoundPositions);
-		// Pripojit doledane assocFromSlowlyMemory k resultu
-		for (int i = 0; i < assocFromSlowlyMemory.size(); i++) {
-			Associations nextAssoc = assocFromSlowlyMemory.get(i);
+		// Pripojit doledane assocFromSlowMemory k resultu
+		for (int i = 0; i < assocFromSlowMemory.size(); i++) {
+			Associations nextAssoc = assocFromSlowMemory.get(i);
 			if (nextAssoc != null) {
 				result.set(i, nextAssoc);
 			}
 			
 		}
-		// Odstranit prazdne polozky z assocFromSlowlyMemory
-		while (assocFromSlowlyMemory.contains(null)) {
-			assocFromSlowlyMemory.remove(null);
+		// Odstranit prazdne polozky z assocFromSlowMemory
+		while (assocFromSlowMemory.contains(null)) {
+			assocFromSlowMemory.remove(null);
 		}		
 		// pridat associace na konec associationsTableCollections
 		addAssociations(result);
@@ -444,7 +444,7 @@ public class FastMemory {
 
 	/**
 	 * Dohleda vsechny associations, ve kterych src_id == objectId z parametru.
-	 * Jestli pro aspon jeden z objektu nic nenajde, sahne na SlowlyMemory.
+	 * Jestli pro aspon jeden z objektu nic nenajde, sahne na SlowMemory.
 	 * Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani,
 	 * Melke - hledat jen ve FastMemory.
 	 * 	uspokojit se, kdyz ve FastMemory nalezena aspon jedna Association,
@@ -452,7 +452,7 @@ public class FastMemory {
 	 * 		dohledat associations u vsech prvku,
 	 * 		nebo
 	 * 		dohledat associations jen u chybejicich prvku.
-	 * Hluboke - dohledat vzdy v SlowlyMemory.
+	 * Hluboke - dohledat vzdy v SlowMemory.
 	 *
 	 * @param cellsId - Vector idecek Objektu.
 	 * @return - Vector<Associations> bud melke, stredni nebo hluboke dle nastavenych parametru
@@ -486,7 +486,7 @@ public class FastMemory {
 					 * 		nebo
 					 * 		dohledat associations jen u chybejicich prvku.*/
 					if (searchAtAllElements) {
-						// Zahodit nalezene a vyhledat vse v SlowlyMemory
+						// Zahodit nalezene a vyhledat vse v SlowMemory
 						result = slowlyMemory.getAllAssociations(cellsId);
 					} else {
 						// Pokracovat ve filtrovani notFoundCellsId, dohledat jen chybejici a pridat k resultu
@@ -638,8 +638,8 @@ public class FastMemory {
 	}
 	
 	/**
-	 * Vyhleda id znaku ve FastMemory, kdyz nenajde tak v SlowlyMemory,
-	 * kdyz nenajde tak zalozi novy znak ve SlowlyMemory.
+	 * Vyhleda id znaku ve FastMemory, kdyz nenajde tak v SlowMemory,
+	 * kdyz nenajde tak zalozi novy znak ve SlowMemory.
 	 *
 	 * @param inputChars an array of char.
 	 * @return an array of {@link java.lang.Long} cells.

@@ -15,20 +15,20 @@ import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.persistent.Tables;
 
 /**
- * Třida reprezentuje pomalou paměť, která se nachází v DB.
+ * Representation of slow memory. Gets data from database.
  *
  * @author Kyrylo Semenko
  */
-public class SlowlyMemory {
+public class SlowMemory {
 	/** Objekt pod spravou Spring FW */
 	private DBViewer dbViewer;
 
 	/**
-	 * <p>Constructor for SlowlyMemory.</p>
+	 * <p>Constructor for SlowMemory.</p>
 	 *
 	 * @param dbViewer a {@link cz.semenko.word.dao.DBViewer} object.
 	 */
-	public SlowlyMemory(DBViewer dbViewer) {
+	public SlowMemory(DBViewer dbViewer) {
 		this.dbViewer = dbViewer;
 	}
 

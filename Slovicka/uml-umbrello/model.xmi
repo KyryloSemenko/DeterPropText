@@ -45,7 +45,7 @@
       <UML:Dependency visibility="public" isSpecification="false" namespace="Logical View" supplier="QE28w09dPmCl" xmi.id="ZZeHFLIeC9GT" client="dITmw9fvNbar" name=""/>
       <UML:Dependency visibility="public" isSpecification="false" namespace="Logical View" supplier="dITmw9fvNbar" xmi.id="dpb0UcRz4chB" client="6nziq2qeSN4L" name=""/>
       <UML:Dependency visibility="public" isSpecification="false" namespace="Logical View" supplier="QoNM12T2lYMi" xmi.id="qQQaAdgnxZcd" client="DteEoy3poJ2K" name=""/>
-      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="8I058QprIOGI" name="SlowlyMemory"/>
+      <UML:Class visibility="public" isSpecification="false" namespace="Logical View" isAbstract="false" isLeaf="false" isRoot="false" xmi.id="8I058QprIOGI" name="SlowMemory"/>
       <UML:Dependency visibility="public" isSpecification="false" namespace="Logical View" supplier="8I058QprIOGI" xmi.id="2a1oc2jbzCGM" client="DteEoy3poJ2K" name=""/>
      </UML:Namespace.ownedElement>
      <XMI.extension xmi.extender="umbrello">

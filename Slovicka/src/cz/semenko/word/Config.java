@@ -51,7 +51,7 @@ public class Config {
 	* 		dohledat associations u vsech prvku,
 	* 		nebo
 	* 		dohledat associations jen u chybejicich prvku.
-	* Hluboke - dohledat vzdy v SlowlyMemory.
+	* Hluboke - dohledat vzdy v SlowMemory.
 	**/
 	private boolean fastMemory_alwaysSearchToAssociationsDeepInTheMemory = false;
 	/** Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam. Viz. {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} */

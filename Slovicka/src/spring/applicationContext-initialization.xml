@@ -18,7 +18,7 @@
 	
 	<!-- DAO -->
 	<bean id="slowlyMemory" 
-		class="cz.semenko.word.technology.memory.slowly.SlowlyMemory" 
+		class="cz.semenko.word.technology.memory.slowly.SlowMemory" 
 		depends-on="dbViewer">
 			<constructor-arg ref="dbViewer" />
 	</bean>
