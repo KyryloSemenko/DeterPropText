@@ -1,4 +1,4 @@
-package cz.semenko.word.technology.memory.slowly;
+package cz.semenko.word.technology.memory.slow;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +16,8 @@ import cz.semenko.word.persistent.Tables;
 
 /**
  * Representation of slow memory. Gets data from database.
+ * <p>Class diagram</p>
+ * <img src="" />
  *
  * @author Kyrylo Semenko
  */
@@ -25,6 +27,7 @@ public class SlowMemory {
 
 	/**
 	 * <p>Constructor for SlowMemory.</p>
+	 * <p>Class diagram</p>
 	 *
 	 * @param dbViewer a {@link cz.semenko.word.dao.DBViewer} object.
 	 */

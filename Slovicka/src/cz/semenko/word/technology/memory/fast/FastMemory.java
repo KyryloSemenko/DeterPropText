@@ -11,7 +11,7 @@ import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.persistent.Tables;
-import cz.semenko.word.technology.memory.slowly.SlowMemory;
+import cz.semenko.word.technology.memory.slow.SlowMemory;
 
 /**
  * Singleton. FastMemory is cached on. SlowMemory is saved in DB.
