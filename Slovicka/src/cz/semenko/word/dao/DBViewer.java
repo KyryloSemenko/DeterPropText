@@ -9,9 +9,20 @@ import java.util.Vector;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
+import cz.semenko.word.sleeping.MemoryCleaner;
+import cz.semenko.word.technology.memory.slow.SlowMemory;
 
 /**
- * Interface pro pristup k datum DB
+ * Interface that defines methods for access to database.<br>
+ * All Known Implementing Classes:<br>
+ * {@link JdbcDBViewer}
+ * {@link HibernateDBViewer}<br>
+ * Classes depends on link DBViewer<br>
+ * {@link SlowMemory}
+ * {@link MemoryCleaner}<br>
+ * 
+ * <p>Class diagram</p>
+ * <img src="doc-files/DBViewer.png" />
  *
  * @author Kyrylo Semenko
  */
