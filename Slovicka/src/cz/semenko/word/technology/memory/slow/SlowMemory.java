@@ -15,9 +15,9 @@ import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.persistent.Tables;
 
 /**
- * Representation of slow memory. Gets data from database.
+ * Representation of slow memory. Gets data from database through {@link DBViewer}.
  * <p>Class diagram</p>
- * <img src="" />
+ * <img src="doc-files\SlowMemory.png" />
  *
  * @author Kyrylo Semenko
  */
@@ -27,7 +27,6 @@ public class SlowMemory {
 
 	/**
 	 * <p>Constructor for SlowMemory.</p>
-	 * <p>Class diagram</p>
 	 *
 	 * @param dbViewer a {@link cz.semenko.word.dao.DBViewer} object.
 	 */
