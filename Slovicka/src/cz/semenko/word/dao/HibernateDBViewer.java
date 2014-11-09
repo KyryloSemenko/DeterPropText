@@ -218,19 +218,6 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getStringVectorFromPools(java.util.Map, java.util.Vector, java.util.Map, java.util.Map)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public Vector<String> getStringVectorFromPools(
-			Map<Long, String> paramStringsMap,
-			Vector<Associations> associations, Map<Long, Cell> cellsPool,
-			Map<Long, Associations> associationsPool) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.lang.String)
 	 */
 	/** {@inheritDoc} */

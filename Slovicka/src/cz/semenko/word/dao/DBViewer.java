@@ -257,20 +257,6 @@ public interface DBViewer {
 	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
 
 	/**
-	 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.
-	 * Dale nahore budou SRC s Asociacemi s vyssim COST
-	 *
-	 * @param associations
-	 * @param cellsPool a {@link java.util.Map} object.
-	 * @param associationsPool a {@link java.util.Map} object.
-	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
-	 * @return a {@link java.util.Vector} object.
-	 */
-	public Vector<String> getStringVectorFromPools(Map<Long, String> paramStringsMap,
-			Vector<Associations> associations, Map<Long, Cell> cellsPool,
-			Map<Long, Associations> associationsPool);
-
-	/**
 	 * Odstrani prazdne radky v tabulkach associations a cells - posune radku nahoru
 	 *
 	 * @throws java.sql.SQLException if any.

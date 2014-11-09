@@ -255,60 +255,6 @@ public class JdbcDBViewer implements DBViewer {
 		}
 		return getSrc(idVector);
 	}
-
-	/**
-	 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.
-	 * Dale nahore budou SRC s Asociacemi s vyssim COST
-	 * @param associations
-	 * @param cellsPool
-	 * @param associationsPool
-	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
-	 * @return pole Stringu SRC
-	 */
-	@Override
-	public Vector<String> getStringVectorFromPools(
-			Map<Long, String> paramStringsMap, 
-			Vector<Associations> associations, 
-			Map<Long, Cell> cellsPool,
-			Map<Long, Associations> associationsPool) {
-		
-		Vector<String> result = new Vector<String>();
-		// TODO zkontrolovat zda radi dle COST asociaci
-		for (int i = 0; i < associations.size(); i++) {
-			StringBuilder nextRes = new StringBuilder();
-			Long nextId = associations.get(i).getTgtId();
-			Vector<Long> cellsVector = new Vector<Long>();
-			cellsVector.add(nextId);
-			// Ziskame src pro srcId asociaci
-			String leftNeighbour = paramStringsMap.get(associations.get(i).getSrcId());
-			// Sestavime src
-			while(true) {
-				boolean isStringPrepared = true;
-				for (int k = 0; k < cellsVector.size(); k++) {
-					Cell nextOb = cellsPool.get(cellsVector.get(k));
-					if (nextOb.getType() > 2) { // TODO definovat tuto hodnotu v konfiguraku
-						isStringPrepared = false;
-						Associations nextAssoc = associationsPool.get(nextOb.getId());
-						cellsVector.remove(k);
-						cellsVector.add(k, nextAssoc.getTgtId());
-						cellsVector.add(k, nextAssoc.getSrcId());
-						k++;
-					}
-				}
-				if (isStringPrepared) {
-					break;
-				}
-			}
-			for (int k = 0; k < cellsVector.size(); k++) {
-				Cell nextOb = cellsPool.get(cellsVector.get(k));
-				if (nextOb.getType() <= 2) { // TODO definovat tuto hodnotu v konfiguraku
-					nextRes.append(nextOb.getSrc());
-				}
-			}
-			result.add(leftNeighbour + "|" + nextRes.toString());
-		}
-		return result;
-	}
 	
 	/* (non-Javadoc)
 	 * @see cz.semenko.word.database.DBViewer#getStringToTwoAssociations(java.lang.Long, java.lang.Long)
