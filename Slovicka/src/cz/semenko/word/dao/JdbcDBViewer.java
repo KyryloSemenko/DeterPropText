@@ -268,6 +268,7 @@ public class JdbcDBViewer implements DBViewer {
 		Vector<String> result = new Vector<String>();
 		Vector<Associations> associations = new Vector<Associations>();
 		associations.addAll(targetAssociations.values());
+		// Vector of assoc.getTgtId, that is ID of target Cell
 		Vector<Long> idVector = new Vector<Long>();
 		for (int i = 0; i < associations.size(); i++) {
 			Associations assoc = associations.get(i);
@@ -325,6 +326,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 
+	/** See {@link DBViewer#getAssociationsFromPool(Vector, Map, StringBuffer)} */
 	@Override
 	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
 			Map<Long, Associations> associationsPool,

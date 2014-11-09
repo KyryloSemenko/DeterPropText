@@ -56,7 +56,7 @@ public class FastMemory {
 	 * Constructor
 	 *
 	 * @throws java.sql.SQLException if any.
-	 * @param slowMemory a {@link cz.semenko.word.technology.memory.slowly.SlowMemory} object.
+	 * @param slowMemory a {@link cz.semenko.word.technology.memory.slow.SlowMemory} object.
 	 */
 	public FastMemory(SlowMemory slowMemory) throws SQLException {
 		this.slowMemory = slowMemory;

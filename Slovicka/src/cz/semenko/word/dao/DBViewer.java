@@ -255,40 +255,41 @@ public interface DBViewer {
 	 * @param assocIdToDelete a {@link java.util.List} object.
 	 */
 	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
-/**
- * Sestavi Vector stringu z idecek tgt z parametru
- *
- * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
- * @param targetAssociations - Mapa asociaci, pro targety kterych hledame src
- * @return Vector src stringu pro tgt_id asociaci z parametru
- * @throws java.lang.Exception if any.
- */
+	
+	/**
+	 * Sestavi Vector stringu z idecek tgt z parametru
+	 *
+	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
+	 * @param targetAssociations - Mapa asociaci, pro targety kterych hledame src
+	 * @return Vector src stringu pro tgt_id asociaci z parametru
+	 * @throws java.lang.Exception if any.
+	 */
 	public Vector<String> getSrc(Map<Long, String> paramStringsMap,
 			Map<Long, Associations> targetAssociations) throws Exception;
 
-			/**
-			 * TODO
-			 *
-			 * @param idVector a {@link java.util.Vector} object.
-			 * @param associationsPool a {@link java.util.Map} object.
-			 * @param selectAssocBuff a {@link java.lang.StringBuffer} object.
-			 * @throws java.sql.SQLException if any.
-			 * @return a {@link java.util.Vector} object.
-			 */
+	/**
+	 * TODO
+	 *
+	 * @param idVector a {@link java.util.Vector} object, that holds ID of target Cells in associations
+	 * @param associationsPool a {@link java.util.Map} object.
+	 * @param selectAssocBuff a {@link java.lang.StringBuffer} object.
+	 * @throws java.sql.SQLException if any.
+	 * @return a {@link java.util.Vector} object.
+	 */
 	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
 			Map<Long, Associations> associationsPool,
 			StringBuffer selectAssocBuff) throws SQLException;
 
-			/**
-			 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.
-			 * Dale nahore budou SRC s Asociacemi s vyssim COST
-			 *
-			 * @param associations
-			 * @param cellsPool a {@link java.util.Map} object.
-			 * @param associationsPool a {@link java.util.Map} object.
-			 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
-			 * @return a {@link java.util.Vector} object.
-			 */
+	/**
+	 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.
+	 * Dale nahore budou SRC s Asociacemi s vyssim COST
+	 *
+	 * @param associations
+	 * @param cellsPool a {@link java.util.Map} object.
+	 * @param associationsPool a {@link java.util.Map} object.
+	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
+	 * @return a {@link java.util.Vector} object.
+	 */
 	public Vector<String> getStringVectorFromPools(Map<Long, String> paramStringsMap,
 			Vector<Associations> associations, Map<Long, Cell> cellsPool,
 			Map<Long, Associations> associationsPool);
