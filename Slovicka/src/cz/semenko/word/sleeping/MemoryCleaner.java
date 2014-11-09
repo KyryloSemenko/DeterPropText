@@ -11,6 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import cz.semenko.word.Config;
 import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
+import cz.semenko.word.persistent.Cell;
 
 
 /**
@@ -54,7 +55,7 @@ public class MemoryCleaner {
 	}
 
 	/**
-	 * Odstrani asociace, ktere maji nizkou cost, a jejich objekty.
+	 * Remove {@link Associations} objects that has low {@link Associations#cost} and their {@link Cell} objects from database.
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
