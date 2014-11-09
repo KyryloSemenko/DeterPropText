@@ -245,7 +245,7 @@ public interface DBViewer {
 			 * @param lowestCostForLeaving a int.
 			 * @return a {@link java.util.List} object.
 			 */
-	public List<Associations> getAllAssociationsUpToCost(
+	public List<Associations> getAllAssociationsLowerThenCost(
 			List<Long> cellsId, int lowestCostForLeaving) throws SQLException;
 
 	/**

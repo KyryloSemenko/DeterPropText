@@ -55,7 +55,11 @@ public class MemoryCleaner {
 	}
 
 	/**
-	 * Remove {@link Associations} objects that has low {@link Associations#cost} and their {@link Cell} objects from database.
+	 * Remove {@link Associations} objects that has low {@link Associations#cost} and their {@link Cell} objects from database.<br>
+	 * Sequence diagram <br>
+	 * <img src="doc-files\sequence_diagram_cleanMemoryFromRedundantCells.png"/> <br>
+	 * Activity diagram <br>
+	 * <img src="doc-files\activity_diagram_cleanMemoryFromRedundantCells.png"/> <br>
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
@@ -72,10 +76,7 @@ public class MemoryCleaner {
 		logger.info("cleanMemoryFromRedundantAssociations - START. Number of Associations: " + lastIdAssociations);
 		for (long i = lastIdAssociations; i > 0; i = i - numOfAssocToProcess) {
 			System.out.println("Zpracovavam Associations od " + (i-numOfAssocToProcess+1) + " do " + i);
-			List<Associations> associations = dbViewer.getAssociations(
-					i-numOfAssocToProcess+1, 
-					i, 
-					lowestCostForLeaving);		
+			List<Associations> associations = dbViewer.getAssociations(i-numOfAssocToProcess+1,i,lowestCostForLeaving);		
 			if (associations.size() == 0) {
 				System.out.println("Nenalezeny Associations s Cost mensim nez " + lowestCostForLeaving);
 				continue;
@@ -83,21 +84,12 @@ public class MemoryCleaner {
 			List<List<Associations>> levels = new ArrayList<List<Associations>>();
 			levels.add(associations);
 			while (true) {
-				List<Long> cellsId = new ArrayList<Long>();
-				List<Associations> previousLevel = levels.get(levels.size()-1);
-				
-				for (int k = 0; k < previousLevel.size(); k++) {
-					Associations nextAssoc = previousLevel.get(k);
-					cellsId.add(nextAssoc.getSrcId());
-					cellsId.add(nextAssoc.getTgtId());
-				}
-				List<Associations> nextLevel = dbViewer.getAllAssociationsUpToCost(cellsId, lowestCostForLeaving);
+				List<Associations> nextLevel = extractNextLevelFromLevels(lowestCostForLeaving, levels);
 				if (nextLevel.size() == 0) {
 					break;
 				}
 				levels.add(nextLevel);
 			}
-			
 			deleteAssociationsAndCellsList(levels);
 		}
 		System.out.println("Startuji removeEmptyRows()");
@@ -105,6 +97,28 @@ public class MemoryCleaner {
 		
 		lastIdAssociations = dbViewer.getLastIdAssociationsTable();
 		logger.info("cleanMemoryFromRedundantAssociations - STOP. Number of Associations: " + lastIdAssociations);
+	}
+
+	/** Get Associations List from levels */
+	private List<Associations> extractNextLevelFromLevels(int lowestCostForLeaving,
+			List<List<Associations>> levels) throws SQLException {
+		List<Long> cellsId = new ArrayList<Long>();
+		List<Associations> previousLevel = levels.get(levels.size()-1);
+		
+		addCellsIdFromPreviousLevelsAssociations(cellsId, previousLevel);
+		
+		List<Associations> nextLevel = dbViewer.getAllAssociationsLowerThenCost(cellsId, lowestCostForLeaving);
+		return nextLevel;
+	}
+
+	/** For each Associations in previousLevel List extract srcId and tgtId and add them to cellsId List */
+	private void addCellsIdFromPreviousLevelsAssociations(List<Long> cellsId,
+			List<Associations> previousLevel) {
+		for (int k = 0; k < previousLevel.size(); k++) {
+			Associations nextAssoc = previousLevel.get(k);
+			cellsId.add(nextAssoc.getSrcId());
+			cellsId.add(nextAssoc.getTgtId());
+		}
 	}
 
 	/**

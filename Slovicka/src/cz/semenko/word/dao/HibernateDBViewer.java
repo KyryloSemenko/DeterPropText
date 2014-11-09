@@ -298,7 +298,7 @@ public class HibernateDBViewer implements DBViewer {
 	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Associations> getAllAssociationsUpToCost(List<Long> cellsId,
+	public List<Associations> getAllAssociationsLowerThenCost(List<Long> cellsId,
 			int lowestCostForLeaving) {
 		Session s = getSession();
 		Query q = s.createQuery("from Associations where cost < :lowestCost and id in (:cellsId)")

@@ -1226,7 +1226,7 @@ public class JdbcDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public List<Associations> getAllAssociationsUpToCost(List<Long> cellsId, int lowestCostForLeaving) throws SQLException {
+	public List<Associations> getAllAssociationsLowerThenCost(List<Long> cellsId, int lowestCostForLeaving) throws SQLException {
 		StringBuilder sql = new StringBuilder("SELECT * FROM associations WHERE cell_id IN (");
 		for (Long nextId : cellsId) {
 			sql.append(nextId);
