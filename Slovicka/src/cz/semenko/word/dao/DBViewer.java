@@ -255,19 +255,6 @@ public interface DBViewer {
 	 * @param assocIdToDelete a {@link java.util.List} object.
 	 */
 	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
-	
-	/**
-	 * TODO
-	 *
-	 * @param idVector a {@link java.util.Vector} object, that holds ID of target Cells in associations
-	 * @param associationsPool a {@link java.util.Map} object.
-	 * @param selectAssocBuff a {@link java.lang.StringBuffer} object.
-	 * @throws java.sql.SQLException if any.
-	 * @return a {@link java.util.Vector} object.
-	 */
-	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
-			Map<Long, Associations> associationsPool,
-			StringBuffer selectAssocBuff) throws SQLException;
 
 	/**
 	 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.

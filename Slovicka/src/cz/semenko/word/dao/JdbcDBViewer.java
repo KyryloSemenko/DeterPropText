@@ -256,33 +256,6 @@ public class JdbcDBViewer implements DBViewer {
 		return getSrc(idVector);
 	}
 
-	/** See {@link DBViewer#getAssociationsFromPool(Vector, Map, StringBuffer)} */
-	@Override
-	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
-			Map<Long, Associations> associationsPool,
-			StringBuffer selectAssocBuff) throws SQLException {
-		selectAssocBuff.insert(0, "SELECT cell_id, src_id, tgt_id FROM associations " +
-				"WHERE cell_id IN (");
-		selectAssocBuff.delete(selectAssocBuff.length()-1, selectAssocBuff.length());
-		selectAssocBuff.append(")");
-		ResultSet assocRS = connection.createStatement().executeQuery(selectAssocBuff.toString());
-		while(assocRS.next()) {
-			Associations assoc = new Associations(
-					null, 
-					assocRS.getLong("cell_id"), 
-					assocRS.getLong("src_id"),
-					null, 
-					assocRS.getLong("tgt_id"), 
-					null, 
-					null);
-			associationsPool.put(assoc.getObjId(), assoc);
-			idVector.add(assoc.getSrcId());
-			idVector.add(assoc.getTgtId());
-		}
-		assocRS.close();
-		return idVector;
-	}
-
 	/**
 	 * Vytvori Vector Stringu s tim, ze nahore budou SRC pro src_id s objekty vyssiho Type.
 	 * Dale nahore budou SRC s Asociacemi s vyssim COST

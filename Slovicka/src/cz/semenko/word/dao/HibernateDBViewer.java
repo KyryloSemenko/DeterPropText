@@ -231,18 +231,6 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getAssociationsFromPool(java.util.Vector, java.util.Map, java.lang.StringBuffer)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public Vector<Long> getAssociationsFromPool(Vector<Long> idVector,
-			Map<Long, Associations> associationsPool,
-			StringBuffer selectAssocBuff) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.lang.String)
 	 */
 	/** {@inheritDoc} */
