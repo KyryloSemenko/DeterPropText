@@ -243,17 +243,6 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.util.Map, java.util.Map)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public Vector<String> getSrc(Map<Long, String> paramStringsMap,
-			Map<Long, Associations> targetAssociations) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.lang.String)
 	 */
 	/** {@inheritDoc} */

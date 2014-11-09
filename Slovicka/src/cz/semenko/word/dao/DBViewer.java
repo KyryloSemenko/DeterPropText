@@ -257,17 +257,6 @@ public interface DBViewer {
 	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
 	
 	/**
-	 * Sestavi Vector stringu z idecek tgt z parametru
-	 *
-	 * @param paramStringsMap - Mapa textovych reprezentaci objektu, pro ktere hledame tgt_objekty
-	 * @param targetAssociations - Mapa asociaci, pro targety kterych hledame src
-	 * @return Vector src stringu pro tgt_id asociaci z parametru
-	 * @throws java.lang.Exception if any.
-	 */
-	public Vector<String> getSrc(Map<Long, String> paramStringsMap,
-			Map<Long, Associations> targetAssociations) throws Exception;
-
-	/**
 	 * TODO
 	 *
 	 * @param idVector a {@link java.util.Vector} object, that holds ID of target Cells in associations
