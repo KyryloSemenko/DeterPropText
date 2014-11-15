@@ -30,11 +30,9 @@ public class MemoryCleaner {
 	public static Logger logger = Logger.getLogger(MemoryCleaner.class);
 	
 	/**
-	 * <p>Constructor for MemoryCleaner.</p>
+	 * <p>Empty constructor for MemoryCleaner.</p>
 	 */
-	public MemoryCleaner() {
-		;
-	}
+	public MemoryCleaner() {}
 	
 	/**
 	 * <p>Setter for the field <code>config</code>.</p>
@@ -55,7 +53,7 @@ public class MemoryCleaner {
 	}
 
 	/**
-	 * Remove {@link Associations} objects that has low {@link Associations#cost} and their {@link Cell} objects from database.<br>
+	 * Remove {@link Associations} objects and their {@link Cell} objects that has low {@link Associations#cost} from database.<br>
 	 * Sequence diagram <br>
 	 * <img src="doc-files\sequence_diagram_cleanMemoryFromRedundantCells.png"/> <br>
 	 * Activity diagram <br>

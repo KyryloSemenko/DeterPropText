@@ -14,7 +14,9 @@ import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.Config;
 
 /**
- * Provide a connection to database defined in Spring context.
+ * Provide a connection to database defined in Spring context.<br>
+ * Class diagram<br>
+ * <img src="doc-files/DBconnector.png" />
  * @author Kyrylo Semenko
  *
  */
