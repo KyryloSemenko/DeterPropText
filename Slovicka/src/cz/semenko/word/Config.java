@@ -76,7 +76,7 @@ public class Config {
 	public Config() {
 		try {
 			conf = new XMLConfiguration("config.xml");
-			// Naplnit privatni promenne
+			// Fill out private variables
 			application_name = conf.getString("application.name");
 			dataProvider_numCharsReadsFromInput = conf.getInt("dataProvider.numCharsReadsFromInput");
 			fastMemory_tablesTableSize = conf.getInt("fastMemory.tablesTableSize");
@@ -101,6 +101,8 @@ public class Config {
 			setMemoryCleaner_lowestCostForLeaving(conf.getInt("memoryCleaner.lowestCostForLeaving"));
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
+			System.out.println(e.getMessage());
+			System.exit(1);
 		}
 	}
 	

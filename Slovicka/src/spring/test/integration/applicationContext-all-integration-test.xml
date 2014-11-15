@@ -3,6 +3,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+	<!-- Application configuration -->
+	<import resource="classpath:/spring/applicationContext-initialization.xml" />
+
 	<!-- Database configuration -->
 	<import resource="classpath:/spring/test/integration/applicationContext-dao-integration-test.xml" />
 

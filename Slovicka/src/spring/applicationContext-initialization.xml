@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- Spring context provider -->
 	<bean id="applicationContextProvider" class="cz.semenko.word.ApplicationContextProvider"></bean>
-	<bean id="config" class="cz.semenko.word.Config" /><!-- TODO odstranit -->
+
+	<!-- Application configuration -->
+	<bean id="config" class="cz.semenko.word.Config" />
 	
-	<!-- Hlavni objekt pro cteni textu -->
+	<!-- Object that read and analyse text from a file. -->
     <bean id="textReader"
           class="cz.semenko.word.technology.memory.completion.TextReader">
           	<property name="fastMemory" ref="fastMemory" />

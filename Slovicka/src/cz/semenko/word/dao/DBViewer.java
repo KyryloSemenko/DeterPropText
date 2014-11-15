@@ -29,12 +29,12 @@ import cz.semenko.word.technology.memory.slow.SlowMemory;
 public interface DBViewer {
 
 	/**
-	 * Get max id from Associations
+	 * Get max id from Associations table
 	 *
 	 * @return a {@link java.lang.Long} object.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public Long getLastIdAssociationsTable() throws SQLException;
+	public Long getMaxAssociationsId() throws SQLException;
 
 	/**
 	 * <p>getSuperiorCellsId.</p>
@@ -291,8 +291,16 @@ public interface DBViewer {
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
-	 * @throws java.lang.Exception if any.
+	 * @throws java.sql.SQLException if any.
 	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws SQLException;
+
+	/**
+	 * Warning!<br>
+	 * Clean all data from database.<br>
+	 * Its like dead and born.
+	 * @throws java.sql.SQLException if any.
+	 */
+	public void deleteEverything() throws SQLException;
 }

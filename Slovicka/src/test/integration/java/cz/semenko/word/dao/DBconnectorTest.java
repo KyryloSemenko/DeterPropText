@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 
 import cz.semenko.word.ApplicationContextProvider;
 import cz.semenko.word.dao.DBconnector;
+import cz.semenko.word.sleep.MemoryCleaner;
 
 /**
  * <p>Integration tests for {@link cz.semenko.word.dao.DBconnector}.</p>
@@ -49,12 +50,12 @@ public class DBconnectorTest {
 	public final void testGetConnection() {
 		DBconnector connector = ctx.getBean(DBconnector.class);
 		
-		// Remove old database
-		String toDelete = connector.getDbPath();
-		FileUtils.deleteRecursive(toDelete, false);
-		
-		assertNotNull("DBconnector is null", connector);
 		try {
+			// Remove data from database
+			MemoryCleaner memoryCleaner = ctx.getBean(MemoryCleaner.class);
+			memoryCleaner.forgetEverything();
+			
+			assertNotNull("DBconnector is null", connector);
 			Connection connection = connector.getConnection();
 			assertNotNull("DBconnector does not return Connection object", connection);
 			connection.createStatement().executeQuery("SELECT 1 FROM SYSIBM.SYSDUMMY1");

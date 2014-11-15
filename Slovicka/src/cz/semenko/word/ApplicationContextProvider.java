@@ -38,8 +38,9 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 	}
 	
 	/**
-	 *
-	 * @return a {@link org.springframework.context.ApplicationContext} object to integration tests.
+	 * Application context for integration test environment<br><br>
+	 * <img src="doc-files/IntegrationTestApplicationContext.png" /> 
+	 * @return a {@link org.springframework.context.ApplicationContext}
 	 */
 	public static ApplicationContext getIntegrationTestApplicationContext() {
 		if (ctx == null) {
@@ -56,13 +57,10 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 
 	/**
 	 * @return a {@link org.springframework.context.ApplicationContext} object if exists. Otherwise return null.
-	 * To create new {@link org.springframework.context.ApplicationContext} instance please use to one of specific methods, like {@link cz.semenko.word.ApplicationContextProvider#getIntegrationTestApplicationContext}
+	 * To create new {@link org.springframework.context.ApplicationContext} instance please use one of specific methods, like {@link cz.semenko.word.ApplicationContextProvider#getIntegrationTestApplicationContext}
 	 */
 	public static ResourceLoader getApplicationContext() {
-		if (ctx != null) {
-			return ctx;
-		}
-		return null;
+		return ctx;
 	}
 
 }

@@ -5,13 +5,10 @@
 
 	<!-- Properties for DBconnector class instance -->
 	<bean id="dbConnector" class="cz.semenko.word.dao.DBconnector" scope="singleton">
-		<constructor-arg type="cz.semenko.word.Config" ref="configRef" />
+		<constructor-arg type="cz.semenko.word.Config" ref="config" />
 		<constructor-arg type="java.lang.String" value="integrationTest" />
 		<property name="dataSource" ref="dataSourceRef" />
 	</bean>
-	
-	<!-- Configuration parameters -->
-	<bean id="configRef" class="cz.semenko.word.Config" />
 
 	<!-- Single data source -->
 	<bean id="dataSourceRef" class="org.springframework.jdbc.datasource.SingleConnectionDataSource" lazy-init="true" destroy-method="destroy">
@@ -24,16 +21,10 @@
 		</constructor-arg>
 	</bean>
 	
-	<!-- Memory cleaner (sleep) object -->
-	<bean id="memoryCleaner" class="cz.semenko.word.sleep.MemoryCleaner">
-		<property name="config" ref="configRef" />
-		<property name="dbViewer" ref="dbViewer" />
-	</bean>
-	
 	<!-- DAO -->
 	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
 		<constructor-arg ref="dbConnector" />
-		<property name="config" ref="configRef" />
+		<property name="config" ref="config" />
 	</bean>
 	
 </beans>

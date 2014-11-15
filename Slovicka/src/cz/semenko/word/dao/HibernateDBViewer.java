@@ -276,7 +276,7 @@ public class HibernateDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public Long getLastIdAssociationsTable() throws SQLException {
+	public Long getMaxAssociationsId() throws SQLException {
 		Session session = getSession();
 		Query q = session.createQuery("select max(id) from Associations");
 		return (Long)q.list().get(0);
@@ -331,6 +331,14 @@ public class HibernateDBViewer implements DBViewer {
 			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void deleteEverything() {
+		Session s = getSession();
+		s.createQuery("delete from Associations").executeUpdate();
+		s.createQuery("delete from Cell").executeUpdate();
 	}
 
 }

@@ -17,7 +17,7 @@ import cz.semenko.word.aware.ThoughtsSaver;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
- * 
+ * Object that read and analyse text from a file.<br>
  * @author Kyrylo Semenko
  *
  */

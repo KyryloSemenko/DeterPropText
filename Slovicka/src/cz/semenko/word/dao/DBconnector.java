@@ -47,12 +47,9 @@ public class DBconnector {
 	 * @throws SQLException 
 	 */
 	public Connection getConnection() throws SQLException {
-		Connection connection = null;
-		if (connection == null) {
-			connection = dataSource.getConnection();
-			if (!isTablesExists()) {
-				createDatabaseStructure();
-			}
+		Connection connection = dataSource.getConnection();
+		if (!isTablesExists()) {
+			createDatabaseStructure();
 		}
 		return connection;
 	}

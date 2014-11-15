@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.CleanupFailureDataAccessException;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.dao.DBViewer;
@@ -62,27 +61,30 @@ public class MemoryCleaner {
 	 * @throws java.sql.SQLException if any.
 	 */
 	public void cleanMemoryFromRedundantCells() throws SQLException {
-		int lowestCostForLeaving = config.getMemoryCleaner_lowestCostForLeaving();
-		cleanMemoryFromRedundantAssociations(lowestCostForLeaving);		
+		int lowestCostForLeave = config.getMemoryCleaner_lowestCostForLeaving();
+		cleanMemoryFromRedundantAssociations(lowestCostForLeave);		
 	}
 	
-	private void cleanMemoryFromRedundantAssociations (int lowestCostForLeaving) throws SQLException {
-		// Zacina z posledni Association
+	/** See {@link #cleanMemoryFromRedundantCells() 
+	 * @param lowestCostForLeave remove Associations with less COST than parameter */
+	private void cleanMemoryFromRedundantAssociations (int lowestCostForLeave) throws SQLException {
+		// Start from the last Association
 		int numOfAssocToProcess = 500; //TODO add to config file
-		Long lastIdAssociations = dbViewer.getLastIdAssociationsTable();
-		logger.info("lastIdAssociations: " + lastIdAssociations);
-		logger.info("cleanMemoryFromRedundantAssociations - START. Number of Associations: " + lastIdAssociations);
-		for (long i = lastIdAssociations; i > 0; i = i - numOfAssocToProcess) {
-			System.out.println("Zpracovavam Associations od " + (i-numOfAssocToProcess+1) + " do " + i);
-			List<Associations> associations = dbViewer.getAssociations(i-numOfAssocToProcess+1,i,lowestCostForLeaving);		
+		Long maxAssociationsId = dbViewer.getMaxAssociationsId();
+		logger.info("START. Max Associations id: " + maxAssociationsId);
+		if (numOfAssocToProcess > maxAssociationsId) {
+			numOfAssocToProcess = maxAssociationsId.intValue();
+		}
+		for (long i = maxAssociationsId; i > 0; i = i - numOfAssocToProcess) {
+			logger.info("Process Associations from " + (i-numOfAssocToProcess+1) + " to " + i);
+			List<Associations> associations = dbViewer.getAssociations(i-numOfAssocToProcess+1,i,lowestCostForLeave);		
 			if (associations.size() == 0) {
-				System.out.println("Nenalezeny Associations s Cost mensim nez " + lowestCostForLeaving);
 				continue;
 			}
 			List<List<Associations>> levels = new ArrayList<List<Associations>>();
 			levels.add(associations);
 			while (true) {
-				List<Associations> nextLevel = extractNextLevelFromLevels(lowestCostForLeaving, levels);
+				List<Associations> nextLevel = extractNextLevelFromLevels(lowestCostForLeave, levels);
 				if (nextLevel.size() == 0) {
 					break;
 				}
@@ -90,11 +92,9 @@ public class MemoryCleaner {
 			}
 			deleteAssociationsAndCellsList(levels);
 		}
-		logger.info("Startuji removeEmptyRows()");
 		dbViewer.removeEmptyRows();
 		
-		lastIdAssociations = dbViewer.getLastIdAssociationsTable();
-		logger.info("cleanMemoryFromRedundantAssociations - STOP. Number of Associations: " + lastIdAssociations);
+		logger.info("STOP. Number of Associations: " + dbViewer.getMaxAssociationsId());
 	}
 
 	/** Get Associations List from levels */
@@ -120,7 +120,7 @@ public class MemoryCleaner {
 	}
 
 	/**
-	 * Odstrani z DB seznam Associations
+	 * Remove Associations and Cells from database
 	 * @param levels
 	 * @throws SQLException
 	 */
@@ -136,27 +136,15 @@ public class MemoryCleaner {
 				cellsToDelete.add(nextLevel.get(n).getObjId());
 			}
 		}
-		System.out.println("Mazu Associations. Pocet: " + assocIdToDelete.size());
+		logger.info("Removing Associations. Count: " + assocIdToDelete.size());
 		dbViewer.deleteAssociations(assocIdToDelete);
 		dbViewer.deleteCells(cellsToDelete);
 	}
 
-	// TODO Remove this
 	/**
-	 * <p>main.</p>
-	 *
-	 * @param args an array of {@link java.lang.String} cells.
+	 * {@link DBViewer#deleteEverything()}
 	 */
-	public static void main(String[] args) {
-		try {
-			ApplicationContext applicationContext = 
-				new ClassPathXmlApplicationContext("classpath:/applicationContext.xml");
-			//ViewerGUI window = ViewerGUI.getInstance();
-			MemoryCleaner cleaner = (MemoryCleaner)applicationContext.getBean("memoryCleaner");
-			cleaner.cleanMemoryFromRedundantCells();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage(), e);
-		}
+	public void forgetEverything() throws SQLException {
+		dbViewer.deleteEverything();
 	}
 }

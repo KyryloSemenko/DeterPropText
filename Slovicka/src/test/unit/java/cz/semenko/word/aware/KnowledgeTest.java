@@ -34,9 +34,9 @@ public class KnowledgeTest {
 		Knowledge knowledge = ctx.getBean(Knowledge.class);
 		FastMemory memory = ctx.getBean(FastMemory.class);
 		try {
-			Long[] testData = memory.getCells("abcdefg".toCharArray());
+			Long[] testData = memory.getCells("abcabc".toCharArray());
 			knowledge.remember(testData);
-			testData = memory.getCells("abcdefg".toCharArray());
+			testData = memory.getCells("abcabc".toCharArray());
 			// Jakmile Knowledge precte pismeno a, ihned nabidne odhadovane pokracovani.
 			// ab, ab-cd, abcd-ef, razene dle COST
 			knowledge.remember(testData);

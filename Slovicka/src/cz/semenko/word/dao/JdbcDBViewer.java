@@ -82,9 +82,7 @@ public class JdbcDBViewer implements DBViewer {
             selectWordID = connection.prepareStatement("SELECT id FROM " +
     			"cells WHERE src LIKE ?");
 		    selectCellForAssoc = connection.prepareStatement("SELECT MIN(id) FROM cells WHERE " +
-		    	"src LIKE (" +
-		    	"(SELECT src FROM cells where id = ?) || " +
-				"(SELECT src FROM cells where id = ?))");
+		    	"src LIKE ((SELECT src FROM cells where id = ?) || (SELECT src FROM cells where id = ?))");
 		    selectMaxLevel = connection.prepareStatement("SELECT MAX(type) FROM cells " +
 		    		"WHERE id = ? OR id = ?");
 		    insertAssociation = connection.prepareStatement("INSERT INTO associations (id, src_id, " +
@@ -113,8 +111,6 @@ public class JdbcDBViewer implements DBViewer {
 		    	lastIdAssociationsTable = rs2.getLong(1);
 		    }
 		    rs2.close();
-		    // TODO smazat
-		    // System.out.println("lastIdAssociationsTable: " + lastIdAssociationsTable + "\nlastIdCellsTable: " + lastIdCellsTable);
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 			e.printStackTrace();
@@ -442,9 +438,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 	
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.DBViewer#getCell(java.lang.Long, java.lang.Long, java.lang.Long)
-	 */
+	/* {@inheritDoc} */
 	@Override
 	public Long getCell(Long srcCellID, Long tgtCellID, Long synteticProperty) throws Exception {
 		Long id = null;
@@ -452,7 +446,7 @@ public class JdbcDBViewer implements DBViewer {
 		selectCellForAssoc.setLong(2, tgtCellID);
 		ResultSet rs = selectCellForAssoc.executeQuery();
 		rs.next();
-		if ((id = rs.getLong(1)) > 0) {
+		if ((id = rs.getLong(1)) > 0) { // TODO co jsem to navyvijel?
 			// Increase used association cost
 			updateCostToAssoc.setLong(1, srcCellID);
 			updateCostToAssoc.setLong(2, tgtCellID);
@@ -714,7 +708,6 @@ public class JdbcDBViewer implements DBViewer {
 			preparedStatements.add(nextStat);
 		}
 		while (true) {
-			System.out.println(startPos);
 			String sql = "SELECT " + idRowName + " FROM " + tableName + " WHERE " 
 			+ idRowName + " >= " + startPos	+ " AND " + idRowName + " < " + stopPos;
 			ResultSet idRS = connection.createStatement().executeQuery(sql);
@@ -893,9 +886,8 @@ public class JdbcDBViewer implements DBViewer {
 				cellsToRemove.append(cellsIdVector.get(k) + COMMA);
 			}
 			cellsToRemove.delete(cellsToRemove.length()-1, cellsToRemove.length());
-			System.out.println(cellsToRemove.toString());
-			String sqlDelete = "DELETE FROM cells WHERE id IN (" + cellsToRemove.toString()
-			+ ")";
+			logger.info("Number of cells to remove: " + cellsToRemove.toString());
+			String sqlDelete = "DELETE FROM cells WHERE id IN (" + cellsToRemove.toString()	+ ")";
 			connection.createStatement().executeUpdate(sqlDelete);
 		}		
 	}
@@ -934,11 +926,9 @@ public class JdbcDBViewer implements DBViewer {
 		connection.setAutoCommit(false);
 		try {
 			StringBuilder buff = new StringBuilder();
-			int numItems = 0;
 			for (int i = 0; i < thoughtPairsToUnion.size()-1; i = i+2) {
 				Thought th1 = thoughtPairsToUnion.get(i);
 				Thought th2 = thoughtPairsToUnion.get(i+1);
-				numItems++;
 				Long type = th1.getActiveCell().getType() + th2.getActiveCell().getType();
 				// TODO odstranit po uspesnem testovani
 				if (type > config.getKnowledge_relateThoughtsUpToCellType() * 2) {
@@ -979,12 +969,10 @@ public class JdbcDBViewer implements DBViewer {
 		Vector<Associations> result = new Vector<Associations>();
 		Iterator<Cell> iter = newCells.iterator();
 		StringBuilder buff = new StringBuilder();
-		int numItems = 0;
 		for (int i = 0; i < thoughtPairsToUnion.size() - 1; i = i+2) {
 			Thought srcThought = thoughtPairsToUnion.get(i);
 			Thought tgtThought = thoughtPairsToUnion.get(i+1);
 			Cell ob = iter.next();
-			numItems++;
 			long id = ++lastIdAssociationsTable;
 			long src_id = srcThought.getActiveCell().getId();
 			long src_tbl = 1L; // TODO pridat moznost ukladani do vice tabulek a databazi
@@ -1156,7 +1144,7 @@ public class JdbcDBViewer implements DBViewer {
 
 	/** {@inheritDoc} */
 	@Override
-	public Long getLastIdAssociationsTable() throws SQLException {
+	public Long getMaxAssociationsId() throws SQLException {
 		String sql2 = "SELECT MAX(id) FROM associations";
 	    ResultSet rs2 = connection.createStatement().executeQuery(sql2);
 	    if (rs2.next()) {
@@ -1323,5 +1311,15 @@ public class JdbcDBViewer implements DBViewer {
 			i++;
 		}
 		return result;
+	}
+
+	/** {@inheritDoc} 
+	 * @throws SQLException */
+	@Override
+	public void deleteEverything() throws SQLException {
+		String sql = "DELETE FROM associations";
+		connection.createStatement().executeUpdate(sql);
+		sql = "DELETE FROM cells";
+		connection.createStatement().executeUpdate(sql);
 	}
 }
