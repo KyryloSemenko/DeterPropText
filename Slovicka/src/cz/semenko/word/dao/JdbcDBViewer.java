@@ -726,7 +726,7 @@ public class JdbcDBViewer implements DBViewer {
 					PreparedStatement prepStat = preparedStatements.get(i);
 					prepStat.setLong(1, nonExistsId);
 					prepStat.setLong(2, next);
-					prepStat.executeUpdate();
+					prepStat.executeUpdate(); // TODO ksemenko zde je problem se zmensenim id Cell kvuli referncni integrite s Assoc
 				}
 				nonExistsId++;
 			}
@@ -936,7 +936,7 @@ public class JdbcDBViewer implements DBViewer {
 							" Typ objektu = " + type + "\r\nThought 1 = " + th1 + "\r\nThought 2 = " + th2);
 				}
 				String src = "";
-				if (type < 100) {
+				if (type < config.getDbViewer_maxTextLengthToSave()) {
 					src = th1.getActiveCell().getSrc() + th2.getActiveCell().getSrc();
 					src = src.replaceAll("([^']|^)'([^']|$)", "$1''$2");
 				}
@@ -1321,5 +1321,21 @@ public class JdbcDBViewer implements DBViewer {
 		connection.createStatement().executeUpdate(sql);
 		sql = "DELETE FROM cells";
 		connection.createStatement().executeUpdate(sql);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Long getAssociationsCount() throws SQLException {
+		String sql = "SELECT COUNT(id) FROM assosciations";
+		ResultSet rs = connection.createStatement().executeQuery(sql);
+		return rs.getLong(1);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Long getCellsCount() throws SQLException {
+		String sql = "SELECT COUNT(id) FROM cells";
+		ResultSet rs = connection.createStatement().executeQuery(sql);
+		return rs.getLong(1);
 	}
 }

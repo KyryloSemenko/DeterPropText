@@ -4,6 +4,9 @@
 	<application>
 		<name>DeterPropText</name>
 	</application>
+	<application>
+		<databaseHome>c:\\Users\\k\\DeterPropText</databaseHome>
+	</application>
 	<dataProvider>
 		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- Tested: 512 - 1 sek., 4 - 26 sek. --> 
 	</dataProvider>
@@ -34,4 +37,7 @@
 	<memoryCleaner>
 		<lowestCostForLeaving>2</lowestCostForLeaving>
 	</memoryCleaner>
+	<dbViewer>
+		<maxTextLengthToSave>30</maxTextLengthToSave>
+	</dbViewer>
 </config>

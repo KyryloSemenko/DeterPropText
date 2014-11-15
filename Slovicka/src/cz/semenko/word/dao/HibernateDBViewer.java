@@ -341,4 +341,16 @@ public class HibernateDBViewer implements DBViewer {
 		s.createQuery("delete from Cell").executeUpdate();
 	}
 
+	@Override
+	public Long getAssociationsCount() throws SQLException {
+		Session s = getSession();
+		return (Long)s.createQuery("select count(id) from Associations").uniqueResult();
+	}
+
+	@Override
+	public Long getCellsCount() throws SQLException {
+		Session s = getSession();
+		return (Long)s.createQuery("select count(id) from Cells").uniqueResult();
+	}
+
 }

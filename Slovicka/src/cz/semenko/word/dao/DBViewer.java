@@ -303,4 +303,12 @@ public interface DBViewer {
 	 * @throws java.sql.SQLException if any.
 	 */
 	public void deleteEverything() throws SQLException;
+
+	/** @return number of {@link Associations}Associations objects in table
+	 * @throws SQLException */
+	public Long getAssociationsCount() throws SQLException;
+
+	/** @return number of {@link Cell} objects in table
+	 * @throws SQLException */
+	public Long getCellsCount() throws SQLException;
 }

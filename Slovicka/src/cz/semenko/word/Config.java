@@ -5,7 +5,9 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 import cz.semenko.word.aware.Knowledge;
+import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
+import cz.semenko.word.sleep.MemoryCleaner;
 
 /**
  * Singleton. Access to program configuration.
@@ -16,6 +18,8 @@ import cz.semenko.word.persistent.Cell;
 public class Config {
 	/** Business name of application */
 	private String application_name = null;
+	/** Place where database lives */
+	private String application_databaseHome;
 	/** Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani */
 	private int dataProvider_numCharsReadsFromInput = 0;
 	/** Velikost tabulky Tables v cache FastMemory */
@@ -62,9 +66,10 @@ public class Config {
 	private boolean knowledge_saveThoughtsToFile = false;
 	/** Cesta a nazev souboru pro ulozeni idecek spojenzch objektu behem cteni vstupniho souboru */
 	private String thoughtsSaver_filePathToSaveThoughts;
-	/** Behem vycisteni pameti (spanku) budou odstraneny asociace a jejich objekty, ktere maji 
-		nizsi COST */
+	/** While sleeping (see {@link MemoryCleaner}) will be remove {@link Associations} that has {@link Associations#cost} less than this parameter. Disconnected {@link Cell} objects will by removed too. */
 	private int memoryCleaner_lowestCostForLeaving;
+	/** Length of a text saved to database when a new {@link Cell} creates. Text that longer then this parameter is ignored. This value must not be greater then {@link Cell#src} table column size */
+	private int dbViewer_maxTextLengthToSave;
 	
 	private static XMLConfiguration conf;
 	/** Constant <code>logger</code> */
@@ -78,6 +83,7 @@ public class Config {
 			conf = new XMLConfiguration("config.xml");
 			// Fill out private variables
 			application_name = conf.getString("application.name");
+			setApplication_databaseHome(conf.getString("application.databaseHome"));
 			dataProvider_numCharsReadsFromInput = conf.getInt("dataProvider.numCharsReadsFromInput");
 			fastMemory_tablesTableSize = conf.getInt("fastMemory.tablesTableSize");
 			fastMemory_tablesCellSize = conf.getInt("fastMemory.tablesCellsSize");
@@ -99,6 +105,7 @@ public class Config {
 			setKnowledge_saveThoughtsToFile(conf.getBoolean("knowledge.saveThoughtsToFile"));
 			setThoughtsSaver_filePathToSaveThoughts(conf.getString("thoughtsSaver.filePathToSaveThoughts"));
 			setMemoryCleaner_lowestCostForLeaving(conf.getInt("memoryCleaner.lowestCostForLeaving"));
+			setDbViewer_maxTextLengthToSave(conf.getInt("dbViewer.maxTextLengthToSave"));
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 			System.out.println(e.getMessage());
@@ -412,5 +419,25 @@ public class Config {
 	 */
 	public void setMemoryCleaner_lowestCostForLeaving(int memoryCleaner_lowestCostForLeaving) {
 		this.memoryCleaner_lowestCostForLeaving = memoryCleaner_lowestCostForLeaving;
+	}
+	
+	/** See {@link Config#application_databaseHome} */
+	public String getApplication_databaseHome() {
+		return application_databaseHome;
+	}
+
+	/** See {@link Config#application_databaseHome} */
+	public void setApplication_databaseHome(String application_databaseHome) {
+		this.application_databaseHome = application_databaseHome;
+	}
+
+	/** See {@link Config#dbViewer_maxTextLengthToSave} */
+	public int getDbViewer_maxTextLengthToSave() {
+		return dbViewer_maxTextLengthToSave;
+	}
+
+	/** See {@link Config#dbViewer_maxTextLengthToSave} */
+	public void setDbViewer_maxTextLengthToSave(int dbViewer_maxTextLengthToSave) {
+		this.dbViewer_maxTextLengthToSave = dbViewer_maxTextLengthToSave;
 	}
 }

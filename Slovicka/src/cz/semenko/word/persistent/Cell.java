@@ -2,6 +2,8 @@ package cz.semenko.word.persistent;
 
 import org.apache.log4j.Logger;
 
+import cz.semenko.word.Config;
+
 /**
  * Cell class is data transfer object. It represents a connection of two Associations or single sign (character).<br>
  * 
@@ -10,6 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class Cell {
 	private Long id;
+	/** Text of the Cell. It saved only when it's size shorter than parameter {@link Config#dbViewer_maxTextLengthToSave} */
 	private String src;
 	/** When Cell represents a single sign, its type is 1.<br>
 	 * When it represents a {@link Associations} of two {@link Cell} objects, its type is higher than 1.<br>

@@ -1,24 +1,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- Properties for DBconnector class instance -->
 	<bean id="dbConnector" class="cz.semenko.word.dao.DBconnector" scope="singleton">
-		<constructor-arg type="cz.semenko.word.Config" ref="config" />
-		<constructor-arg type="java.lang.String" value="integrationTest" />
 		<property name="dataSource" ref="dataSourceRef" />
 	</bean>
 
 	<!-- Single data source -->
-	<bean id="dataSourceRef" class="org.springframework.jdbc.datasource.SingleConnectionDataSource" lazy-init="true" destroy-method="destroy">
-		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
-		<constructor-arg value="#{dbConnector.dbUrl}" />
-		<constructor-arg value="username" />
-		<constructor-arg value="password" />
-		<constructor-arg>
-			<value type="boolean">true</value>
-		</constructor-arg>
+	<bean id="dataSourceRef" class="org.springframework.jdbc.datasource.DriverManagerDataSource" depends-on="startDerby">
+		<constructor-arg value="jdbc:derby://localhost:1527/integrationTest;create=true" />
+	    <property name="driverClassName" value="org.apache.derby.jdbc.AutoloadedDriver" />
 	</bean>
 	
 	<!-- DAO -->

@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import cz.semenko.word.ApplicationContextProvider;
-import cz.semenko.word.Config;
 
 /**
  * Provide a connection to database defined in Spring context.<br>
@@ -27,16 +26,6 @@ public class DBconnector {
 	private DataSource dataSource;
 	// Class interface
 	private String dbPath;
-	
-	/** Constructor */
-	public DBconnector(Config config, String databaseName) {
-		// "jdbc:derby:target/database;create=true"
-		String dbSystem = "jdbc:derby:";
-		String userHome = System.getProperty("user.home");
-		String applicationName = config.getApplication_name();
-		dbPath = userHome + System.getProperty("file.separator") + applicationName + System.getProperty("file.separator") + databaseName;
-		dbUrl = dbSystem + dbPath + ";create=true";
-	}
 	
 	/** Constructor for unit tests */
 	public DBconnector() {

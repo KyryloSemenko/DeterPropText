@@ -62,8 +62,8 @@ public class TextReader {
 		
 		FileReader fileReader = new FileReader(new File(fileName));
 		InputStreamReader inputStreamReader = null;
-		if (fileReader.getEncoding().equalsIgnoreCase("utf-8") == false) {
-			logger.error("File " + fileName + " may have not UTF-8 encoding!");
+		if (false == (fileReader.getEncoding().equalsIgnoreCase("UTF-8") || fileReader.getEncoding().equalsIgnoreCase("UTF8"))) {
+			logger.error("The " + fileName + " file has not UTF-8 encoding!");
 			fileReader.close();
 			fileReader = null;
 			inputStreamReader = new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8"));

@@ -5,16 +5,13 @@
  
 	<!-- Properties for DBconnector class instance -->
 	<bean id="dbConnector" class="cz.semenko.word.dao.DBconnector" scope="singleton">
-		<constructor-arg type="cz.semenko.word.Config" ref="config" />
-		<!-- databaseName -->
-		<constructor-arg type="java.lang.String" value="production" />
 		<property name="dataSource" ref="dataSourceRef" />
 	</bean>
 	
 	<!-- Single data source -->
 	<bean id="dataSourceRef" class="org.springframework.jdbc.datasource.SingleConnectionDataSource" lazy-init="true" destroy-method="destroy">
 		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
-		<constructor-arg value="#{dbConnector.dbUrl}" />
+		<constructor-arg value="jdbc:derby:#{config.application_databaseHome}/dev;create=true" />
 		<constructor-arg value="username" />
 		<constructor-arg value="password" />
 		<constructor-arg>

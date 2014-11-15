@@ -6,6 +6,9 @@
 	<!-- Application configuration -->
 	<import resource="classpath:/spring/applicationContext-initialization.xml" />
 
+	<!-- Database server configuration -->
+	<import resource="classpath:/spring/test/integration/applicationContext-dao-server-integration-test.xml" />
+	
 	<!-- Database configuration -->
 	<import resource="classpath:/spring/test/integration/applicationContext-dao-integration-test.xml" />
 
