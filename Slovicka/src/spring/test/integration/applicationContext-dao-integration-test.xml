@@ -24,4 +24,16 @@
 		</constructor-arg>
 	</bean>
 	
+	<!-- Memory cleaner (sleep) object -->
+	<bean id="memoryCleaner" class="cz.semenko.word.sleep.MemoryCleaner">
+		<property name="config" ref="configRef" />
+		<property name="dbViewer" ref="dbViewer" />
+	</bean>
+	
+	<!-- DAO -->
+	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
+		<constructor-arg ref="dbConnector" />
+		<property name="config" ref="configRef" />
+	</bean>
+	
 </beans>

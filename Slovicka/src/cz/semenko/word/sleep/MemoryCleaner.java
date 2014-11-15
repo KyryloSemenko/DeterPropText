@@ -1,4 +1,4 @@
-package cz.semenko.word.sleeping;
+package cz.semenko.word.sleep;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class MemoryCleaner {
 		// Zacina z posledni Association
 		int numOfAssocToProcess = 500; //TODO add to config file
 		Long lastIdAssociations = dbViewer.getLastIdAssociationsTable();
-		System.out.println("lastIdAssociations: " + lastIdAssociations);
+		logger.info("lastIdAssociations: " + lastIdAssociations);
 		logger.info("cleanMemoryFromRedundantAssociations - START. Number of Associations: " + lastIdAssociations);
 		for (long i = lastIdAssociations; i > 0; i = i - numOfAssocToProcess) {
 			System.out.println("Zpracovavam Associations od " + (i-numOfAssocToProcess+1) + " do " + i);
@@ -90,7 +90,7 @@ public class MemoryCleaner {
 			}
 			deleteAssociationsAndCellsList(levels);
 		}
-		System.out.println("Startuji removeEmptyRows()");
+		logger.info("Startuji removeEmptyRows()");
 		dbViewer.removeEmptyRows();
 		
 		lastIdAssociations = dbViewer.getLastIdAssociationsTable();

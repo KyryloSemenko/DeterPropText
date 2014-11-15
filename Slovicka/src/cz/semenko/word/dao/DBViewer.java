@@ -9,7 +9,7 @@ import java.util.Vector;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
-import cz.semenko.word.sleeping.MemoryCleaner;
+import cz.semenko.word.sleep.MemoryCleaner;
 import cz.semenko.word.technology.memory.slow.SlowMemory;
 
 /**

@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import cz.semenko.word.ApplicationContextProvider;
-import cz.semenko.word.sleeping.MemoryCleaner;
+import cz.semenko.word.sleep.MemoryCleaner;
 
 public class MemoryCleanerTest extends TestCase {
 	public static Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());

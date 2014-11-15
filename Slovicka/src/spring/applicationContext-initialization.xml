@@ -61,7 +61,7 @@
 	</bean>
 	
 	<!-- Spanek a zapomenuti -->
-	<bean id="memoryCleaner" class="cz.semenko.word.sleeping.MemoryCleaner">
+	<bean id="memoryCleaner" class="cz.semenko.word.sleep.MemoryCleaner">
 		<property name="config" ref="config" />
 		<property name="dbViewer" ref="dbViewer" />
 	</bean>
