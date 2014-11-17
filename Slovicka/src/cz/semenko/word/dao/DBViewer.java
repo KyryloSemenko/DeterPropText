@@ -257,13 +257,6 @@ public interface DBViewer {
 	 * @param assocIdToDelete a {@link java.util.List} object.
 	 */
 	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
-
-	/**
-	 * Odstrani prazdne radky v tabulkach associations a cells - posune radku nahoru
-	 *
-	 * @throws java.sql.SQLException if any.
-	 */
-	public void removeEmptyRows() throws SQLException;
 	
 	/**
 	 * Nastavi cost u vsech objektu na 0.
@@ -323,4 +316,10 @@ public interface DBViewer {
 	 * @return available IDs for {@link Cell} table 
 	 * @throws SQLException */
 	public Collection<Long> getAvailableCellsIdList() throws SQLException;
+
+	/** 
+	 * {@link MemoryCleaner} removes rows from tables. These removed IDs will by reused.
+	 * @return available IDs for {@link Associations} table 
+	 * @throws SQLException */
+	public Collection<Long> getAvailableAssociationsIdList() throws SQLException;
 }

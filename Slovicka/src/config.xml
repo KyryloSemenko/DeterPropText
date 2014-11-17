@@ -41,5 +41,6 @@
 		<maxTextLengthToSave>30</maxTextLengthToSave>
 		<numRowsForCleanupRotation>100</numRowsForCleanupRotation>
 		<numberOfAvailableCellsIdToReturn>200</numberOfAvailableCellsIdToReturn>
+		<numberOfAvailableAssociationsIdToReturn>200</numberOfAvailableAssociationsIdToReturn>
 	</dbViewer>
 </config>

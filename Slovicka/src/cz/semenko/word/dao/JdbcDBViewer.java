@@ -10,9 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -23,9 +21,8 @@ import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
 
 /**
- * This DAO object create DB connection and
- * provide a different views to data in DB.
- * @author k
+ * DAO object that direct calls java.sql API
+ * @author Kyrylo Semenko
  *
  */
 public class JdbcDBViewer implements DBViewer {
@@ -44,7 +41,6 @@ public class JdbcDBViewer implements DBViewer {
 	private PreparedStatement selectCell;
 	private PreparedStatement selectMaxLevel;
 	private PreparedStatement selectSrc;
-	private long lastIdAssociationsTable;
 	
 	public static Logger logger = Logger.getLogger(JdbcDBViewer.class);
 	
@@ -70,16 +66,10 @@ public class JdbcDBViewer implements DBViewer {
 		    selectMaxLevel = connection.prepareStatement("SELECT MAX(type) FROM cells " +
 		    		"WHERE id = ? OR id = ?");
 		    selectSrc = connection.prepareStatement("SELECT src FROM cells WHERE id = ?");
-		    
-		    String sql2 = "SELECT MAX(id) FROM associations";
-		    ResultSet rs2 = connection.createStatement().executeQuery(sql2);
-		    if (rs2.next()) {
-		    	lastIdAssociationsTable = rs2.getLong(1);
-		    }
-		    rs2.close();
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
@@ -383,117 +373,6 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	@Deprecated
-	public void removeEmptyRows() throws SQLException {
-		// TODO prenest do konfiguraku. Definuje pocet updatu pro statement.
-		int rowsToStatement = 100;
-		// Smazat prazdne radky z Cell
-		String prepSt1 = "UPDATE cells SET id = ? WHERE id = ?";
-		String prepSt2 = "UPDATE associations SET cell_id = ? WHERE cell_id = ?";
-		String prepSt3 = "UPDATE associations SET src_id = ? WHERE src_id = ?";
-		String prepSt4 = "UPDATE associations SET tgt_id = ? WHERE tgt_id = ?";
-		Vector<String> preparedStatementStrings = new Vector<String>();
-		preparedStatementStrings.add(prepSt1);
-		preparedStatementStrings.add(prepSt2);
-		preparedStatementStrings.add(prepSt3);
-		preparedStatementStrings.add(prepSt4);
-		removeEmptyRowsFromTable(rowsToStatement, 
-				getTablesManager().getMaxCellsId(),
-				"cells",
-				"id",
-				preparedStatementStrings);
-		// Smazat prazdne radky z Associations
-		Vector<String> preparedStatementStrings2 = new Vector<String>();
-		preparedStatementStrings2.add("UPDATE associations SET id = ? WHERE id = ?");
-		lastIdAssociationsTable = removeEmptyRowsFromTable(rowsToStatement,
-				lastIdAssociationsTable,
-				"associations",
-				"id",
-				preparedStatementStrings2);
-	}
-
-	@Deprecated
-	private long removeEmptyRowsFromTable(int rowsToStatement, 
-			long lastExistsId, String tableName, String idRowName, 
-			Vector<String> preparedStatementStrings) throws SQLException {
-		// Nalezneme prvni prazdny radek
-		long startPos = 1;
-		long stopPos = startPos + rowsToStatement;
-		Long nonExistsId = null;
-		while (true) {
-			if (startPos >= lastExistsId) {
-				return lastExistsId;
-			}
-			String sql = "SELECT " + idRowName + " FROM " + tableName 
-			+ " WHERE " + idRowName + " >= " + startPos
-			+ " AND " + idRowName + " < " + stopPos + " ORDER BY " + idRowName;
-			ResultSet idRS = connection.createStatement().executeQuery(sql);
-			for (long i = startPos; i < stopPos; i++) {
-				if (idRS.next() == false) {
-					nonExistsId = i;
-					break;
-				}
-				Long nextId = idRS.getLong(idRowName);
-				if (nextId > i) {
-					nonExistsId = nextId - 1;
-					break;
-				}
-			}
-			if (nonExistsId != null) {
-				break;
-			}
-			startPos = stopPos;
-			stopPos = stopPos + rowsToStatement;
-		}
-		// Find out nonempty rows
-		Set<Long> existsId = new TreeSet<Long>();
-		startPos = nonExistsId + 1;
-		stopPos = startPos + rowsToStatement;
-		Vector<PreparedStatement> preparedStatements = new Vector<PreparedStatement>();
-		for (int i = 0; i < preparedStatementStrings.size(); i++) {
-			PreparedStatement nextStat = connection.prepareStatement(preparedStatementStrings.get(i));
-			preparedStatements.add(nextStat);
-		}
-		while (true) {
-			String sql = "SELECT " + idRowName + " FROM " + tableName + " WHERE " 
-			+ idRowName + " >= " + startPos	+ " AND " + idRowName + " < " + stopPos;
-			ResultSet idRS = connection.createStatement().executeQuery(sql);
-			while (idRS.next()) {
-				existsId.add(idRS.getLong(idRowName));
-			}
-			idRS.close();
-			if (existsId.size() < rowsToStatement && startPos < lastExistsId) {
-				startPos = stopPos;
-				stopPos = stopPos + rowsToStatement;
-				continue;
-			}
-			for (Iterator<Long> iter = existsId.iterator(); iter.hasNext(); ) {
-				Long next = iter.next();
-				for (int i = 0; i < preparedStatements.size(); i++) {
-					PreparedStatement prepStat = preparedStatements.get(i);
-					prepStat.setLong(1, nonExistsId);
-					prepStat.setLong(2, next);
-					prepStat.executeUpdate();
-				}
-				nonExistsId++;
-			}
-			startPos = stopPos;
-			stopPos = stopPos + rowsToStatement;
-			if (startPos >= lastExistsId) {
-				break;
-			}
-			existsId.clear();
-		}
-		String sql2 = "SELECT MAX(" + idRowName + ") FROM " + tableName;
-	    ResultSet rs2 = connection.createStatement().executeQuery(sql2);
-	    if (rs2.next()) {
-	    	lastExistsId = rs2.getLong(1);
-	    }
-	    rs2.close();
-	    return lastExistsId;
-	}
-
-	@Override
 	public void resetAssociationCost() throws SQLException {
 		String sql = "UPDATE associations SET cost=0 WHERE cost > 0";
 		connection.createStatement().executeUpdate(sql);
@@ -618,7 +497,7 @@ public class JdbcDBViewer implements DBViewer {
 			Thought srcThought = thoughtPairsToUnion.get(i);
 			Thought tgtThought = thoughtPairsToUnion.get(i+1);
 			Cell ob = iter.next();
-			long id = ++lastIdAssociationsTable;
+			long id = tablesManager.getNextAssociationsId();
 			long src_id = srcThought.getActiveCell().getId();
 			long src_tbl = 1L; // TODO pridat moznost ukladani do vice tabulek a databazi
 			long tgt_id = tgtThought.getActiveCell().getId();
@@ -1032,5 +911,29 @@ public class JdbcDBViewer implements DBViewer {
 	 */
 	public void setDbConnector(DBconnector dbConnector) {
 		this.dbConnector = dbConnector;
+	}
+
+	@Override
+	public Collection<Long> getAvailableAssociationsIdList()
+			throws SQLException {
+		int numberOfAvailableAssociationsIdToReturn = config.getDbViewer_numberOfAvailableAssociationsIdToReturn();
+		Long maxAssociationsId = getMaxAssociationsId();
+		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableAssociationsIdToReturn);
+		// Select with limit
+		String sql = 
+			"SELECT tmp.id FROM ("
+			    + "SELECT ROW_NUMBER() OVER() AS rownum, associations.id "
+			    + "FROM associations WHERE src_id = 0 AND tgt_id = 0"
+			+ ") AS tmp "
+			+ "WHERE rownum <= " + numberOfAvailableAssociationsIdToReturn;
+		ResultSet rs = connection.createStatement().executeQuery(sql);
+		while (rs.next()) {
+			result.add(rs.getLong("id"));
+		}
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableAssociationsIdToReturn) {
+			result.add(++maxAssociationsId);
+		}
+		return result;
 	}
 }

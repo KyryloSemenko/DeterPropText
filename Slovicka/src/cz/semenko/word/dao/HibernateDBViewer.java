@@ -99,12 +99,6 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void removeEmptyRows() throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void finalize() throws Throwable {
 		// TODO Auto-generated method stub
 		
@@ -276,7 +270,7 @@ public class HibernateDBViewer implements DBViewer {
 		Long maxCellsId = getMaxCellsId();
 		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
 		// Select with limit
-		Query query = getSession().createQuery("FROM Cells c WHERE type = 0");
+		Query query = getSession().createQuery("FROM Cells c WHERE c.type = 0");
 		query.setMaxResults(numberOfAvailableCellsIdToReturn);
 		query.executeUpdate();
 		result.addAll(query.list());
@@ -301,5 +295,24 @@ public class HibernateDBViewer implements DBViewer {
 	 */
 	public void setConfig(Config config) {
 		this.config = config;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<Long> getAvailableAssociationsIdList()
+			throws SQLException {
+		int numberOfAvailableAssociationsIdToReturn = getConfig().getDbViewer_numberOfAvailableAssociationsIdToReturn();
+		Long maxAssociationsId = getMaxAssociationsId();
+		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableAssociationsIdToReturn);
+		// Select with limit
+		Query query = getSession().createQuery("FROM Associations a WHERE a.type = 0");
+		query.setMaxResults(numberOfAvailableAssociationsIdToReturn);
+		query.executeUpdate();
+		result.addAll(query.list());
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableAssociationsIdToReturn) {
+			result.add(++maxAssociationsId);
+		}
+		return result;
 	}
 }

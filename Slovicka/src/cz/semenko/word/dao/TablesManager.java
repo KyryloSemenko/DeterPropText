@@ -21,9 +21,26 @@ public class TablesManager {
 	
 	/** Stack of available IDs in Cells table */
 	private Stack<Long> availableCellsIdStack = new Stack<Long>();
+
+	/** Stack of available IDs in Associations table */
+	private Stack<Long> availableAssociationsIdStack = new Stack<Long>();
 	
 	/** Empty constructor */
 	public TablesManager() throws SQLException {}
+
+	/***************************************** business logic ****************************************/
+	
+	/**
+	 * @return the {@link Long}<br>
+	 * See {@link TablesManager#maxCellsId}
+	 * @throws SQLException 
+	 */
+	public Long getMaxCellsId() throws SQLException {
+		if (maxCellsId == null) {
+			maxCellsId = dbViewer.getMaxCellsId();
+		}
+		return maxCellsId;
+	}
 
 	/** Find out a new available ID to insert 
 	 * @throws SQLException */
@@ -31,10 +48,33 @@ public class TablesManager {
 		if (availableCellsIdStack.empty()) {
 			availableCellsIdStack.addAll(dbViewer.getAvailableCellsIdList());
 		}
-		return availableCellsIdStack.remove(0);
+		setMaxCellsId(availableCellsIdStack.remove(0));
+		return getMaxCellsId();
+	}
+
+	/**
+	 * @return the {@link Long}<br>
+	 * See {@link TablesManager#maxAssociationsId}
+	 * @throws SQLException 
+	 */
+	public Long getMaxAssociationsId() throws SQLException {
+		if (maxAssociationsId == null) {
+			maxAssociationsId = dbViewer.getMaxAssociationsId();
+		}
+		return maxAssociationsId;
 	}
 	
+	/** Find out a new available ID to insert 
+	 * @throws SQLException */
+	public Long getNextAssociationsId() throws SQLException {
+		if (availableAssociationsIdStack.empty()) {
+			availableAssociationsIdStack.addAll(dbViewer.getAvailableAssociationsIdList());
+		}
+		setMaxAssociationsId(availableAssociationsIdStack.remove(0));
+		return getMaxAssociationsId();
+	}
 	
+	/***************************************** getters and setters ****************************************/
 	
 	/**
 	 * @return the {@link DBViewer}<br>
@@ -53,35 +93,11 @@ public class TablesManager {
 	}
 
 	/**
-	 * @return the {@link Long}<br>
-	 * See {@link TablesManager#maxCellsId}
-	 * @throws SQLException 
-	 */
-	public Long getMaxCellsId() throws SQLException {
-		if (maxCellsId == null) {
-			maxCellsId = dbViewer.getMaxCellsId();
-		}
-		return maxCellsId;
-	}
-
-	/**
 	 * @param maxCellsId the {@link Long} to set<br>
 	 * See {@link TablesManager#maxCellsId}
 	 */
 	public void setMaxCellsId(Long maxCellsId) {
 		this.maxCellsId = maxCellsId;
-	}
-
-	/**
-	 * @return the {@link Long}<br>
-	 * See {@link TablesManager#maxAssociationsId}
-	 * @throws SQLException 
-	 */
-	public Long getMaxAssociationsId() throws SQLException {
-		if (maxAssociationsId == null) {
-			maxAssociationsId = dbViewer.getMaxAssociationsId();
-		}
-		return maxAssociationsId;
 	}
 
 	/**

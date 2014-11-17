@@ -72,8 +72,10 @@ public class Config {
 	private int dbViewer_maxTextLengthToSave;
 	/** How many rows will be clean up during one loop of cleaning tables Cells and Associations from empty rows. */
 	private int dbViewer_numRowsForCleanupRotation;
-	/** Number of IDs that has to be returned from {@link DBViewer#getAvailableCellsIdList()} */
+	/** Number of IDs to return from {@link DBViewer#getAvailableCellsIdList()} */
 	private int dbViewer_numberOfAvailableCellsIdToReturn;
+	/** Number of IDs to return from {@link DBViewer#getAvailableAssociationsIdList()} */
+	private int dbViewer_numberOfAvailableAssociationsIdToReturn;
 	
 	private static XMLConfiguration conf;
 	/** Constant <code>logger</code> */
@@ -112,6 +114,7 @@ public class Config {
 			setDbViewer_maxTextLengthToSave(conf.getInt("dbViewer.maxTextLengthToSave"));
 			setDbViewer_numRowsForCleanupRotation(conf.getInt("dbViewer.numRowsForCleanupRotation"));
 			setDbViewer_numberOfAvailableCellsIdToReturn(conf.getInt("dbViewer.numberOfAvailableCellsIdToReturn"));
+			setDbViewer_numberOfAvailableAssociationsIdToReturn(conf.getInt("dbViewer.numberOfAvailableAssociationsIdToReturn"));
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 			System.out.println(e.getMessage());
@@ -473,5 +476,22 @@ public class Config {
 	public void setDbViewer_numberOfAvailableCellsIdToReturn(
 			int dbViewer_numberOfAvailableCellsIdToReturn) {
 		this.dbViewer_numberOfAvailableCellsIdToReturn = dbViewer_numberOfAvailableCellsIdToReturn;
+	}
+
+	/**
+	 * @return the {@link int}<br>
+	 * See {@link Config#dbViewer_numberOfAvailableAssociationsIdToReturn}
+	 */
+	public int getDbViewer_numberOfAvailableAssociationsIdToReturn() {
+		return dbViewer_numberOfAvailableAssociationsIdToReturn;
+	}
+
+	/**
+	 * @param dbViewer_numberOfAvailableAssociationsIdToReturn the {@link int} to set<br>
+	 * See {@link Config#dbViewer_numberOfAvailableAssociationsIdToReturn}
+	 */
+	public void setDbViewer_numberOfAvailableAssociationsIdToReturn(
+			int dbViewer_numberOfAvailableAssociationsIdToReturn) {
+		this.dbViewer_numberOfAvailableAssociationsIdToReturn = dbViewer_numberOfAvailableAssociationsIdToReturn;
 	}
 }

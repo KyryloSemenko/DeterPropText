@@ -91,9 +91,8 @@ public class MemoryCleaner {
 				}
 				levels.add(nextLevel);
 			}
-			deleteAssociationsAndCellsList(levels);
+			deleteAssociationsAndCellsList(levels); // ksemenko TODO nemazat ale nastavit na dummy
 		}
-		dbViewer.removeEmptyRows();
 		
 		logger.info("STOP. Number of Associations: " + dbViewer.getMaxAssociationsId());
 	}
