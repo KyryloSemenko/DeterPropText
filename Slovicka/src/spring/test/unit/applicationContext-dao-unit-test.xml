@@ -21,11 +21,5 @@
 		lazy-init="false">
 		<constructor-arg value="-web,-webPort,11111" />
 	</bean>
-	
-	<!-- DAO -->
-	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
-		<constructor-arg ref="dbConnector" />
-		<property name="config" ref="config" />
-		<property name="tablesManager" ref="tablesManager" />
-	</bean>
+
 </beans>

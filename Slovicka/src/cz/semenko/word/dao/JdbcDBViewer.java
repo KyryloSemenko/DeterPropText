@@ -661,7 +661,7 @@ public class JdbcDBViewer implements DBViewer {
 			}
 			String character = nextCharacter.toString();
 			character = character.replaceAll("'", "''");
-			Long nextId = getTablesManager().getNextCellsId();
+			Long nextId = tablesManager.getNextCellsId();
 			Cell ob = new Cell(nextId, nextCharacter.toString(), 1L);
 			buff.append("(" + nextId + ", '" + character + "', 1), ");
 			tempMapOfCharsToId.put(nextCharacter, ob);

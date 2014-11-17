@@ -18,11 +18,5 @@
 			<value type="boolean">true</value>
 		</constructor-arg>
 	</bean>
-	
-	<!-- DAO TODO spojit se slowMemory -->
-	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
-		<constructor-arg ref="dbConnector" />
-		<property name="config" ref="config" />
-	</bean>
  
 </beans>

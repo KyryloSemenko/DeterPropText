@@ -13,11 +13,4 @@
 	    <property name="driverClassName" value="org.apache.derby.jdbc.AutoloadedDriver" />
 	</bean>
 	
-	<!-- DAO -->
-	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
-		<constructor-arg ref="dbConnector" />
-		<property name="config" ref="config" />
-		<property name="tablesManager" ref="tablesManager" />
-	</bean>
-	
 </beans>

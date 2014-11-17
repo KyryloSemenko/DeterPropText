@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.h2.store.fs.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

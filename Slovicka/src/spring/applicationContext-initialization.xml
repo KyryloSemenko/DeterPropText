@@ -19,6 +19,13 @@
     </bean>
 	
 	<!-- DAO -->
+	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
+		<constructor-arg ref="dbConnector" />
+		<property name="config" ref="config" />
+		<property name="tablesManager" ref="tablesManager" />
+	</bean>
+	
+	<!-- DAO utility -->
 	<bean id="slowMemory" 
 		class="cz.semenko.word.technology.memory.slow.SlowMemory" 
 		depends-on="dbViewer">

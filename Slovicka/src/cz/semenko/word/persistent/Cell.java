@@ -11,12 +11,14 @@ import cz.semenko.word.Config;
  *
  */
 public class Cell {
+	/** The Cell with id = 0 is dummy. It use for referencing from removed associations. */
 	private Long id;
 	/** Text of the Cell. It saved only when it's size shorter than parameter {@link Config#dbViewer_maxTextLengthToSave} */
 	private String src;
 	/** When Cell represents a single sign, its type is 1.<br>
 	 * When it represents a {@link Associations} of two {@link Cell} objects, its type is higher than 1.<br>
-	 * For example Cell "a" (type 1) and Cell "b" (type 1) creates new Cell "ab" (type 2).
+	 * For example Cell "a" (type 1) and Cell "b" (type 1) creates new Cell "ab" (type 2).<br>
+	 * When type is 0, it mean that cell has been removed.
 	 **/
 	private Long type;
 	Logger logger = Logger.getLogger(Cell.class);

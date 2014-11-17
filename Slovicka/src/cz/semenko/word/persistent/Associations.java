@@ -7,7 +7,7 @@ package cz.semenko.word.persistent;
  */
 public class Associations {
 	private Long id;
-	/** Each Association has its own Cell. Reference to created Cell */
+	/** Each Association has its own Cell. Reference to created Cell. When cell_id 0, it mean that association has been removed and referenced to dummy cell. */
 	private Long cellId;
 	/** ID of source Cells */
 	private Long srcId;

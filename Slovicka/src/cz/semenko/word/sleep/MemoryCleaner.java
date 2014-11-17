@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.dao.CleanupFailureDataAccessException;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.dao.DBViewer;
