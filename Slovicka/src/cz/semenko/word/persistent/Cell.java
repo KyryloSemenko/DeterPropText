@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import cz.semenko.word.Config;
 
 /**
- * Cell class is data transfer object. It represents a connection of two Associations or single sign (character).<br>
+ * Cell class is a data transfer object. It represents a connection of two Associations or single sign (character).<br>
  * 
  * @author Kyrylo Semenko
  *

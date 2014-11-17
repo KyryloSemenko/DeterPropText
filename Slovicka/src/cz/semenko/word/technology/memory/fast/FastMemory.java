@@ -400,7 +400,7 @@ public class FastMemory {
 	public void createNewAssociationsAndCells(
 			Vector<Thought> thoughtPairsToUnion) throws Exception {
 
-		Vector<Cell> newCells = slowMemory.getNewCells(thoughtPairsToUnion);
+		Vector<Cell> newCells = slowMemory.insertNewCells(thoughtPairsToUnion);
 		Vector<Thought> newThoughts = new Vector<Thought>();
 		
 		/** Prida nove cells do FastMemory */

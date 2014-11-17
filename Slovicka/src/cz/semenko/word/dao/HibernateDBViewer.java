@@ -2,6 +2,8 @@ package cz.semenko.word.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -9,23 +11,20 @@ import java.util.Vector;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
 
 /**
- * <p>HibernateDBViewer class.</p>
+ * <p>HibernateDBViewer class is DAO object that use Hibernate to supply data from DB.</p>
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class HibernateDBViewer implements DBViewer {
+	/** Application configuration */
+	private Config config;
 
-
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSuperiorCellsId(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public Vector<Long> getSuperiorCellsId(Vector<Long> pairsToFind)
 			throws SQLException {
@@ -33,10 +32,6 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getAllAssociations(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public Vector<Associations> getAllAssociations(Vector<Long> cellsId)
 			throws Exception {
@@ -44,10 +39,6 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#increaseAssociationsCostToCellsId(java.lang.Long[])
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void increaseAssociationsCostToCellsId(Long[] obIdArray)
 			throws SQLException {
@@ -55,10 +46,6 @@ public class HibernateDBViewer implements DBViewer {
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#increaseAssociationsCost(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void increaseAssociationsCost(Vector<Long> associationsId)
 			throws Exception {
@@ -66,10 +53,7 @@ public class HibernateDBViewer implements DBViewer {
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getNewPrimitiveCells(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Vector<Cell> getNewPrimitiveCells(Vector<Character> nonExistent)
 			throws Exception {
@@ -81,10 +65,6 @@ public class HibernateDBViewer implements DBViewer {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#insertAssociations(java.util.Vector, java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public Vector<Associations> insertAssociations(
 			Vector<Thought> thoughtPairsToUnion, Vector<Cell> newCells)
@@ -93,81 +73,49 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getNewCells(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
-	public Vector<Cell> getNewCells(Vector<Thought> thoughtPairsToUnion)
+	public Vector<Cell> insertNewCells(Vector<Thought> thoughtPairsToUnion)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#deleteCells(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void deleteCells(List<Long> idVector) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#cleanMemoryFromRedundantCells()
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void cleanMemoryFromRedundantCells() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#resetAssociationCost()
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void resetAssociationCost() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#removeEmptyRows()
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void removeEmptyRows() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#finalize()
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public void finalize() throws Throwable {
 		// TODO Auto-generated method stub
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getMaxLevel(java.lang.Long, java.lang.Long)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public int getMaxLevel(Long srcID, Long tgtID) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getCell(java.lang.Long, java.lang.Long, java.lang.Long)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public Long getCell(Long srcCellID, Long tgtCellID,
 			Long synteticProperty) throws Exception {
@@ -175,20 +123,12 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getLeftNeighbours(java.lang.String)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public Vector<Cell> getLeftNeighbours(String src) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrcToCells(java.lang.Long[])
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public Map<Long, String> getSrcToCells(Long[] inputCells)
 			throws Exception {
@@ -196,20 +136,12 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrcAndTgt(java.lang.Long, java.lang.Long)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public String getSrcAndTgt(Long srcCell, Long tgtCell) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getStringToTwoAssociations(java.lang.Long, java.lang.Long)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public String getStringToTwoAssociations(Long lastAssoc, Long nextAssoc)
 			throws Exception {
@@ -217,47 +149,31 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.lang.String)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public String getSrc(String semicolonSeparategId) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.util.Vector)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public String getSrc(Vector<Long> idVector) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#getSrc(java.lang.Long)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public String getSrc(Long cellId) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see cz.semenko.word.database.AbstractDBViewer#executeQuery(java.lang.String)
-	 */
-	/** {@inheritDoc} */
 	@Override
 	public ResultSet executeQuery(String sql) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/** {@inheritDoc} */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Cell> getPrimitiveCells(List<Character> missingChars) {
 		List<String> missingStrings = new Vector<String>();
@@ -274,7 +190,6 @@ public class HibernateDBViewer implements DBViewer {
 		return HibernateUtil.getSessionFactory().openSession();
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Long getMaxAssociationsId() throws SQLException {
 		Session session = getSession();
@@ -282,7 +197,7 @@ public class HibernateDBViewer implements DBViewer {
 		return (Long)q.list().get(0);
 	}
 
-	/** {@inheritDoc} */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Associations> getAssociations(long minId, long maxId,
 			int lowestCostForLeaving) {
@@ -295,7 +210,6 @@ public class HibernateDBViewer implements DBViewer {
 		return result;
 	}
 
-	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Associations> getAllAssociationsLowerThenCost(List<Long> cellsId,
@@ -307,7 +221,6 @@ public class HibernateDBViewer implements DBViewer {
 		return (List<Associations>)q.list();
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public void deleteAssociations(List<Long> assocIdToDelete) {
 		Session s = getSession();
@@ -317,7 +230,6 @@ public class HibernateDBViewer implements DBViewer {
 		return;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Vector<Cell> getCells(Vector<Long> missingCellsId)
 			throws SQLException {
@@ -325,7 +237,6 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Associations getAssociation(Thought srcThought, Thought tgtThought)
 			throws SQLException {
@@ -333,7 +244,6 @@ public class HibernateDBViewer implements DBViewer {
 		return null;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public void deleteEverything() {
 		Session s = getSession();
@@ -353,4 +263,43 @@ public class HibernateDBViewer implements DBViewer {
 		return (Long)s.createQuery("select count(id) from Cells").uniqueResult();
 	}
 
+	@Override
+	public Long getMaxCellsId() throws SQLException {
+		Session s = getSession();
+		return (Long)s.createQuery("select max(id) from Cells").uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<Long> getAvailableCellsIdList() throws SQLException {
+		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
+		Long maxCellsId = getMaxCellsId();
+		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
+		// Select with limit
+		Query query = getSession().createQuery("FROM Cells c WHERE type = 0");
+		query.setMaxResults(numberOfAvailableCellsIdToReturn);
+		query.executeUpdate();
+		result.addAll(query.list());
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableCellsIdToReturn) {
+			result.add(++maxCellsId);
+		}
+		return result;
+	}
+
+	/**
+	 * @return the {@link Config}<br>
+	 * See {@link HibernateDBViewer#config}
+	 */
+	public Config getConfig() {
+		return config;
+	}
+
+	/**
+	 * @param config the {@link Config} to set<br>
+	 * See {@link HibernateDBViewer#config}
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
+	}
 }

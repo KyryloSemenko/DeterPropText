@@ -5,22 +5,22 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 import cz.semenko.word.aware.Knowledge;
+import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.sleep.MemoryCleaner;
 
 /**
- * Singleton. Access to program configuration.
+ * Singleton. Access to application configuration.
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class Config {
 	/** Business name of application */
 	private String application_name = null;
 	/** Place where database lives */
 	private String application_databaseHome;
-	/** Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. TODO: vyzkouset co bude rychlejsi, doprogramovat chovani ktere zajisti nejrychlejsi nacitani */
+	/** Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. */
 	private int dataProvider_numCharsReadsFromInput = 0;
 	/** Velikost tabulky Tables v cache FastMemory */
 	private int fastMemory_tablesTableSize = 0;
@@ -70,6 +70,10 @@ public class Config {
 	private int memoryCleaner_lowestCostForLeaving;
 	/** Length of a text saved to database when a new {@link Cell} creates. Text that longer then this parameter is ignored. This value must not be greater then {@link Cell#src} table column size */
 	private int dbViewer_maxTextLengthToSave;
+	/** How many rows will be clean up during one loop of cleaning tables Cells and Associations from empty rows. */
+	private int dbViewer_numRowsForCleanupRotation;
+	/** Number of IDs that has to be returned from {@link DBViewer#getAvailableCellsIdList()} */
+	private int dbViewer_numberOfAvailableCellsIdToReturn;
 	
 	private static XMLConfiguration conf;
 	/** Constant <code>logger</code> */
@@ -106,6 +110,8 @@ public class Config {
 			setThoughtsSaver_filePathToSaveThoughts(conf.getString("thoughtsSaver.filePathToSaveThoughts"));
 			setMemoryCleaner_lowestCostForLeaving(conf.getInt("memoryCleaner.lowestCostForLeaving"));
 			setDbViewer_maxTextLengthToSave(conf.getInt("dbViewer.maxTextLengthToSave"));
+			setDbViewer_numRowsForCleanupRotation(conf.getInt("dbViewer.numRowsForCleanupRotation"));
+			setDbViewer_numberOfAvailableCellsIdToReturn(conf.getInt("dbViewer.numberOfAvailableCellsIdToReturn"));
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 			System.out.println(e.getMessage());
@@ -439,5 +445,33 @@ public class Config {
 	/** See {@link Config#dbViewer_maxTextLengthToSave} */
 	public void setDbViewer_maxTextLengthToSave(int dbViewer_maxTextLengthToSave) {
 		this.dbViewer_maxTextLengthToSave = dbViewer_maxTextLengthToSave;
+	}
+
+	/** See {@link Config#dbViewer_numRowsForCleanupRotation} */
+	public int getDbViewer_numRowsForCleanupRotation() {
+		return dbViewer_numRowsForCleanupRotation;
+	}
+
+	/** See {@link Config#dbViewer_numRowsForCleanupRotation} */
+	public void setDbViewer_numRowsForCleanupRotation(
+			int dbViewer_numRowsForCleanupRotation) {
+		this.dbViewer_numRowsForCleanupRotation = dbViewer_numRowsForCleanupRotation;
+	}
+
+	/**
+	 * @return the {@link int}<br>
+	 * See {@link Config#dbViewer_numberOfAvailableCellsIdToReturn}
+	 */
+	public int getDbViewer_numberOfAvailableCellsIdToReturn() {
+		return dbViewer_numberOfAvailableCellsIdToReturn;
+	}
+
+	/**
+	 * @param dbViewer_numberOfAvailableCellsIdToReturn the {@link int} to set<br>
+	 * See {@link Config#dbViewer_numberOfAvailableCellsIdToReturn}
+	 */
+	public void setDbViewer_numberOfAvailableCellsIdToReturn(
+			int dbViewer_numberOfAvailableCellsIdToReturn) {
+		this.dbViewer_numberOfAvailableCellsIdToReturn = dbViewer_numberOfAvailableCellsIdToReturn;
 	}
 }

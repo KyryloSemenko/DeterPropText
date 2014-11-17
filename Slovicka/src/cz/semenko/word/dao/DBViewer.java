@@ -2,6 +2,7 @@ package cz.semenko.word.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -97,13 +98,13 @@ public interface DBViewer {
 			throws SQLException;
 
 	/**
-	 * <p>Create {@link java.util.Vector} of new {@link Cell} objects and save it to database.</p>
+	 * <p>Create {@link java.util.Vector} of new {@link Cell} objects and save it in empty database rows.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Cell> getNewCells(
+	public Vector<Cell> insertNewCells(
 			Vector<Thought> thoughtPairsToUnion) throws Exception;
 
 	/**
@@ -125,6 +126,7 @@ public interface DBViewer {
 	public int getMaxLevel(Long srcID, Long tgtID) throws Exception;
 
 	/**
+	 * @deprecated
 	 * <p>getCell.</p>
 	 *
 	 * @param srcCellID a {@link java.lang.Long} object.
@@ -298,7 +300,7 @@ public interface DBViewer {
 
 	/**
 	 * Warning!<br>
-	 * Clean all data from database.<br>
+	 * It cleans all data from database.<br>
 	 * Its like dead and born.
 	 * @throws java.sql.SQLException if any.
 	 */
@@ -311,4 +313,14 @@ public interface DBViewer {
 	/** @return number of {@link Cell} objects in table
 	 * @throws SQLException */
 	public Long getCellsCount() throws SQLException;
+
+	/** @return max id of {@link Cells} object in table
+	 * @throws SQLException */
+	public Long getMaxCellsId() throws SQLException;
+
+	/** 
+	 * {@link MemoryCleaner} removes rows from tables. These removed IDs will by reused.
+	 * @return available IDs for {@link Cell} table 
+	 * @throws SQLException */
+	public Collection<Long> getAvailableCellsIdList() throws SQLException;
 }

@@ -52,14 +52,15 @@
 		<property name="config" ref="config" />
 	</bean>
 	
-	<!-- Reprezentace tabulky ASSOCIATIONS -->
-	<bean id="associations" class="cz.semenko.word.persistent.Associations">
-	</bean>
-	
 	<!-- Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru -->
 	<bean id="CellsCreationDecider" class="cz.semenko.word.aware.policy.CellCreationDecider">
 		<property name="fastMemory" ref="fastMemory" />
 		<property name="config" ref="config" />
+	</bean>
+	
+	<!-- Manager of database tables -->
+	<bean id="tablesManager" class="cz.semenko.word.dao.TablesManager">
+		<property name="dbViewer" ref="dbViewer" />
 	</bean>
 	
 	<!-- Spanek a zapomenuti -->

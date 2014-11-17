@@ -135,7 +135,7 @@ public class SlowMemory {
 		Vector<Thought> thoughtPairsToUnion = new Vector<Thought>();
 		thoughtPairsToUnion.add(srcThought);
 		thoughtPairsToUnion.add(tgtThought);
-		Vector<Cell> cells = getNewCells(thoughtPairsToUnion);
+		Vector<Cell> cells = insertNewCells(thoughtPairsToUnion);
 		result = cells.firstElement();
 		return result;
 	}
@@ -244,16 +244,14 @@ public class SlowMemory {
 	}
 
 	/**
-	 * <p>getNewCells.</p>
+	 * <p>Insert new {@link Cell} objects to database</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Cell> getNewCells(Vector<Thought> thoughtPairsToUnion)
-			throws Exception {
-		/** Vytvori nove cells */
-		Vector<Cell> newCells = dbViewer.getNewCells(thoughtPairsToUnion);
+	public Vector<Cell> insertNewCells(Vector<Thought> thoughtPairsToUnion)	throws Exception {
+		Vector<Cell> newCells = dbViewer.insertNewCells(thoughtPairsToUnion);
 		return newCells;
 	}
 

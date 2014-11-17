@@ -14,10 +14,10 @@ import cz.semenko.word.persistent.Cell;
 
 
 /**
- * <p>MemoryCleaner class.</p>
+ * <p>MemoryCleaner class manage sleep process.</p>
+ * <img src="doc-files/class_diagram_MemoryCleaner.png"/>
  *
- * @author k
- * @version $Id: $Id
+ * @author Kyrylo Semenko
  */
 public class MemoryCleaner {
 	
@@ -65,8 +65,10 @@ public class MemoryCleaner {
 		cleanMemoryFromRedundantAssociations(lowestCostForLeave);		
 	}
 	
-	/** See {@link #cleanMemoryFromRedundantCells() 
-	 * @param lowestCostForLeave remove Associations with less COST than parameter */
+	/** 
+	 * Remove Associations with COST less than parameter<br>
+	 * See {@link #cleanMemoryFromRedundantCells() 
+	 * @param lowestCostForLeave */
 	private void cleanMemoryFromRedundantAssociations (int lowestCostForLeave) throws SQLException {
 		// Start from the last Association
 		int numOfAssocToProcess = 500; //TODO add to config file
