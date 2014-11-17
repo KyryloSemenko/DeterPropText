@@ -25,7 +25,7 @@ public class MemoryCleanerTest extends TestCase {
 	 * @throws Exception
 	 */
 	@Test
-	public void testCleanMemoryFromRedundantAssociations () throws Exception {
+	public void testCleanMemoryFromUselessAssociations () throws Exception {
 		ApplicationContext ctx = ApplicationContextProvider.getIntegrationTestApplicationContext();
 		MemoryCleaner memoryCleaner = ctx.getBean(MemoryCleaner.class);
 		Knowledge knowledge = ctx.getBean(Knowledge.class);
@@ -43,7 +43,7 @@ public class MemoryCleanerTest extends TestCase {
 		testData = memory.getCells("abc".toCharArray());
 		knowledge.remember(testData);
 		
-		memoryCleaner.cleanMemoryFromRedundantCells();
+		memoryCleaner.cleanMemoryFromUselessCells();
 		Long expectedAssociationsCount = 1L;
 		Long expectedCellsCount = 4L;
 		

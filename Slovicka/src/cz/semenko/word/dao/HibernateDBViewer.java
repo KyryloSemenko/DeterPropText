@@ -87,7 +87,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void cleanMemoryFromRedundantCells() throws SQLException {
+	public void cleanMemoryFromUselessCells() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}

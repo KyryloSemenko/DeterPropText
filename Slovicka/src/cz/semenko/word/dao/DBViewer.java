@@ -277,7 +277,7 @@ public interface DBViewer {
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void cleanMemoryFromRedundantCells() throws SQLException;
+	public void cleanMemoryFromUselessCells() throws SQLException;
 	
 	/**
 	 * Dostane z DB objekty dle zadanych ID. Nevytvari nove.

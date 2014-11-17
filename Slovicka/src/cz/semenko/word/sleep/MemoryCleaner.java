@@ -53,22 +53,22 @@ public class MemoryCleaner {
 	/**
 	 * Remove {@link Associations} objects and their {@link Cell} objects that has low {@link Associations#cost} from database.<br>
 	 * Sequence diagram <br>
-	 * <img src="doc-files\sequence_diagram_cleanMemoryFromRedundantCells.png"/> <br>
+	 * <img src="doc-files\sequence_diagram_cleanMemoryFromUselessCells.png"/> <br>
 	 * Activity diagram <br>
-	 * <img src="doc-files\activity_diagram_cleanMemoryFromRedundantCells.png"/> <br>
+	 * <img src="doc-files\activity_diagram_cleanMemoryFromUselessCells.png"/> <br>
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void cleanMemoryFromRedundantCells() throws SQLException {
+	public void cleanMemoryFromUselessCells() throws SQLException {
 		int lowestCostForLeave = config.getMemoryCleaner_lowestCostForLeaving();
-		cleanMemoryFromRedundantAssociations(lowestCostForLeave);		
+		cleanMemoryFromUselessAssociations(lowestCostForLeave);		
 	}
 	
 	/** 
 	 * Remove Associations with COST less than parameter<br>
-	 * See {@link #cleanMemoryFromRedundantCells() 
+	 * See {@link #cleanMemoryFromUselessCells() 
 	 * @param lowestCostForLeave */
-	private void cleanMemoryFromRedundantAssociations (int lowestCostForLeave) throws SQLException {
+	private void cleanMemoryFromUselessAssociations (int lowestCostForLeave) throws SQLException {
 		// Start from the last Association
 		int numOfAssocToProcess = 500; //TODO add to config file
 		Long maxAssociationsId = dbViewer.getMaxAssociationsId();

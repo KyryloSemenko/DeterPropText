@@ -500,7 +500,7 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void cleanMemoryFromRedundantCells() throws SQLException {
+	public void cleanMemoryFromUselessCells() throws SQLException {
 		int numRows = 200;
 		for (int i = 0; i <= getTablesManager().getMaxCellsId(); i = i + numRows) {
 			// Overujeme postupne sadu po sade
