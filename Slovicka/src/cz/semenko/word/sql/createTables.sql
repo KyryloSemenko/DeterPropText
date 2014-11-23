@@ -65,6 +65,6 @@ create index assoc_cost_idx on associations(cost);
 ALTER TABLE cells ALTER COLUMN id RESTART WITH 0;
 ALTER TABLE associations ALTER COLUMN id RESTART WITH 0;
 
--- Dummy cell to reference from removed associations
+-- Dummy cell to reference from removed associations, see Cell class and 'type' field javaDoc
 INSERT INTO cells (id, src, type) VALUES (0, NULL, 1);
 --commit;

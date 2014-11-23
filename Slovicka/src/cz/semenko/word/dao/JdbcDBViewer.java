@@ -433,8 +433,8 @@ public class JdbcDBViewer implements DBViewer {
 	}
 	
 	@Override
-	public void deleteCells(List<Long> cellsIdToDelete) throws SQLException {
-		StringBuilder sql = new StringBuilder("DELETE FROM cells WHERE id IN (");
+	public void markCellsAsAvailableForReuse(List<Long> cellsIdToDelete) throws SQLException {
+		StringBuilder sql = new StringBuilder("UPDATE cells SET src = null, type = 0 WHERE id IN (");
 		for (Long nextId : cellsIdToDelete) {
 			sql.append(nextId);
 			sql.append(COMMA);
@@ -751,8 +751,8 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException {
-		StringBuilder sql = new StringBuilder("DELETE FROM associations WHERE id IN (");
+	public void markAssociationsAsAvailableForReuse(List<Long> assocIdToDelete) throws SQLException {
+		StringBuilder sql = new StringBuilder("UPDATE associations SET cell_id = 0, src_id = 0, tgt_id = 0, cost = 0 WHERE id IN (");
 		for (Long nextId : assocIdToDelete) {
 			sql.append(nextId);
 			sql.append(COMMA);
@@ -820,7 +820,7 @@ public class JdbcDBViewer implements DBViewer {
 	public void deleteEverything() throws SQLException {
 		String sql = "DELETE FROM associations";
 		connection.createStatement().executeUpdate(sql);
-		sql = "DELETE FROM cells";
+		sql = "DELETE FROM cells WHERE id > " + Cell.DUMMY_CELL_ID;
 		connection.createStatement().executeUpdate(sql);
 	}
 
@@ -857,11 +857,54 @@ public class JdbcDBViewer implements DBViewer {
 	    rs.close();
 	    return result;
 	}
+	
+	/**
+	 * @return the {@link TablesManager}<br>
+	 * See {@link JdbcDBViewer#tablesManager}
+	 */
+	public TablesManager getTablesManager() {
+		return tablesManager;
+	}
+	
+	/**
+	 * @param tablesManager the {@link TablesManager} to set<br>
+	 * See {@link JdbcDBViewer#tablesManager}
+	 */
+	public void setTablesManager(TablesManager tablesManager) {
+		this.tablesManager = tablesManager;
+	}
+	
+	/**
+	 * @return the {@link DBconnector}<br>
+	 * See {@link JdbcDBViewer#dbConnector}
+	 */
+	public DBconnector getDbConnector() {
+		return dbConnector;
+	}
+	
+	/**
+	 * @param dbConnector the {@link DBconnector} to set<br>
+	 * See {@link JdbcDBViewer#dbConnector}
+	 */
+	public void setDbConnector(DBconnector dbConnector) {
+		this.dbConnector = dbConnector;
+	}
 
 	@Override
 	public Collection<Long> getAvailableCellsIdList() throws SQLException {
 		int numberOfAvailableCellsIdToReturn = config.getDbViewer_numberOfAvailableCellsIdToReturn();
 		Long maxCellsId = getMaxCellsId();
+		Collection<Long> result = getCellsIdMarkedAsAvailable();
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableCellsIdToReturn) {
+			result.add(++maxCellsId);
+		}
+		return result;
+	}
+	
+	@Override
+	public Collection<Long> getCellsIdMarkedAsAvailable() throws SQLException {
+		int numberOfAvailableCellsIdToReturn = config.getDbViewer_numberOfAvailableCellsIdToReturn();
 		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
 		// Select with limit
 		String sql = 
@@ -874,43 +917,7 @@ public class JdbcDBViewer implements DBViewer {
 		while (rs.next()) {
 			result.add(rs.getLong("id"));
 		}
-		// If there are no enough free IDs
-		while (result.size() < numberOfAvailableCellsIdToReturn) {
-			result.add(++maxCellsId);
-		}
 		return result;
-	}
-
-	/**
-	 * @return the {@link TablesManager}<br>
-	 * See {@link JdbcDBViewer#tablesManager}
-	 */
-	public TablesManager getTablesManager() {
-		return tablesManager;
-	}
-
-	/**
-	 * @param tablesManager the {@link TablesManager} to set<br>
-	 * See {@link JdbcDBViewer#tablesManager}
-	 */
-	public void setTablesManager(TablesManager tablesManager) {
-		this.tablesManager = tablesManager;
-	}
-
-	/**
-	 * @return the {@link DBconnector}<br>
-	 * See {@link JdbcDBViewer#dbConnector}
-	 */
-	public DBconnector getDbConnector() {
-		return dbConnector;
-	}
-
-	/**
-	 * @param dbConnector the {@link DBconnector} to set<br>
-	 * See {@link JdbcDBViewer#dbConnector}
-	 */
-	public void setDbConnector(DBconnector dbConnector) {
-		this.dbConnector = dbConnector;
 	}
 
 	@Override
@@ -918,6 +925,17 @@ public class JdbcDBViewer implements DBViewer {
 			throws SQLException {
 		int numberOfAvailableAssociationsIdToReturn = config.getDbViewer_numberOfAvailableAssociationsIdToReturn();
 		Long maxAssociationsId = getMaxAssociationsId();
+		ArrayList<Long> result = getAssociationsIdMarkedAsAvailable();
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableAssociationsIdToReturn) {
+			result.add(++maxAssociationsId);
+		}
+		return result;
+	}
+
+	@Override
+	public ArrayList<Long> getAssociationsIdMarkedAsAvailable() throws SQLException {
+		int numberOfAvailableAssociationsIdToReturn = config.getDbViewer_numberOfAvailableAssociationsIdToReturn();
 		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableAssociationsIdToReturn);
 		// Select with limit
 		String sql = 
@@ -929,10 +947,6 @@ public class JdbcDBViewer implements DBViewer {
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		while (rs.next()) {
 			result.add(rs.getLong("id"));
-		}
-		// If there are no enough free IDs
-		while (result.size() < numberOfAvailableAssociationsIdToReturn) {
-			result.add(++maxAssociationsId);
 		}
 		return result;
 	}

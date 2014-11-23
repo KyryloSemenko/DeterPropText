@@ -81,7 +81,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void deleteCells(List<Long> idVector) {
+	public void markCellsAsAvailableForReuse(List<Long> idVector) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -216,9 +216,9 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public void deleteAssociations(List<Long> assocIdToDelete) {
+	public void markAssociationsAsAvailableForReuse(List<Long> assocIdToDelete) {
 		Session s = getSession();
-		s.createQuery("delete from Associations where id in :param")
+		s.createQuery("update Associations a set a.cell_id = 0, a.srsId = 0, a.tgtId = 0, cost = 0 where id in :param")
 			.setParameterList("param", assocIdToDelete)
 			.executeUpdate();
 		return;
@@ -242,7 +242,7 @@ public class HibernateDBViewer implements DBViewer {
 	public void deleteEverything() {
 		Session s = getSession();
 		s.createQuery("delete from Associations").executeUpdate();
-		s.createQuery("delete from Cell").executeUpdate();
+		s.createQuery("delete from Cell where id > " + Cell.DUMMY_CELL_ID).executeUpdate();
 	}
 
 	@Override
@@ -262,25 +262,7 @@ public class HibernateDBViewer implements DBViewer {
 		Session s = getSession();
 		return (Long)s.createQuery("select max(id) from Cells").uniqueResult();
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Collection<Long> getAvailableCellsIdList() throws SQLException {
-		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
-		Long maxCellsId = getMaxCellsId();
-		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
-		// Select with limit
-		Query query = getSession().createQuery("FROM Cells c WHERE c.type = 0");
-		query.setMaxResults(numberOfAvailableCellsIdToReturn);
-		query.executeUpdate();
-		result.addAll(query.list());
-		// If there are no enough free IDs
-		while (result.size() < numberOfAvailableCellsIdToReturn) {
-			result.add(++maxCellsId);
-		}
-		return result;
-	}
-
+	
 	/**
 	 * @return the {@link Config}<br>
 	 * See {@link HibernateDBViewer#config}
@@ -288,7 +270,7 @@ public class HibernateDBViewer implements DBViewer {
 	public Config getConfig() {
 		return config;
 	}
-
+	
 	/**
 	 * @param config the {@link Config} to set<br>
 	 * See {@link HibernateDBViewer#config}
@@ -297,22 +279,55 @@ public class HibernateDBViewer implements DBViewer {
 		this.config = config;
 	}
 
+	@Override
+	public Collection<Long> getAvailableCellsIdList() throws SQLException {
+		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
+		Long maxCellsId = getMaxCellsId();
+		Collection<Long> result = getCellsIdMarkedAsAvailable();
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableCellsIdToReturn) {
+			result.add(++maxCellsId);
+		}
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<Long> getCellsIdMarkedAsAvailable() throws SQLException {
+		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
+		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
+		// Select with limit
+		Query query = getSession().createQuery("FROM Cells c WHERE c.type = 0");
+		query.setMaxResults(numberOfAvailableCellsIdToReturn);
+		query.executeUpdate();
+		result.addAll(query.list());
+		return result;
+	}
+
 	@Override
 	public Collection<Long> getAvailableAssociationsIdList()
 			throws SQLException {
 		int numberOfAvailableAssociationsIdToReturn = getConfig().getDbViewer_numberOfAvailableAssociationsIdToReturn();
 		Long maxAssociationsId = getMaxAssociationsId();
+		ArrayList<Long> result = getAssociationsIdMarkedAsAvailable();
+		// If there are no enough free IDs
+		while (result.size() < numberOfAvailableAssociationsIdToReturn) {
+			result.add(++maxAssociationsId);
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ArrayList<Long> getAssociationsIdMarkedAsAvailable()
+			throws SQLException {
+		int numberOfAvailableAssociationsIdToReturn = getConfig().getDbViewer_numberOfAvailableAssociationsIdToReturn();
 		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableAssociationsIdToReturn);
 		// Select with limit
 		Query query = getSession().createQuery("FROM Associations a WHERE a.type = 0");
 		query.setMaxResults(numberOfAvailableAssociationsIdToReturn);
 		query.executeUpdate();
 		result.addAll(query.list());
-		// If there are no enough free IDs
-		while (result.size() < numberOfAvailableAssociationsIdToReturn) {
-			result.add(++maxAssociationsId);
-		}
 		return result;
 	}
 }

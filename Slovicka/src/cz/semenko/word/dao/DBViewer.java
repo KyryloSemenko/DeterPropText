@@ -2,11 +2,13 @@ package cz.semenko.word.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
@@ -108,12 +110,12 @@ public interface DBViewer {
 			Vector<Thought> thoughtPairsToUnion) throws Exception;
 
 	/**
-	 * <p>deleteCells.</p>
+	 * Set Cells as empty or available for reuse
 	 *
 	 * @param idVector a {@link java.util.List} object.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public void deleteCells(List<Long> idVector) throws SQLException;
+	public void markCellsAsAvailableForReuse(List<Long> idVector) throws SQLException;
 
 	/**
 	 * <p>getMaxLevel.</p>
@@ -251,12 +253,12 @@ public interface DBViewer {
 			List<Long> cellsId, int lowestCostForLeaving) throws SQLException;
 
 	/**
-	 * Delete all assotiations from ID list
+	 * Set Associations as empty or available for reuse
 	 *
 	 * @throws java.sql.SQLException if any.
 	 * @param assocIdToDelete a {@link java.util.List} object.
 	 */
-	public void deleteAssociations(List<Long> assocIdToDelete) throws SQLException;
+	public void markAssociationsAsAvailableForReuse(List<Long> assocIdToDelete) throws SQLException;
 	
 	/**
 	 * Nastavi cost u vsech objektu na 0.
@@ -312,14 +314,30 @@ public interface DBViewer {
 	public Long getMaxCellsId() throws SQLException;
 
 	/** 
-	 * {@link MemoryCleaner} removes rows from tables. These removed IDs will by reused.
-	 * @return available IDs for {@link Cell} table 
+	 * This method always returns constant number of IDs. <br>
+	 * {@link MemoryCleaner} marks {@link Cell} rows as available for reuse. These available IDs will by returned (see {@link DBViewer#getCellsIdMarkedAsAvailable()} method).
+	 * In addition when its count is less then {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}, then extra IDs will be generated.
+	 * @return available for reuse IDs from {@link Cell} table plus new generated IDs in total numbers of {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}
 	 * @throws SQLException */
 	public Collection<Long> getAvailableCellsIdList() throws SQLException;
+	
+	/**
+	 * Don't use this method for obtain available IDs. Please use a {@link DBViewer#getAvailableCellsIdList()} method instead. 
+	 * @return list of {@link Cell} IDs marked as available (linked to {@link Cell#DUMMY_TYPE}) row. But number of returned IDs is not greater then {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}
+	 */
+	public Collection<Long> getCellsIdMarkedAsAvailable() throws SQLException;
 
 	/** 
-	 * {@link MemoryCleaner} removes rows from tables. These removed IDs will by reused.
-	 * @return available IDs for {@link Associations} table 
+	 * This method always returns constant number of IDs. <br>
+	 * {@link MemoryCleaner} marks {@link Associations} rows as available for reuse. These available IDs will by returned (see {@link DBViewer#getAssociationsIdMarkedAsAvailable()} method).
+	 * In addition when its count is less then {@link Config#getDbViewer_numberOfAvailableAssociationsIdToReturn()}, then extra IDs will be generated.
+	 * @return available for reuse IDs from {@link Associations} table plus new generated IDs in total numbers of {@link Config#getDbViewer_numberOfAvailableAssociationsIdToReturn()}
 	 * @throws SQLException */
 	public Collection<Long> getAvailableAssociationsIdList() throws SQLException;
+
+	/**
+	 * Don't use this method for obtain available IDs. Please use a {@link DBViewer#getAvailableAssociationsIdList()} method instead. 
+	 * @return list of {@link Associations} IDs marked as available (linked to {@link Cell#DUMMY_CELL_ID}) row. But number of returned IDs is not greater then {@link Config#getDbViewer_numberOfAvailableAssociationsIdToReturn()}
+	 */
+	public Collection<Long> getAssociationsIdMarkedAsAvailable() throws SQLException;
 }

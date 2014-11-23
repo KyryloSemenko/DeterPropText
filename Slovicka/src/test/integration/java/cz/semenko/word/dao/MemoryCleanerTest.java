@@ -44,10 +44,17 @@ public class MemoryCleanerTest extends TestCase {
 		knowledge.remember(testData);
 		
 		memoryCleaner.cleanMemoryFromUselessCells();
-		Long expectedAssociationsCount = 1L;
-		Long expectedCellsCount = 4L;
+		
+		Long expectedAssociationsCount = 2L;
+		Long expectedCellsCount = 6L;
 		
 		assertEquals(expectedAssociationsCount, dbViewer.getAssociationsCount());
 		assertEquals(expectedCellsCount, dbViewer.getCellsCount());
+
+		int expectedAvailableAssociationsCount = 1;
+		int expectedAvailableCellsCount = 1;
+		
+		assertEquals(expectedAvailableAssociationsCount, dbViewer.getAssociationsIdMarkedAsAvailable().size());
+		assertEquals(expectedAvailableCellsCount, dbViewer.getCellsIdMarkedAsAvailable().size());
 	}
 }

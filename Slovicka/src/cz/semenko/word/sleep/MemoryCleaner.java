@@ -91,7 +91,7 @@ public class MemoryCleaner {
 				}
 				levels.add(nextLevel);
 			}
-			deleteAssociationsAndCellsList(levels); // ksemenko TODO nemazat ale nastavit na dummy
+			markAssociationsAndCellsAsAvailableForReuse(levels);
 		}
 		
 		logger.info("STOP. Number of Associations: " + dbViewer.getMaxAssociationsId());
@@ -120,11 +120,11 @@ public class MemoryCleaner {
 	}
 
 	/**
-	 * Remove Associations and Cells from database
+	 * Set Associations and Cells as empty or available for reuse
 	 * @param levels
 	 * @throws SQLException
 	 */
-	private void deleteAssociationsAndCellsList(List<List<Associations>> levels)
+	private void markAssociationsAndCellsAsAvailableForReuse(List<List<Associations>> levels)
 			throws SQLException {
 		List<Long> assocIdToDelete = new ArrayList<Long>();
 		List<Long> cellsToDelete = new ArrayList<Long>();
@@ -137,8 +137,8 @@ public class MemoryCleaner {
 			}
 		}
 		logger.info("Removing Associations. Count: " + assocIdToDelete.size());
-		dbViewer.deleteAssociations(assocIdToDelete);
-		dbViewer.deleteCells(cellsToDelete);
+		dbViewer.markAssociationsAsAvailableForReuse(assocIdToDelete);
+		dbViewer.markCellsAsAvailableForReuse(cellsToDelete);
 	}
 
 	/**

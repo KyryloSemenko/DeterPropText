@@ -5,12 +5,16 @@ import org.apache.log4j.Logger;
 import cz.semenko.word.Config;
 
 /**
- * Cell class is a data transfer object. It represents a connection of two Associations or single sign (character).<br>
+ * Cell class is a data transfer object. It represents a connection of two {@link Associations} or single sign (character).<br>
  * 
  * @author Kyrylo Semenko
  *
  */
 public class Cell {
+	/** Cell with id = 0 is used for mark related {@link Associations} as linked with nothing. Please don't remove this Cell from database.*/
+	public static final Long DUMMY_CELL_ID = Long.valueOf(0L);
+	/** {@link Cell#type} 0 is used for mark this Cell as removed and available for reuse. */
+	public static final Long DUMMY_TYPE = Long.valueOf(0L);
 	/** The Cell with id = 0 is dummy. It use for referencing from removed associations. */
 	private Long id;
 	/** Text of the Cell. It saved only when it's size shorter than parameter {@link Config#dbViewer_maxTextLengthToSave} */
@@ -18,7 +22,7 @@ public class Cell {
 	/** When Cell represents a single sign, its type is 1.<br>
 	 * When it represents a {@link Associations} of two {@link Cell} objects, its type is higher than 1.<br>
 	 * For example Cell "a" (type 1) and Cell "b" (type 1) creates new Cell "ab" (type 2).<br>
-	 * When type is 0, it mean that cell has been removed.
+	 * When type is 0, it mean that this cell has been removed and its id is available for reuse.
 	 **/
 	private Long type;
 	Logger logger = Logger.getLogger(Cell.class);

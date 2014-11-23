@@ -1,13 +1,17 @@
 package cz.semenko.word.persistent;
 
 /**
- * Associations class is data transfer object. Represent association of two {@link cz.semenko.word.persistent.Cell}
+ * Associations class is data transfer object. It represents association of two {@link Cell} objects.
  * @author Kyrylo Semenko
  *
  */
 public class Associations {
 	private Long id;
-	/** Each Association has its own Cell. Reference to created Cell. When cell_id 0, it mean that association has been removed and referenced to dummy cell. */
+	/** The {@link Association} object can have a related {@link Cell} object.<br>
+	 *  If Association has a related {@link Cell} object, it mean that Association is used often.<br>
+	 *  If Association has'nt a related {@link Cell} object, it mean that Association is new.<br>
+	 *  When cell_id is 0, it mean that association has been removed and referenced to dummy cell. Such Association id can be reused when a new one is creating.<br>
+	 *  Human brain has around 86,000,000,000 neurons and an average adult has 100000000000000 - 1000000000000000 synapses (by information from <a href="http://en.wikipedia.org/wiki/List_of_animals_by_number_of_neurons">Wikipedia</a>) */
 	private Long cellId;
 	/** ID of source Cells */
 	private Long srcId;

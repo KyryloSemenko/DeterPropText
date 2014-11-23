@@ -72,9 +72,9 @@ public class Config {
 	private int dbViewer_maxTextLengthToSave;
 	/** How many rows will be clean up during one loop of cleaning tables Cells and Associations from empty rows. */
 	private int dbViewer_numRowsForCleanupRotation;
-	/** Number of IDs to return from {@link DBViewer#getAvailableCellsIdList()} */
+	/** Number of IDs to return from {@link DBViewer#getAvailableCellsIdList()} when new {@link Cell} objects are creating */
 	private int dbViewer_numberOfAvailableCellsIdToReturn;
-	/** Number of IDs to return from {@link DBViewer#getAvailableAssociationsIdList()} */
+	/** Number of IDs to return from {@link DBViewer#getAvailableAssociationsIdList()} when new {@link Associations} objects are creating */
 	private int dbViewer_numberOfAvailableAssociationsIdToReturn;
 	
 	private static XMLConfiguration conf;
