@@ -166,7 +166,7 @@ public class JdbcDBViewer implements DBViewer {
 				Long nextId = idVector.get(i);
 				for (int k = 0; k < associations.size(); k++) {
 					Associations nextAssoc = associations.get(k);
-					if (nextAssoc.getObjId().compareTo(nextId) == 0) {
+					if (nextAssoc.getCellId().compareTo(nextId) == 0) {
 						idVector.remove(i);
 						idVector.insertElementAt(nextAssoc.getSrcId(), i);
 						idVector.insertElementAt(nextAssoc.getTgtId(), i+1);
@@ -525,14 +525,14 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Vector<Cell> getNewPrimitiveCells(Vector<Character> nonExistent) throws Exception {
+	public Vector<Cell> createNewPrimitiveCells(Vector<Character> nonExistChars) throws Exception {
 		Vector<Cell> result = new Vector<Cell>();
 		Map<Character, Cell> tempMapOfCharsToId = new TreeMap<Character, Cell>();
 		StringBuilder buff = new StringBuilder();
 		
-		for (int i = 0; i < nonExistent.size(); i++) {
+		for (int i = 0; i < nonExistChars.size(); i++) {
 			// Neukladame do DB zdvojene a opakujici se znaky
-			Character nextCharacter = nonExistent.get(i);
+			Character nextCharacter = nonExistChars.get(i);
 			if (tempMapOfCharsToId.containsKey(nextCharacter)) {
 				Cell ob = tempMapOfCharsToId.get(nextCharacter);
 				result.add(ob);

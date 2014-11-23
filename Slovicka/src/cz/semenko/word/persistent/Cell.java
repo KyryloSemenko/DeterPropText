@@ -11,6 +11,8 @@ import cz.semenko.word.Config;
  *
  */
 public class Cell {
+	/** Base type of a {@link Cell} object, for example a single character */
+	public static final Long TYPE_PRIMITIVE = 1L;
 	/** Cell with id = 0 is used for mark related {@link Associations} as linked with nothing. Please don't remove this Cell from database.*/
 	public static final Long DUMMY_CELL_ID = Long.valueOf(0L);
 	/** {@link Cell#type} 0 is used for mark this Cell as removed and available for reuse. */

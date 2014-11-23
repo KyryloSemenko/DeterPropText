@@ -107,4 +107,18 @@ public class TablesManager {
 	public void setMaxAssociationsId(Long maxAssociationsId) {
 		this.maxAssociationsId = maxAssociationsId;
 	}
+
+	/**
+	 * When creation of {@link Cell} object crashed, return back unused ID
+	 */
+	public void moveBackNextCellsId(Long returnedId) {
+		availableCellsIdStack.set(0, returnedId);
+	}
+	
+	/**
+	 * When creation of {@link Associations} object crashed, return back unused ID
+	 */
+	public void moveBackNextAssociationsId(Long returnedId) {
+		availableAssociationsIdStack.set(0, returnedId);
+	}
 }

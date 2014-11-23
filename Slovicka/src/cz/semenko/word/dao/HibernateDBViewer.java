@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.hibernate.Query;
@@ -24,6 +25,8 @@ import cz.semenko.word.persistent.Cell;
 public class HibernateDBViewer implements DBViewer {
 	/** Application configuration */
 	private Config config;
+	private HibernateSessionFactory hibernateSessionFactory;
+	private TablesManager tablesManager;
 
 	@Override
 	public Vector<Long> getSuperiorCellsId(Vector<Long> pairsToFind)
@@ -53,15 +56,31 @@ public class HibernateDBViewer implements DBViewer {
 		
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Vector<Cell> getNewPrimitiveCells(Vector<Character> nonExistent)
-			throws Exception {
+	public Vector<Cell> createNewPrimitiveCells(Vector<Character> newChars)	throws Exception {
 		Vector<Cell> result = new Vector<Cell>();
+		Map<String, Cell> map = new TreeMap<String, Cell>();
+		
 		Session sess = getSession();
-		Query q = sess.createQuery("from Cell where src in (:param)");
-		q.setParameterList("param", nonExistent);
-		result = (Vector<Cell>)q.list();
+		for (Character nextChar : newChars) {
+			Cell cell = map.get(nextChar.toString());
+			if (cell == null) {
+				cell = new Cell();
+				Long nextId = tablesManager.getNextCellsId();
+				cell.setId(nextId);
+				cell.setSrc(nextChar.toString());
+				cell.setType(Cell.TYPE_PRIMITIVE);
+				map.put(nextChar.toString(), cell);
+				try {
+					sess.save(cell);
+				} catch (Exception e) {
+					tablesManager.moveBackNextCellsId(nextId);
+					throw e;
+				}
+			}
+			result.add(cell);
+		}
+		
 		return result;
 	}
 
@@ -181,7 +200,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 	
 	private Session getSession() {
-		return HibernateUtil.getSessionFactory().openSession();
+		return getHibernateSessionFactory().getSessionFactory().openSession();
 	}
 
 	@Override
@@ -254,13 +273,13 @@ public class HibernateDBViewer implements DBViewer {
 	@Override
 	public Long getCellsCount() throws SQLException {
 		Session s = getSession();
-		return (Long)s.createQuery("select count(id) from Cells").uniqueResult();
+		return (Long)s.createQuery("select count(id) from Cell").uniqueResult();
 	}
 
 	@Override
 	public Long getMaxCellsId() throws SQLException {
 		Session s = getSession();
-		return (Long)s.createQuery("select max(id) from Cells").uniqueResult();
+		return (Long)s.createQuery("select max(id) from Cell").uniqueResult();
 	}
 	
 	/**
@@ -297,9 +316,8 @@ public class HibernateDBViewer implements DBViewer {
 		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
 		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
 		// Select with limit
-		Query query = getSession().createQuery("FROM Cells c WHERE c.type = 0");
+		Query query = getSession().createQuery("FROM Cell c WHERE c.type = 0");
 		query.setMaxResults(numberOfAvailableCellsIdToReturn);
-		query.executeUpdate();
 		result.addAll(query.list());
 		return result;
 	}
@@ -326,8 +344,39 @@ public class HibernateDBViewer implements DBViewer {
 		// Select with limit
 		Query query = getSession().createQuery("FROM Associations a WHERE a.type = 0");
 		query.setMaxResults(numberOfAvailableAssociationsIdToReturn);
-		query.executeUpdate();
 		result.addAll(query.list());
 		return result;
+	}
+
+	/**
+	 * @return the {@link HibernateSessionFactory}<br>
+	 * See {@link HibernateDBViewer#hibernateSessionFactory}
+	 */
+	public HibernateSessionFactory getHibernateSessionFactory() {
+		return hibernateSessionFactory;
+	}
+
+	/**
+	 * @param hibernateSessionFactory the {@link HibernateSessionFactory} to set<br>
+	 * See {@link HibernateDBViewer#hibernateSessionFactory}
+	 */
+	public void setHibernateSessionFactory(HibernateSessionFactory hibernateSessionFactory) {
+		this.hibernateSessionFactory = hibernateSessionFactory;
+	}
+
+	/**
+	 * @return the {@link TablesManager}<br>
+	 * See {@link HibernateDBViewer#tablesManager}
+	 */
+	public TablesManager getTablesManager() {
+		return tablesManager;
+	}
+
+	/**
+	 * @param tablesManager the {@link TablesManager} to set<br>
+	 * See {@link HibernateDBViewer#tablesManager}
+	 */
+	public void setTablesManager(TablesManager tablesManager) {
+		this.tablesManager = tablesManager;
 	}
 }

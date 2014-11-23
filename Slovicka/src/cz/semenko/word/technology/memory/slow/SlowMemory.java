@@ -74,12 +74,10 @@ public class SlowMemory {
 		return result;
 	}
 	/**
-	 * Nalezne v DB idecka masivu znaku. Jestli znak neexistuje - vytvori ho. Zdvojene a opakujici se znaky nevytvari nove,
-	 * ale vrati jejich id.
+	 * Find {@link Cell} objects in database. If some objects doesn't found, a new objects of type {@link Cell#TYPE_PRIMITIVE} are created.<br>
 	 *
-	 * @param missingChars a {@link java.util.Vector} object.
-	 * @return Pole Idecek znaku
-	 * @throws SQLException if any.
+	 * @param missingChars a {@link java.util.Vector} of {@link Character} objects.
+	 * @return Array of Long - IDs of found or created {@link Cell} objects.
 	 * @throws java.lang.Exception if any.
 	 */
 	public Long[] getCharsId(Vector<Character> missingChars) throws Exception {
@@ -90,16 +88,16 @@ public class SlowMemory {
 			primCellsMap.put(ob.getSrc(), ob);
 		}
 		// Get nonexists caracters
-		Vector<Character> nonExistent = new Vector<Character>();// vector nenalezenych znaku
+		Vector<Character> nonExistCharacters = new Vector<Character>();// vector nenalezenych znaku
 		for (Character ch : missingChars) {
 			if (primCellsMap.containsKey(Character.toString(ch)) == false) {
-				nonExistent.add(ch);
+				nonExistCharacters.add(ch);
 			}
 		}
-		if (nonExistent.size() > 0) {
+		if (nonExistCharacters.size() > 0) {
 			// Doplni objekty ktere jeste nejsou v DB
 			// Ziskame klice vlozenych znaku
-			Vector<Cell> newCells = dbViewer.getNewPrimitiveCells(nonExistent);
+			Vector<Cell> newCells = dbViewer.createNewPrimitiveCells(nonExistCharacters);
 			for (Cell ob : newCells) {
 				primCellsMap.put(ob.getSrc(), ob);
 			}

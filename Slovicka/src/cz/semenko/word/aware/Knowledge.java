@@ -165,7 +165,7 @@ public class Knowledge {
 			if (assoc == null) {
 				unitedCellsId.add(null);
 			} else {
-				unitedCellsId.add(assoc.getObjId());
+				unitedCellsId.add(assoc.getCellId());
 			}
 		}
 		return unitedCellsId;

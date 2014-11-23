@@ -287,7 +287,7 @@ public class FastMemory {
 		for (int i = 0; i < localAssocTable.size(); i++) {
 			Associations nextAssoc = localAssocTable.get(i);
 			for (int k = 0; k < arrayOfCellsId.length; k++) {
-				if (nextAssoc.getObjId() == arrayOfCellsId[k]) {
+				if (nextAssoc.getCellId() == arrayOfCellsId[k]) {
 					nextAssoc.setCost(nextAssoc.getCost() + 1);
 				}
 			}
@@ -574,7 +574,7 @@ public class FastMemory {
 	 */
 	public Thought getThought(Thought th1, Thought th2) throws Exception {
 		Associations ass = th1.getAssociation(th2);
-		Long cellId = ass.getObjId();
+		Long cellId = ass.getCellId();
 		Vector<Long> vector = new Vector<Long>();
 		vector.add(cellId);
 		Vector<Cell> cellsVector = getCells(vector);

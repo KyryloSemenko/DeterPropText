@@ -33,7 +33,7 @@ public class Associations {
 			Long tgtTable, Long cost) {
 		super();
 		this.id = id;
-		this.cellId = cellId;
+		this.setCellId(cellId);
 		this.srcId = srcId;
 		this.srcTable = srcTable;
 		this.tgtId = tgtId;
@@ -58,7 +58,7 @@ public class Associations {
 	@Override
 	public String toString() {
 		return ("\nid=" + id
-				+ "\t\tcellId=" + cellId
+				+ "\t\tcellId=" + getCellId()
 				+ "\t\tsrcId=" + srcId
 				+ "\t\tsrcTable=" + srcTable
 				+ "\t\ttgtId=" + tgtId
@@ -114,11 +114,19 @@ public class Associations {
 		this.cost = cost;
 	}
 
-	public Long getObjId() {
+	/**
+	 * @return the {@link Long}<br>
+	 * See {@link Associations#cellId}
+	 */
+	public Long getCellId() {
 		return cellId;
 	}
 
-	public void setObjId(Long cellId) {
+	/**
+	 * @param cellId the {@link Long} to set<br>
+	 * See {@link Associations#cellId}
+	 */
+	public void setCellId(Long cellId) {
 		this.cellId = cellId;
 	}
 }

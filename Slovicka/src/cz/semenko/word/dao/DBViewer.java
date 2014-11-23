@@ -2,7 +2,6 @@ package cz.semenko.word.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -78,14 +77,14 @@ public interface DBViewer {
 			throws Exception;
 
 	/**
-	 * <p>getNewPrimitiveCells.</p>
+	 * Create new Cells of {@link Cell#TYPE_PRIMITIVE} type and save it to database.
 	 *
-	 * @param nonExistent a {@link java.util.Vector} object.
-	 * @return a {@link java.util.Vector} object.
+	 * @param nonExistChars a {@link java.util.Vector} of {@link Character} object.
+	 * @return a {@link java.util.Vector} of {@link Cell} objects with type {@link Cell#TYPE_PRIMITIVE}.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Cell> getNewPrimitiveCells(
-			Vector<Character> nonExistent) throws Exception;
+	public Vector<Cell> createNewPrimitiveCells(
+			Vector<Character> nonExistChars) throws Exception;
 
 	/**
 	 * <p>insertAssociations.</p>

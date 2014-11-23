@@ -3,7 +3,7 @@
                                    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 13-Mar-2011 7:54:35 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
- <class entity-name="TABLES" name="cz.semenko.word.persistent.Tables" schema="K">
+ <class entity-name="TABLES" name="cz.semenko.word.persistent.Tables">
   <id name="id" type="java.lang.Long">
             <column name="ID" />
             <generator class="assigned" />

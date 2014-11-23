@@ -133,7 +133,7 @@ public class MemoryCleaner {
 			List<Associations> nextLevel = levels.get(m);
 			for (int n = 0; n < nextLevel.size(); n++) {
 				assocIdToDelete.add(nextLevel.get(n).getId());
-				cellsToDelete.add(nextLevel.get(n).getObjId());
+				cellsToDelete.add(nextLevel.get(n).getCellId());
 			}
 		}
 		logger.info("Removing Associations. Count: " + assocIdToDelete.size());

@@ -19,10 +19,18 @@
     </bean>
 	
 	<!-- DAO -->
-	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer">
-		<constructor-arg ref="dbConnector" />
-		<property name="config" ref="config" />
-		<property name="tablesManager" ref="tablesManager" />
+<!-- 	<bean id="dbViewer" class="cz.semenko.word.dao.JdbcDBViewer"> -->
+<!-- 		<constructor-arg ref="dbConnector" /> -->
+<!-- 		<property name="config" ref="config" /> -->
+<!-- 		<property name="tablesManager" ref="tablesManager" /> -->
+<!-- 	</bean> -->
+	<bean id="dbViewer" class="cz.semenko.word.dao.HibernateDBViewer">
+		<property name="hibernateSessionFactory" ref="hibernateSessionFactory" />
+        <property name="config" ref="config" />
+        <property name="tablesManager" ref="tablesManager" />
+	</bean>
+	<bean id="hibernateSessionFactory" class="cz.semenko.word.dao.HibernateSessionFactory">
+		<property name="dbUrl" value="jdbc:derby:#{config.application_databaseHome}/integrationTest;create=true" />
 	</bean>
 	
 	<!-- DAO utility -->
