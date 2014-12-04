@@ -56,6 +56,8 @@ public class Knowledge {
 	 * Metoda ktera vyhledava jiz zname objekty, vytvari nove, nastavuje COST
 	 * u znamych Associations. Behem zpracovani vstupnich objektu tato metoda ovlivnuje
 	 * stav Knowledge - vedomi.
+	 * @param inputCells IDs of {@link cz.semenko.word.persistent.Cell} objects that has been read in one hit,
+	 * see {@link cz.semenko.word.Config#dataProvider_numCharsReadsFromInput}
 	 */
 	public void remember(Long[] inputCells) throws Exception {
 		// Pripojit inputCells k predchozim myslenkam
@@ -218,13 +220,15 @@ public class Knowledge {
 	 * Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
 	 * Vytvorit nove objekty.
 	 * Omezit velikost vektoru myslenek aby nedochazelo k preteceni.
+	 * @param inputCells IDs of {@link cz.semenko.word.persistent.Cell} objects that has been read in one hit,
+	 * see {@link cz.semenko.word.Config#dataProvider_numCharsReadsFromInput}<br>
 	 **/
 	private Vector<Thought> attachToExistingThoughts(Vector<Thought> thoughts2,
 			Long[] inputCells) throws Exception {
 		/* Nejdriv dohledat spicky pro rozhodovani, jake objekty spojovat 
 		 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 		 * ktere vytvareji tyto spickove objekty */
-		inputCells = thoughtUnionDecider.getTipsAndJoin(inputCells);
+		inputCells = thoughtUnionDecider.getTipsAndJoinCells(inputCells);
 		// Vytvorit vektor Thoughts
 		Vector<Thought> newThoughts = new Vector<Thought>();
 		newThoughts = getExistsThoughts(inputCells);

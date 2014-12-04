@@ -3,7 +3,7 @@ package cz.semenko.word.aware.policy;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
-import cz.semenko.word.aware.Layers;
+import cz.semenko.word.aware.LayersManager;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.technology.memory.fast.FastMemory;
@@ -209,23 +209,22 @@ public class ThoughtUnionDecider {
 	 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 	 * ktere vytvareji tyto spickove objekty.
 	 *
-	 * @param inputCells an array of {@link java.lang.Long} cells.
+	 * @param inputCells IDs of {@link cz.semenko.word.persistent.Cell} objects that has been read in one hit,
+	 * see {@link cz.semenko.word.Config#dataProvider_numCharsReadsFromInput}<br>
 	 * @throws java.lang.Exception if any.
 	 * @return an array of {@link java.lang.Long} cells.
 	 */
-	public Long[] getTipsAndJoin(Long[] inputCells) throws Exception {
-		Layers layers = new Layers();
-		for (int i = 0; i < inputCells.length; i++) {
-			layers.addId(inputCells[i]);
-		}
-		while (layers.hasLastLayerPairs()) {
-			int constant = layers.getCurrentConstant();
+	public Long[] getTipsAndJoinCells(Long[] inputCells) throws Exception {
+		LayersManager layers = new LayersManager();
+		layers.setFirstLayer(inputCells);
+		while (layers.lastLayerHasPairs()) {
+			int constant = layers.getCurrentPositionForUnion();
 			Vector<Long> layer = layers.getCurrentLayer();
 			Vector<Long> superiorLayer = fastMemory.getSuperiorCellsId(layer, constant);
 			layers.setLastLayer(superiorLayer);
 		}
 		// Sestavime objekty od spicek dolu
-		Long[] result = layers.getHighlyCells();
+		Long[] result = layers.getBottomCells();
 		fastMemory.increaseAssociationsCostToCellsId(result);
 		return result;
 	}

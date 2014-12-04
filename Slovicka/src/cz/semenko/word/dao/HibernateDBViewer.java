@@ -31,29 +31,25 @@ public class HibernateDBViewer implements DBViewer {
 	@Override
 	public Vector<Long> getSuperiorCellsId(Vector<Long> pairsToFind)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public Vector<Associations> getAllAssociations(Vector<Long> cellsId)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public void increaseAssociationsCostToCellsId(Long[] obIdArray)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public void increaseAssociationsCost(Vector<Long> associationsId)
 			throws Exception {
-		// TODO Auto-generated method stub
-		
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
@@ -88,102 +84,86 @@ public class HibernateDBViewer implements DBViewer {
 	public Vector<Associations> insertAssociations(
 			Vector<Thought> thoughtPairsToUnion, Vector<Cell> newCells)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public Vector<Cell> insertNewCells(Vector<Thought> thoughtPairsToUnion)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
-	public void markCellsAsAvailableForReuse(List<Long> idVector) {
-		// TODO Auto-generated method stub
-		
+	public void markCellsAsAvailableForReuse(List<Long> idVector) throws SQLException {
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public void cleanMemoryFromUselessCells() throws SQLException {
-		// TODO Auto-generated method stub
-		
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public void resetAssociationCost() throws SQLException {
-		// TODO Auto-generated method stub
-		
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public void finalize() throws Throwable {
-		// TODO Auto-generated method stub
-		
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public int getMaxLevel(Long srcID, Long tgtID) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public Long getCell(Long srcCellID, Long tgtCellID,
 			Long synteticProperty) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public Vector<Cell> getLeftNeighbours(String src) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public Map<Long, String> getSrcToCells(Long[] inputCells)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public String getSrcAndTgt(Long srcCell, Long tgtCell) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public String getStringToTwoAssociations(Long lastAssoc, Long nextAssoc)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public String getSrc(String semicolonSeparategId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public String getSrc(Vector<Long> idVector) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public String getSrc(Long cellId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public ResultSet executeQuery(String sql) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -246,15 +226,13 @@ public class HibernateDBViewer implements DBViewer {
 	@Override
 	public Vector<Cell> getCells(Vector<Long> missingCellsId)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override
 	public Associations getAssociation(Thought srcThought, Thought tgtThought)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override

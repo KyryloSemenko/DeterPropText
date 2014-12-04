@@ -99,14 +99,13 @@ public interface DBViewer {
 			throws SQLException;
 
 	/**
-	 * <p>Create {@link java.util.Vector} of new {@link Cell} objects and save it in empty database rows.</p>
+	 * <p>Create {@link java.util.Vector} of new {@link Cell} objects and save these Cells to DB.</p>
 	 *
 	 * @param thoughtPairsToUnion a {@link java.util.Vector} object.
 	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Cell> insertNewCells(
-			Vector<Thought> thoughtPairsToUnion) throws Exception;
+	public Vector<Cell> insertNewCells(Vector<Thought> thoughtPairsToUnion) throws Exception;
 
 	/**
 	 * Set Cells as empty or available for reuse
