@@ -450,6 +450,7 @@ public class JdbcDBViewer implements DBViewer {
 	public Vector<Cell> insertNewCells(Vector<Thought> thoughtPairsToUnion) throws Exception {
 		Vector<Cell> result = new Vector<Cell>();
 		connection.setAutoCommit(false);
+		String sql = null;
 		try {
 			StringBuilder buff = new StringBuilder();
 			for (int i = 0; i < thoughtPairsToUnion.size()-1; i = i+2) {
@@ -474,13 +475,13 @@ public class JdbcDBViewer implements DBViewer {
 				return result;
 			}
 			buff.delete(buff.length() - 2, buff.length());
-			String sql = "INSERT INTO CELLS (id, src, type) VALUES " + buff.toString();
+			sql = "INSERT INTO CELLS (id, src, type) VALUES " + buff.toString();
 			connection.createStatement().executeUpdate(sql);
 			connection.commit();
 		} catch (Exception e) {
 			connection.rollback();
-			logger.error(e.getMessage(), e);
-			System.out.println(e.getMessage() + e);
+			logger.error(e.getMessage() + " SQL: " + sql, e);
+			System.out.println(e.getMessage() + " SQL: " + sql);
 			System.exit(1);
 		}		
 		connection.setAutoCommit(true);
@@ -520,7 +521,12 @@ public class JdbcDBViewer implements DBViewer {
 		buff.delete(buff.length()-2, buff.length());
 		String sql = "INSERT INTO associations (id, src_id, src_tbl, tgt_id, tgt_tbl, cost, cell_id) " + 
 		"VALUES " + buff.toString();
-		connection.createStatement().executeUpdate(sql);
+		try {
+			connection.createStatement().executeUpdate(sql);
+		} catch (Exception e) {
+			logger.error(e.getLocalizedMessage() + " SQL: " + sql);
+			throw e;
+		}
 		return result;
 	}
 
@@ -891,9 +897,8 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Collection<Long> getAvailableCellsIdList() throws SQLException {
+	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) throws SQLException {
 		int numberOfAvailableCellsIdToReturn = config.getDbViewer_numberOfAvailableCellsIdToReturn();
-		Long maxCellsId = getMaxCellsId();
 		Collection<Long> result = getCellsIdMarkedAsAvailable();
 		// If there are no enough free IDs
 		while (result.size() < numberOfAvailableCellsIdToReturn) {
@@ -921,10 +926,9 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Collection<Long> getAvailableAssociationsIdList()
+	public Collection<Long> getAvailableAssociationsIdList(Long maxAssociationsId)
 			throws SQLException {
 		int numberOfAvailableAssociationsIdToReturn = config.getDbViewer_numberOfAvailableAssociationsIdToReturn();
-		Long maxAssociationsId = getMaxAssociationsId();
 		ArrayList<Long> result = getAssociationsIdMarkedAsAvailable();
 		// If there are no enough free IDs
 		while (result.size() < numberOfAvailableAssociationsIdToReturn) {

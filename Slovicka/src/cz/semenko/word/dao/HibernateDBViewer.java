@@ -277,9 +277,8 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Collection<Long> getAvailableCellsIdList() throws SQLException {
+	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) throws SQLException {
 		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
-		Long maxCellsId = getMaxCellsId();
 		Collection<Long> result = getCellsIdMarkedAsAvailable();
 		// If there are no enough free IDs
 		while (result.size() < numberOfAvailableCellsIdToReturn) {
@@ -301,10 +300,8 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Collection<Long> getAvailableAssociationsIdList()
-			throws SQLException {
+	public Collection<Long> getAvailableAssociationsIdList(Long maxAssociationsId) throws SQLException {
 		int numberOfAvailableAssociationsIdToReturn = getConfig().getDbViewer_numberOfAvailableAssociationsIdToReturn();
-		Long maxAssociationsId = getMaxAssociationsId();
 		ArrayList<Long> result = getAssociationsIdMarkedAsAvailable();
 		// If there are no enough free IDs
 		while (result.size() < numberOfAvailableAssociationsIdToReturn) {

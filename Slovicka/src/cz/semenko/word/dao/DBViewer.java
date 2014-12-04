@@ -315,9 +315,10 @@ public interface DBViewer {
 	 * This method always returns constant number of IDs. <br>
 	 * {@link MemoryCleaner} marks {@link Cell} rows as available for reuse. These available IDs will by returned (see {@link DBViewer#getCellsIdMarkedAsAvailable()} method).
 	 * In addition when its count is less then {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}, then extra IDs will be generated.
+	 * @param maxCellsId Max ID from CELLS table
 	 * @return available for reuse IDs from {@link Cell} table plus new generated IDs in total numbers of {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}
 	 * @throws SQLException */
-	public Collection<Long> getAvailableCellsIdList() throws SQLException;
+	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) throws SQLException;
 	
 	/**
 	 * Don't use this method for obtain available IDs. Please use a {@link DBViewer#getAvailableCellsIdList()} method instead. 
@@ -329,9 +330,10 @@ public interface DBViewer {
 	 * This method always returns constant number of IDs. <br>
 	 * {@link MemoryCleaner} marks {@link Associations} rows as available for reuse. These available IDs will by returned (see {@link DBViewer#getAssociationsIdMarkedAsAvailable()} method).
 	 * In addition when its count is less then {@link Config#getDbViewer_numberOfAvailableAssociationsIdToReturn()}, then extra IDs will be generated.
+	 * @param maxAssociationsId Max ID from ASSOCIATIONS table
 	 * @return available for reuse IDs from {@link Associations} table plus new generated IDs in total numbers of {@link Config#getDbViewer_numberOfAvailableAssociationsIdToReturn()}
 	 * @throws SQLException */
-	public Collection<Long> getAvailableAssociationsIdList() throws SQLException;
+	public Collection<Long> getAvailableAssociationsIdList(Long maxAssociationsId) throws SQLException;
 
 	/**
 	 * Don't use this method for obtain available IDs. Please use a {@link DBViewer#getAvailableAssociationsIdList()} method instead. 

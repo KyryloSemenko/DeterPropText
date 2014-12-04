@@ -119,7 +119,6 @@ public class LayersManager {
 		boolean hasPair = false;
 		int numberOfNotNulIds = 0;
 		Vector<Long> lastLayer = layers.lastElement();
-		System.out.println(layers);
 		int positionForUnion = positionsForUnion.lastElement();
 		for (int i = 0; i < lastLayer.size(); i = i + positionForUnion) {
 			Long nextId = lastLayer.get(i);

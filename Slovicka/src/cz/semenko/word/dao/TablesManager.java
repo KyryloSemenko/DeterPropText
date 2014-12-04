@@ -46,7 +46,7 @@ public class TablesManager {
 	 * @throws SQLException */
 	public Long getNextCellsId() throws SQLException {
 		if (availableCellsIdStack.empty()) {
-			availableCellsIdStack.addAll(dbViewer.getAvailableCellsIdList());
+			availableCellsIdStack.addAll(dbViewer.getAvailableCellsIdList(getMaxCellsId()));
 		}
 		setMaxCellsId(availableCellsIdStack.remove(0));
 		return getMaxCellsId();
@@ -68,7 +68,7 @@ public class TablesManager {
 	 * @throws SQLException */
 	public Long getNextAssociationsId() throws SQLException {
 		if (availableAssociationsIdStack.empty()) {
-			availableAssociationsIdStack.addAll(dbViewer.getAvailableAssociationsIdList());
+			availableAssociationsIdStack.addAll(dbViewer.getAvailableAssociationsIdList(getMaxAssociationsId()));
 		}
 		setMaxAssociationsId(availableAssociationsIdStack.remove(0));
 		return getMaxAssociationsId();
