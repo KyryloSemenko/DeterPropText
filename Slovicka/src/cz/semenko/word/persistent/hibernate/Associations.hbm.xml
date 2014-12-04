@@ -9,7 +9,7 @@
             <generator class="assigned" />
         </id>
         <property name="cellId" type="java.lang.Long">
-            <column name="OBJ_ID" />
+            <column name="CELL_ID" />
         </property>
         <property name="srcId" type="java.lang.Long">
             <column name="SRC_ID" not-null="true" />
