@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -458,7 +457,7 @@ public class JdbcDBViewer implements DBViewer {
 				Thought th2 = thoughtPairsToUnion.get(i+1);
 				Long type = th1.getActiveCell().getType() + th2.getActiveCell().getType();
 				// TODO odstranit po uspesnem testovani
-				if (type > config.getKnowledge_relateThoughtsUpToCellType() * 2) {
+				if (type > config.getCellsCreationDecider_createNewCellsToAllPairsDepth() * 2) {
 					throw new Exception ("Typ noveho objektu je vyssi nez je povoleno v konfiguracnim souboru." +
 							" Typ objektu = " + type + "\r\nThought 1 = " + th1 + "\r\nThought 2 = " + th2);
 				}
@@ -531,32 +530,36 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Vector<Cell> createNewPrimitiveCells(Vector<Character> nonExistChars) throws Exception {
-		Vector<Cell> result = new Vector<Cell>();
-		Map<Character, Cell> tempMapOfCharsToId = new TreeMap<Character, Cell>();
-		StringBuilder buff = new StringBuilder();
-		
-		for (int i = 0; i < nonExistChars.size(); i++) {
-			// Neukladame do DB zdvojene a opakujici se znaky
-			Character nextCharacter = nonExistChars.get(i);
-			if (tempMapOfCharsToId.containsKey(nextCharacter)) {
-				Cell ob = tempMapOfCharsToId.get(nextCharacter);
+	public Vector<Cell> createNewPrimitiveCells(Vector<Character> nonExistChars) {
+		try {
+			Vector<Cell> result = new Vector<Cell>();
+			Map<Character, Cell> tempMapOfCharsToId = new TreeMap<Character, Cell>();
+			StringBuilder buff = new StringBuilder();
+			
+			for (int i = 0; i < nonExistChars.size(); i++) {
+				// Neukladame do DB zdvojene a opakujici se znaky
+				Character nextCharacter = nonExistChars.get(i);
+				if (tempMapOfCharsToId.containsKey(nextCharacter)) {
+					Cell ob = tempMapOfCharsToId.get(nextCharacter);
+					result.add(ob);
+					continue;
+				}
+				String character = nextCharacter.toString();
+				character = character.replaceAll("'", "''");
+				Long nextId = tablesManager.getNextCellsId();
+				Cell ob = new Cell(nextId, nextCharacter.toString(), 1L);
+				buff.append("(" + nextId + ", '" + character + "', 1), ");
+				tempMapOfCharsToId.put(nextCharacter, ob);
 				result.add(ob);
-				continue;
 			}
-			String character = nextCharacter.toString();
-			character = character.replaceAll("'", "''");
-			Long nextId = tablesManager.getNextCellsId();
-			Cell ob = new Cell(nextId, nextCharacter.toString(), 1L);
-			buff.append("(" + nextId + ", '" + character + "', 1), ");
-			tempMapOfCharsToId.put(nextCharacter, ob);
-			result.add(ob);
+			buff.delete(buff.length() - 2, buff.length());
+			String sqlIns = "INSERT INTO cells (id, src, type) VALUES "; //(?, 1), (?, 1)...
+			buff.insert(0, sqlIns);		
+			connection.createStatement().executeUpdate(buff.toString());		
+			return result;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
-		buff.delete(buff.length() - 2, buff.length());
-		String sqlIns = "INSERT INTO cells (id, src, type) VALUES "; //(?, 1), (?, 1)...
-		buff.insert(0, sqlIns);		
-		connection.createStatement().executeUpdate(buff.toString());		
-		return result;
 	}
 
 	@Override
@@ -691,7 +694,7 @@ public class JdbcDBViewer implements DBViewer {
 		return result;
 	}
 
-	public List<Cell> getPrimitiveCells(List<Character> missingChars) throws SQLException {
+	public List<Cell> getPrimitiveCells(List<Character> missingChars) {
 		List<Cell> result = new Vector<Cell>();
 		if (missingChars.size() == 0) {
 			return result;
@@ -718,9 +721,9 @@ public class JdbcDBViewer implements DBViewer {
 				result.add(nextOb);
 			}
 			rs.close();
-		} catch (SQLSyntaxErrorException e) {
-			logger.error(e.getMessage() + " Query: " + query + param.toString() + ")", e);
-			throw new SQLException(e);
+		} catch (SQLException e) {
+			String message = e.getMessage() + " Query: " + query + param.toString() + ")";
+			throw new RuntimeException(message, e);
 		}
 		return result;
 	}
@@ -853,15 +856,19 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Long getMaxCellsId() throws SQLException {
-		Long result = null;
-	    String sql = "SELECT MAX(id) FROM cells";
-	    ResultSet rs = connection.createStatement().executeQuery(sql);
-	    if (rs.next()) {
-	    	result = rs.getLong(1);
-	    }
-	    rs.close();
-	    return result;
+	public Long getMaxCellsId() {
+		try {
+			Long result = null;
+		    String sql = "SELECT MAX(id) FROM cells";
+		    ResultSet rs = connection.createStatement().executeQuery(sql);
+		    if (rs.next()) {
+		    	result = rs.getLong(1);
+		    }
+		    rs.close();
+		    return result;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
@@ -897,7 +904,7 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) throws SQLException {
+	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) {
 		int numberOfAvailableCellsIdToReturn = config.getDbViewer_numberOfAvailableCellsIdToReturn();
 		Collection<Long> result = getCellsIdMarkedAsAvailable();
 		// If there are no enough free IDs
@@ -908,21 +915,25 @@ public class JdbcDBViewer implements DBViewer {
 	}
 	
 	@Override
-	public Collection<Long> getCellsIdMarkedAsAvailable() throws SQLException {
-		int numberOfAvailableCellsIdToReturn = config.getDbViewer_numberOfAvailableCellsIdToReturn();
-		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
-		// Select with limit
-		String sql = 
-			"SELECT tmp.id FROM ("
-			    + "SELECT ROW_NUMBER() OVER() AS rownum, cells.id "
-			    + "FROM cells WHERE type = 0"
-			+ ") AS tmp "
-			+ "WHERE rownum <= " + numberOfAvailableCellsIdToReturn;
-		ResultSet rs = connection.createStatement().executeQuery(sql);
-		while (rs.next()) {
-			result.add(rs.getLong("id"));
+	public Collection<Long> getCellsIdMarkedAsAvailable() {
+		try {
+			int numberOfAvailableCellsIdToReturn = config.getDbViewer_numberOfAvailableCellsIdToReturn();
+			ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
+			// Select with limit
+			String sql = 
+				"SELECT tmp.id FROM ("
+				    + "SELECT (ROW_NUMBER() OVER()) AS cells_rownum, cells.id "
+				    + "FROM cells WHERE type = 0"
+				+ ") AS tmp "
+				+ "WHERE cells_rownum <= " + numberOfAvailableCellsIdToReturn;
+			ResultSet rs = connection.createStatement().executeQuery(sql);
+			while (rs.next()) {
+				result.add(rs.getLong("id"));
+			}
+			return result;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
-		return result;
 	}
 
 	@Override
@@ -944,10 +955,10 @@ public class JdbcDBViewer implements DBViewer {
 		// Select with limit
 		String sql = 
 			"SELECT tmp.id FROM ("
-			    + "SELECT ROW_NUMBER() OVER() AS rownum, associations.id "
+			    + "SELECT ROW_NUMBER() OVER() AS cells_rownum, associations.id "
 			    + "FROM associations WHERE src_id = 0 AND tgt_id = 0"
 			+ ") AS tmp "
-			+ "WHERE rownum <= " + numberOfAvailableAssociationsIdToReturn;
+			+ "WHERE cells_rownum <= " + numberOfAvailableAssociationsIdToReturn;
 		ResultSet rs = connection.createStatement().executeQuery(sql);
 		while (rs.next()) {
 			result.add(rs.getLong("id"));

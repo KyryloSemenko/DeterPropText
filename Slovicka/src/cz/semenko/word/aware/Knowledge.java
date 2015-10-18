@@ -17,7 +17,7 @@ import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
  * <p>Knowledge.<br>
- * The place where thoughts are living. Knowledge differs from subconscious mind
+ * The place where thoughts were living. Knowledge differs from subconscious mind
  * ability to activate events and actions.
  * Knowledge process to more credible thoughts and scenario then subconscious mind.
  * 
@@ -44,20 +44,20 @@ public class Knowledge {
 	
 	/**
 	 * Predicts a continuation of a text.
-	 * @param cell - last cell that has been read
+	 * @param input - array of {@link Cell#id} has been read from input
 	 */
-	private List<Cell> predict(Cell cell) {
+	public List<Cell> suggest(Long[] input) {
 		List<Cell> result = new ArrayList<Cell>();
 		// TODO naimplementovat. Spravovat logiku dle patternu MVC nebo Chain of responsibility.
 		return result;
 	}
 	
 	/**
-	 * Metoda ktera vyhledava jiz zname objekty, vytvari nove, nastavuje COST
-	 * u znamych Associations. Behem zpracovani vstupnich objektu tato metoda ovlivnuje
-	 * stav Knowledge - vedomi.
-	 * @param inputCells IDs of {@link cz.semenko.word.persistent.Cell} objects that has been read in one hit,
-	 * see {@link cz.semenko.word.Config#dataProvider_numCharsReadsFromInput}
+	 * Metoda ktera vyhledava jiz zname objekty, vytvari nove, nastavuje COST u znamych Associations. Behem zpracovani vstupnich objektu tato metoda
+	 * ovlivnuje stav Knowledge - vedomi.
+	 * 
+	 * @param inputCells IDs of {@link cz.semenko.word.persistent.Cell} objects that has been read in one hit, see
+	 * {@link cz.semenko.word.Config#dataProvider_numCharsReadsFromInput}
 	 */
 	public void remember(Long[] inputCells) throws Exception {
 		// Pripojit inputCells k predchozim myslenkam
@@ -70,56 +70,71 @@ public class Knowledge {
 		//TODO: thoughts = createLogicalRelations(thoughts);
 	}
 
-	/* Provest dohledani v DB. Pak vytvaret nove objekty do takove hloubky, jak je to
-	definovano v configuracni promenne. TODO hloubku vytvareni objektu musi definovat
-	a ridit zvlastni objekt. Tato hloubka by mela zalezet na moznostech hardwarovych
-	prostredku a od nastavene politiky uchovavani objektu. 
-	
-	Novy objekt by mel mit reference na nasledujici objekt. Na druhou stranu, nove objekty
-	se ctou ve blocich. Tak ze mozna by se meli zpracovavat stosem.
-	
-	Otazkou je, zda reference maji
-	odkazovat na predchozi primitivni objekt, nebo na sbaleny objekt. Pak je otazkou, zda
-	maji se uchovavat reference na predchazejici objekty a do jake hloubky.
-	Reference na objekty dozadu nebo dopredu prez objekt mohou byt pouzite pro odhaleni chyb a navrh opravy.
-	Soucasne reference dozadu nebo dopredu pomuzou odhalit pravidla a vyjimky z pravidel.
-	
-	Jednym z cilu je dohledani opakujicich se sekvenci.
-	
-	Zatim implementuji nasledujici scenar:
-		Projit vsechny pary v celem thoughts2, zda nemaji assoc na nasledujici objekt.
-		Spojit vsechny ktere maji, nacist nove vznikle Thought.
-		
-		Projit postupne vsechny objekty v thoughts2, a u Thought, ktere nemaji pozadovanou hloubku
-		zapouzdreni (zabaleni) objektu, provest slouceni s nasledujicim objektem. Vyjimkou je posledni
-		prvek.
-	Podrobnejsi scenar:
-		Projit vsechny pary v celem thoughts2, zda jsou vhodnymi klijenty pro spojeni.
-		Jestli objekty pro spojeni jsou vedle sebe, rozhodnout ktery z objektu ma prioritu.
-		Dostat z DB vsechny asociace pro nove objekty. Jestli asociace a novy objekt neexistuje, vytvorit
-			novy Cell a Associations.
-		Sestavit Thoughts pro nove objekty.
-		Nahradit Spojene Thoughts novymi Thoughts.			
-	*/
-	private Vector<Thought> getThoughtsToSomeDepth(Vector<Thought> thoughts2) throws Exception {
+	/**
+	 * <p>
+	 * Provest dohledani v DB. Pak vytvaret nove objekty do takove hloubky, jak je to definovano v configuracni promenne. TODO hloubku vytvareni
+	 * objektu musi definovat a ridit zvlastni objekt. Tato hloubka by mela zalezet na moznostech hardwarovych prostredku a od nastavene politiky
+	 * uchovavani objektu.<br />
+	 * <br />
+	 * Novy objekt by mel mit reference na nasledujici objekt. Na druhou stranu, nove objekty se ctou ve blocich. Tak ze mozna by se meli zpracovavat
+	 * stosem.<br />
+	 * <br />
+	 * Otazkou je, zda reference maji odkazovat na predchozi primitivni objekt, nebo na sbaleny objekt. Pak je otazkou, zda maji se uchovavat
+	 * reference na predchazejici objekty a do jake hloubky.
+	 * </p>
+	 * 
+	 * <p>
+	 * Reference na objekty dozadu nebo dopredu prez objekt mohou byt pouzite pro odhaleni chyb a navrh opravy.Soucasne reference dozadu nebo dopredu
+	 * pomuzou odhalit pravidla a vyjimky z pravidel.<br />
+	 * <br />
+	 * Jednym z cilu je dohledani opakujicich se sekvenci.
+	 * </p>
+	 * 
+	 * <p>
+	 * Zatim implementuji nasledujici scenar:
+	 * </p>
+	 * 
+	 * <ul>
+	 * <li>Projit vsechny pary v celem thoughts2, zda nemaji assoc na nasledujici objekt.</li>
+	 * <li>Spojit vsechny ktere maji, nacist nove vznikle Thought.</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * Projit postupne vsechny objekty v thoughts2, a u Thought, ktere nemaji pozadovanou hloubku zapouzdreni (zabaleni) objektu, provest slouceni s
+	 * nasledujicim objektem. Vyjimkou je posledni prvek.
+	 * </p>
+	 * 
+	 * <p>
+	 * Podrobnejsi scenar:
+	 * </p>
+	 * 
+	 * <ul>
+	 * <li>Projit vsechny pary v celem oldThoughts, zda jsou vhodnymi klijenty pro spojeni</li>
+	 * <li>Jestli objekty pro spojeni jsou vedle sebe, rozhodnout ktery z objektu ma prioritu</li>
+	 * <li>Dostat z DB vsechny asociace pro nove objekty. Jestli asociace a novy objekt neexistuje, vytvorit novy Cell a Associations</li>
+	 * <li>Sestavit Thoughts pro nove objekty</li>
+	 * <li>Nahradit Spojene Thoughts novymi Thoughts</li>
+	 * </ul>
+	 */
+	private Vector<Thought> getThoughtsToSomeDepth(Vector<Thought> oldThoughts) throws Exception {
 		while (true) {
 			/** Ziskame seznam pozici prvku v thoughts2 pro spojeni.*/
-			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(thoughts2);
+			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(oldThoughts);
 			if (positionsToRelation.isEmpty()) {
-				return thoughts2;
+				return oldThoughts;
 			}
 			/** Vytvorime nove Associations, vytvorime nove Cell ktere drive neexistovali a zvysime Cost u stavajicich*/
-			increaseAssociationsCost(thoughts2, positionsToRelation); // Ted vsechny objekty a associace existuji
+			increaseAssociationsCost(oldThoughts, positionsToRelation); // Ted vsechny objekty a associace existuji
 			/** Sestavime pary pro spojovani. */
 			Vector<Thought> thoughtsPairToUnion = new Vector<Thought>();
 			for (int i = 0; i < positionsToRelation.size(); i++) {
-				thoughtsPairToUnion.add(thoughts2.get(positionsToRelation.get(i)));
-				thoughtsPairToUnion.add(thoughts2.get(positionsToRelation.get(i) + 1));
+				thoughtsPairToUnion.add(oldThoughts.get(positionsToRelation.get(i)));
+				thoughtsPairToUnion.add(oldThoughts.get(positionsToRelation.get(i) + 1));
 			}
 			/** Ziskame idecka vsech novych objektu. Zde nemaji co delat prazdne objekty. */
-			Vector<Long> unitedCellsId = getNewCellsId(thoughts2, positionsToRelation);
+			Vector<Long> unitedCellsId = getNewCellsId(oldThoughts, positionsToRelation);
 			if (unitedCellsId.contains(null)) {
-				throw new Exception("Zde nemaji co delat prazdne objekty. " + unitedCellsId);
+				throw new RuntimeException("Empty cells are not allowed in this place. " + unitedCellsId);
 			}
 			/** Ziskame vsechny asociace novych objektu. Nevytvarime nove. */
 			Vector<Associations> allAssociations = fastMemory.getAllAssociations(unitedCellsId);
@@ -140,12 +155,13 @@ public class Knowledge {
 				Thought thought = new Thought(ob, assocVector);
 				newThoughts.add(thought);
 			}
-			/** nahradime stare spojovane pary v thoughs2 na nove spojene newThoughts. */
+			// nahradime stare spojovane pary v thoughs2 na nove spojene newThoughts.
+//			oldThoughts = newThoughts;
 			for (int n = newThoughts.size()-1; n >= 0; n--) {
 				int pos = positionsToRelation.remove(positionsToRelation.size()-1);
-				thoughts2.remove(pos+1);
-				thoughts2.remove(pos);
-				thoughts2.add(pos, newThoughts.get(n));
+				oldThoughts.remove(pos+1);
+				oldThoughts.remove(pos);
+				oldThoughts.add(pos, newThoughts.get(n));
 			}
 		}
 	}
@@ -275,10 +291,9 @@ public class Knowledge {
 	private Vector<Thought> recognizeKnownThoughts(Vector<Thought> newThoughts) throws Exception {
 		// Associations pro zvyseni COST
 		Vector<Long> assocVector = new Vector<Long>();
-		// Nejdriv dostneme doporuceni ke spojeni
-		ThoughtUnionDecider desider = thoughtUnionDecider;
 		while(true) {
-			Vector<Integer> positionsToRelation = desider.getPositionsToRelation(newThoughts);
+			// Nejdriv dostneme doporuceni ke spojeni
+			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(newThoughts);
 			// Pak zjistime ktere thoughts jiz maji spolecnou asociaci a zaroven doporucene ke spojeni z predchoziho filtru	
 			Map<Integer, Thought> existsMergedThoughts = new TreeMap<Integer, Thought>();
 			for (int i = 0; i < newThoughts.size()-1; i++) {

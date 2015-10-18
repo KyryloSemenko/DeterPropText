@@ -4,13 +4,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
 
+import org.apache.commons.collections.list.TreeList;
 import org.apache.log4j.Logger;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
-import cz.semenko.word.persistent.Tables;
 import cz.semenko.word.technology.memory.slow.SlowMemory;
 
 /**
@@ -26,7 +26,6 @@ import cz.semenko.word.technology.memory.slow.SlowMemory;
  * @author Kyrylo Semenko
  */
 public class FastMemory {
-	private Collection<Tables> tablesCollection;
 	/** Constant <code>logger</code> */
 	public static Logger logger = Logger.getLogger(FastMemory.class);
 	/**
@@ -38,7 +37,7 @@ public class FastMemory {
 	 * Vector has a start up - vector.get (0) is up;
 	 * new elements are added to the beginning of the collection.
 	 */
-	private Collection<Cell> cellsCollection;
+	private TreeList cellsCollection;
 	/**
 	 * <ul>Bude naplnovana a doplnovana dle nasledujicich pravidel:
 	 * 	<li>vector ma zacatek nahore - vector.get(0) je nahore;
@@ -48,7 +47,7 @@ public class FastMemory {
 	 * 	<li>Vector has a start up - vector.get (0) is up;
 	 * 	<li>new elements are added to the beginning of the collection.
 	 */
-	private Collection<Associations> associationsCollection;
+	private TreeList associationsCollection;
 	private SlowMemory slowMemory;
 	private Config config;
 	
@@ -60,9 +59,8 @@ public class FastMemory {
 	 */
 	public FastMemory(SlowMemory slowMemory) throws SQLException {
 		this.slowMemory = slowMemory;
-		associationsCollection = slowMemory.getAssociations();
-		cellsCollection = slowMemory.getCells();
-		tablesCollection = slowMemory.getTables(); // TODO vyhodit nebo spravovat Springem
+		associationsCollection = new TreeList(slowMemory.getAssociations());
+		cellsCollection = new TreeList(slowMemory.getCells());
 	}
 
 	/**
@@ -84,10 +82,8 @@ public class FastMemory {
 	 * @return array of Id
 	 * @throws SQLException if any.
 	 * @param chars an array of char.
-	 * @throws java.lang.Exception if any.
 	 */
-	public Long[] getCharsId(char[] chars) throws Exception {
-		Vector<Cell> localCellsTable = (Vector<Cell>)cellsCollection;
+	public Long[] getCharsId(char[] chars) {
 		Long[] result = new Long[chars.length];
 		char ch;
 		Cell object;
@@ -96,15 +92,15 @@ public class FastMemory {
 		lab:
 		for (int i = 0; i < chars.length; i++) {
 			ch = chars[i];
-			for (int k = 0; k < localCellsTable.size(); k++) {
-				object = localCellsTable.get(k);
+			for (int k = 0; k < cellsCollection.size(); k++) {
+				object = (Cell) cellsCollection.get(k);
 				if (object.getSrc().compareTo(Character.toString(ch)) == 0) {
 					result[i] = object.getId();
 					// Posunout object o jednu pozici nahoru jestli neni jiz nahore
 					if (k > 0) {
-						tempCell = localCellsTable.get(k - 1);
-						localCellsTable.set(k - 1, object);
-						localCellsTable.set(k, tempCell);
+						tempCell = (Cell) cellsCollection.get(k - 1);
+						cellsCollection.set(k - 1, object);
+						cellsCollection.set(k, tempCell);
 					}
 					continue lab;
 				}
@@ -127,16 +123,16 @@ public class FastMemory {
 					result[i] = findingChars[pos];
 					Cell newCell = new Cell(findingChars[pos], missingChars.get(pos).toString(), 1L);
 					// Jestli objekt jiz existuje v localCellsTable, znamena to ze jde o zdvojena nebo opakujici se pismena. Nezvedame je nahoru.
-					if (localCellsTable.contains(newCell)) {
+					if (cellsCollection.contains(newCell)) {
 						pos++;
 						continue;
 					}
-					if (localCellsTable.size() < tableCellsSize) { // doplni na zacatek localO nalezeny Cell.
-						localCellsTable.add(0, newCell);
+					if (cellsCollection.size() < tableCellsSize) { // doplni na zacatek localO nalezeny Cell.
+						cellsCollection.add(0, newCell);
 					} else {
 						// vlozi na zacatek vektora sadu z posledniho cteni, napriklad osum poslednich misto starych zaznamu
-						localCellsTable.add(0, newCell);
-						localCellsTable.setSize(config.getFastMemory_tablesCellSize());
+						cellsCollection.add(0, newCell);
+						cellsCollection = new TreeList(cellsCollection.subList(0, tableCellsSize));
 					}
 					pos++;
 				}
@@ -167,20 +163,19 @@ public class FastMemory {
 	 */
 	public Vector<Cell> getCells(Vector<Long> cellsId) throws Exception {
 		Vector<Cell> result = new Vector<Cell>();
-		Vector<Cell> localCellsTable = (Vector<Cell>)cellsCollection;
 		Vector<Long> missingCellsId = new Vector<Long>();
 		// zkusime dohledat objekty v rychle pameti
 		label:
 		for (int i = 0; i < cellsId.size(); i++) {
-			for (int k = 0; k < localCellsTable.size(); k++) {
-				Cell ob = localCellsTable.get(k);
+			for (int k = 0; k < cellsCollection.size(); k++) {
+				Cell ob = (Cell) cellsCollection.get(k);
 				if (ob.getId().compareTo(cellsId.get(i)) == 0) {
 					result.add(i, ob);
 					// zvednout o jednu pozici nalezeny objekt
 					if (k > 0) {
-						Cell tempObj = localCellsTable.get(k-1);
-						localCellsTable.set(k-1, ob);
-						localCellsTable.set(k, tempObj);
+						Cell tempObj = (Cell) cellsCollection.get(k-1);
+						cellsCollection.set(k-1, ob);
+						cellsCollection.set(k, tempObj);
 					}
 					continue label;
 				}
@@ -237,25 +232,23 @@ public class FastMemory {
 	 */
 	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
 		// Jestli srcThought je spojena associaci s tgtThought, nalezne a vrati tuto Association
-		Vector<Associations> assocVector = srcThought.getConsequenceAssociations();
+		Collection<Associations> assocVector = srcThought.getConsequenceAssociations();
 		Associations result = null;
-		for (int i = 0; i < assocVector.size(); i++) {
-			result = assocVector.get(i);
-			if (result.getTgtId().compareTo(tgtThought.getActiveCell().getId()) == 0) {
-				return result;
+		for (Associations assoc : assocVector) {
+			if (assoc.getTgtId().compareTo(tgtThought.getActiveCell().getId()) == 0) {
+				return assoc;
 			}
 		}
 		// Kdyz asociace nenalezena, dohledat Association v Memory
-		assocVector = (Vector<Associations>)associationsCollection;
 		long srcCellId = srcThought.getActiveCell().getId();
 		long tgtCellId = tgtThought.getActiveCell().getId();
-		for (int i = 0; i < assocVector.size(); i++) {
-			Associations nextAssoc = assocVector.get(i);
+		for (int i = 0; i < associationsCollection.size(); i++) {
+			Associations nextAssoc = (Associations) associationsCollection.get(i);
 			if (nextAssoc.getSrcId() == srcCellId && nextAssoc.getTgtId() == tgtCellId) {
 				if (i > 0) { // Zvednout o jednu pozici pouzitou Associations
-					Associations tempAssoc = assocVector.get(i-1);
-					assocVector.set(i-1, nextAssoc);
-					assocVector.set(i, tempAssoc);
+					Associations tempAssoc = (Associations) associationsCollection.get(i-1);
+					associationsCollection.set(i-1, nextAssoc);
+					associationsCollection.set(i, tempAssoc);
 				}
 				return nextAssoc;
 			}
@@ -283,9 +276,8 @@ public class FastMemory {
 	 * @throws java.sql.SQLException if any.
 	 */
 	public void increaseAssociationsCostToCellsId(Long[] arrayOfCellsId) throws SQLException {
-		Vector<Associations> localAssocTable = (Vector<Associations>)associationsCollection;
-		for (int i = 0; i < localAssocTable.size(); i++) {
-			Associations nextAssoc = localAssocTable.get(i);
+		for (int i = 0; i < associationsCollection.size(); i++) {
+			Associations nextAssoc = (Associations) associationsCollection.get(i);
 			for (int k = 0; k < arrayOfCellsId.length; k++) {
 				if (nextAssoc.getCellId() == arrayOfCellsId[k]) {
 					nextAssoc.setCost(nextAssoc.getCost() + 1);
@@ -305,9 +297,8 @@ public class FastMemory {
 	 */
 	public void increaseAssociationsCost(Vector<Long> associationsId) throws Exception {
 		slowMemory.increaseAssociationsCost(associationsId);
-		Vector<Associations> localAssocTable = (Vector<Associations>)associationsCollection;
-		for (int i = 0; i < localAssocTable.size(); i++) {
-			Associations nextAssoc = localAssocTable.get(i);
+		for (int i = 0; i < associationsCollection.size(); i++) {
+			Associations nextAssoc = (Associations) associationsCollection.get(i);
 			if (associationsId.contains(nextAssoc.getId())) {
 				nextAssoc.setCost(nextAssoc.getCost() + 1);
 			}
@@ -344,8 +335,6 @@ public class FastMemory {
 	public Vector<Associations> getAssociations(
 			Vector<Thought> thoughtsPairToUnion) throws Exception {
 		Vector<Associations> result = new Vector<Associations>();
-		result.setSize(thoughtsPairToUnion.size() / 2);
-		Vector<Associations> tempAssocTable = (Vector<Associations>)associationsCollection;
 		Vector<Integer> notFoundPositions = new Vector<Integer>();
 		int elevate = config.getDataProvider_numCharsReadsFromInput();
 		lab:
@@ -353,15 +342,17 @@ public class FastMemory {
 		for (int i = 0; i < thoughtsPairToUnion.size()-1; i = i+2) {
 			Thought th1 = thoughtsPairToUnion.get(i);
 			Thought th2 = thoughtsPairToUnion.get(i+1);
-			for (int k = 0; k < tempAssocTable.size(); k++) {
-				Associations nextAssoc = tempAssocTable.get(k);
+			for (int k = 0; k < associationsCollection.size(); k++) {
+				Associations nextAssoc = (Associations) associationsCollection.get(k);
 				if (nextAssoc.getSrcId() == th1.getActiveCell().getId() 
 						&& nextAssoc.getTgtId() == th2.getActiveCell().getId()) {
-					result.set((i+1) / 2, nextAssoc);
+					if (nextAssoc != null) {
+						result.add(nextAssoc);
+					}
 					// Zvednout pozici nalezene Associations o elevate
 					if (k - elevate > 0) {
-						nextAssoc = tempAssocTable.remove(k);
-						tempAssocTable.add(k - elevate, nextAssoc);
+						nextAssoc = (Associations) associationsCollection.remove(k);
+						associationsCollection.add(k - elevate, nextAssoc);
 					}
 					continue lab;
 				}
@@ -372,22 +363,21 @@ public class FastMemory {
 			return result;
 		}
 		// dohledat associations v SlowMemory
-		Vector<Associations> assocFromSlowMemory = 
-			slowMemory.getAssociations(thoughtsPairToUnion, notFoundPositions);
+		Vector<Associations> assocFromSlowMemory = slowMemory.getAssociations(thoughtsPairToUnion, notFoundPositions);
 		// Pripojit doledane assocFromSlowMemory k resultu
-		for (int i = 0; i < assocFromSlowMemory.size(); i++) {
-			Associations nextAssoc = assocFromSlowMemory.get(i);
+		for (Associations nextAssoc : assocFromSlowMemory) {
 			if (nextAssoc != null) {
-				result.set(i, nextAssoc);
+				result.add(0, nextAssoc);
 			}
-			
 		}
 		// Odstranit prazdne polozky z assocFromSlowMemory
 		while (assocFromSlowMemory.contains(null)) {
 			assocFromSlowMemory.remove(null);
 		}		
 		// pridat associace na konec associationsTableCollections
-		addAssociations(result);
+		if (result.size() > 0) {
+			addAssociations(result);
+		}
 		return result;
 	}
 
@@ -460,7 +450,6 @@ public class FastMemory {
 	 */
 	public Vector<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
 		boolean deepSearch = config.isFastMemory_alwaysSearchToAssociationsDeepInTheMemory();
-		Vector<Associations> tempAssociations = (Vector<Associations>)associationsCollection;
 		Vector<Associations> result = new Vector<Associations>();
 		if (deepSearch) { // TODO porovnat s Melkym vyhledavanim v ruznych rezimech.
 			result = slowMemory.getAllAssociations(cellsId);
@@ -470,8 +459,8 @@ public class FastMemory {
 			for(int i = 0; i < cellsId.size(); i++) {
 				Long nextId = cellsId.get(i);
 				boolean found = false;
-				for (int k = 0; k < tempAssociations.size(); k++) {
-					Associations ass = tempAssociations.get(k);
+				for (int k = 0; k < associationsCollection.size(); k++) {
+					Associations ass = (Associations) associationsCollection.get(k);
 					if (nextId == ass.getSrcId()) {
 						while (notFoundCellsId.contains(nextId)) {
 							notFoundCellsId.removeElement(nextId);
@@ -516,24 +505,23 @@ public class FastMemory {
 		if (newAssociations.size() == 0) {
 			return;
 		}
-		Vector<Associations> tempAssociations = (Vector<Associations>)associationsCollection;
 		for (Associations ass : newAssociations) {
-			int pos = tempAssociations.indexOf(ass);
+			int pos = associationsCollection.indexOf(ass);
 			if (pos == -1) { // associace nenalezena. Pridat na zacatek.
-				tempAssociations.add(0, ass);
+				associationsCollection.add(0, ass);
 				continue;
 			}
 			if (pos > 0) { // associace jiz existuje v tempAssociations. Zvednout nahoru.
-				Associations tempAss = tempAssociations.get(pos-1);
-				tempAssociations.set(pos-1, ass);
-				tempAssociations.set(pos, tempAss);
+				Associations tempAss = (Associations) associationsCollection.get(pos-1);
+				associationsCollection.set(pos-1, ass);
+				associationsCollection.set(pos, tempAss);
 			} else { // associace jiz ma prvni pozici - nic neprovadet.
 				;
 			}
 		}
 		int maxAssociationsSize = config.getFastMemory_tablesAssociationsSize();
-		if (tempAssociations.size() > maxAssociationsSize) {
-			tempAssociations.setSize(maxAssociationsSize);
+		if (associationsCollection.size() > maxAssociationsSize) {
+			associationsCollection = new TreeList(associationsCollection.subList(0, maxAssociationsSize));
 		}
 	}
 
@@ -544,23 +532,22 @@ public class FastMemory {
 	 * @param newCells a {@link java.util.Collection} object.
 	 */
 	public void addCells(Collection<Cell> newCells) {
-		Vector<Cell> tempCells = (Vector<Cell>)cellsCollection;
 		for (Cell ob : newCells) {
-			int pos = tempCells.indexOf(ob);
+			int pos = cellsCollection.indexOf(ob);
 			if (pos == -1) { // associace nenalezena. Pridat na zacatek.
-				tempCells.add(0, ob);
+				cellsCollection.add(0, ob);
 			}
 			if (pos > 0) { // associace jiz existuje v tempAssociations. Zvednout nahoru.
-				Cell tempOb = tempCells.get(pos-1);
-				tempCells.set(pos-1, ob);
-				tempCells.set(pos, tempOb);
+				Cell tempOb = (Cell) cellsCollection.get(pos-1);
+				cellsCollection.set(pos-1, ob);
+				cellsCollection.set(pos, tempOb);
 			} else { // associace jiz je na zacatku. Nic neprovadet.
 				;
 			}
 		}
 		int maxCellsSize = config.getFastMemory_tablesCellSize();
-		if (tempCells.size() > maxCellsSize) {
-			tempCells.setSize(maxCellsSize);
+		if (cellsCollection.size() > maxCellsSize) {
+			cellsCollection = new TreeList(cellsCollection.subList(0, maxCellsSize));
 		}
 	}
 
@@ -643,11 +630,20 @@ public class FastMemory {
 	 *
 	 * @param inputChars an array of char.
 	 * @return an array of {@link java.lang.Long} cells.
-	 * @throws java.lang.Exception if any.
 	 */
-	public Long[] getCells(char[] inputChars) throws Exception {
+	public Long[] getCells(char[] inputChars) {
 		Long[] result = getCharsId(inputChars);
 		return result;
+	}
+	
+	/**
+	 * Call the {@link FastMemory#getCells(char[])} method
+	 *
+	 * @param input String of arbitraty characters
+	 * @return an array of {@link java.lang.Long} cells.
+	 */
+	public Long[] getCells(String input) {
+		return getCells(input.toCharArray());
 	}
 	
 	/**

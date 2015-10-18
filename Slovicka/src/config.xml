@@ -18,7 +18,7 @@
 		<searchToAssociationsAtAllElements>true</searchToAssociationsAtAllElements>
 	</fastMemory>
 	<knowledge>
-		<relateThoughtsUpToCellType>68</relateThoughtsUpToCellType>
+<!-- 		<relateThoughtsUpToCellType>68</relateThoughtsUpToCellType> -->
 		<knowledgeSize>100</knowledgeSize>
 		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
 		<decideToRelateByCellTypeOrAssocCost>false</decideToRelateByCellTypeOrAssocCost>
@@ -31,7 +31,7 @@
 	</cellsCreationDecider>
 	<thoughtsSaver>
 		<filePathToSaveThoughts>
-			C:\Users\k\Prace\Projects\Slovicka\slovickaWorkspace\Slovicka\Data-out\ulozenaIdeckaBehemZpracovani.txt
+			Data-out\ulozenaIdeckaBehemZpracovani.txt
 		</filePathToSaveThoughts>
 	</thoughtsSaver>
 	<memoryCleaner>
@@ -43,4 +43,7 @@
 		<numberOfAvailableCellsIdToReturn>200</numberOfAvailableCellsIdToReturn>
 		<numberOfAvailableAssociationsIdToReturn>200</numberOfAvailableAssociationsIdToReturn>
 	</dbViewer>
+	<thoughtUnionDecider>
+		<competitionAllowed>true</competitionAllowed>
+	</thoughtUnionDecider>
 </config>

@@ -9,12 +9,13 @@ import java.util.Vector;
 import cz.semenko.word.Config;
 
 public class ThoughtsSaver {
+	/**
+	 * Separator of {@link Thought}s in file
+	 */
+	private static final String THOUGHT_SEPARATOR = ";";
 	private BufferedWriter bw = null;
-	// Componeneta pod spravou Spring FW
-	private Config config; // TODO odstranit z konstruktoru na spravovat Springem
 	
 	public ThoughtsSaver(Config config) throws IOException {
-		this.config = config;
 		String filePath = config.getThoughtsSaver_filePathToSaveThoughts();
 		File fileToSaveThoughts = new File(filePath);
 		if (!fileToSaveThoughts.exists()) {
@@ -45,7 +46,7 @@ public class ThoughtsSaver {
 	 * @throws IOException 
 	 */
 	public void saveCellId(Long id) throws IOException {
-		bw.append(id + ";");		
+		bw.append(id + THOUGHT_SEPARATOR);		
 	}
 
 	/**
@@ -56,7 +57,7 @@ public class ThoughtsSaver {
 	public void saveThoughts(Vector<Thought> thoughts) throws IOException {
 		StringBuffer buff = new StringBuffer();
 		for (int i = 0; i < thoughts.size(); i++) {
-			buff.append(thoughts.get(i).getActiveCell().getId() + ";");
+			buff.append(thoughts.get(i).getActiveCell().getId() + THOUGHT_SEPARATOR);
 		}
 		bw.append(buff);
 		bw.flush();

@@ -18,66 +18,117 @@ import cz.semenko.word.sleep.MemoryCleaner;
 public class Config {
 	/** Business name of application */
 	private String application_name = null;
+	
 	/** Place where database lives */
 	private String application_databaseHome;
+	
 	/** Kolik pismen bude nazcteno ze souboru do masivu. Je to jako vizualni pamet. */
 	private int dataProvider_numCharsReadsFromInput = 0;
+	
 	/** Velikost tabulky Tables v cache FastMemory */
 	private int fastMemory_tablesTableSize = 0;
+	
 	/** Velikost tabulky Cell v cache FastMemory */
 	private int fastMemory_tablesCellSize = 0;
+	
 	/** Velikost tabulky Associations v cache FastMemory */
 	private int fastMemory_tablesAssociationsSize = 0;
-	/** While {@link Knowledge} decides to create a new {@link Cell} from two close Cells, it compare these Cells {@link Cell#type} with this configuration property. <br>
-	 * If one of Cell has Type higher then configuration parameter, then new Cell will not created. */
-	private int knowledge_relateThoughtsUpToCellType = 0;
+
+//	/**
+//	 * While {@link Knowledge} decides to create a new {@link Cell} from two close Cells, it compare these Cells {@link Cell#type} with this configuration property. <br>
+//	 * If one of Cell has Type higher then configuration parameter, then new Cell will not created.
+//	 */
+//	private int knowledge_relateThoughtsUpToCellType = 0;
+
 	/** Maximalni velikost aware - delka vektoru myslenek */
 	private int knowledge_knowledgeSize = 0;
-	/** Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni. 
-		true - Budou spojeny dle velikosti type objektu,
-		false - budou spojeny dle velikosti cost associaci */
+
+	/**
+	 * Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni.<br>
+	 * true - Budou spojeny dle velikosti type objektu,<br>
+	 * false - budou spojeny dle velikosti cost associaci
+	 */
 	private boolean knowledge_decideToRelateByCellTypeOrAssocCost = false;
-	/** Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom
-		c je objekt s vetsim cost nez b, potom bude prednostne pouzita ab, kdyz parameter
-		je nastaven na true, nebo bc kdyz parameter je nastaven na false */
+	
+	/**
+	 * Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom c je objekt s vetsim cost nez b,<br>
+	 * potom bude prednostne pouzita ab, kdyz parameter je nastaven na true,<br>
+	 * nebo bc kdyz parameter je nastaven na false
+	 */
 	private boolean knowledge_decideToRelateCellsByHigherCellType = false;
-	/** Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,
-		potom budou spojovany objekty dle velikosti hodnot asociaci.
-		true - budou spojovany objekty s vyssi hodnotou asociaci
-		false - budou spojovany objekty s nizsi hodnotou asociaci */
+
+	/**
+	 * Jestli jsou tri objekty za sebou (a, b, c), a existuji asociace ab, bc,<br>
+	 * potom budou spojovany objekty dle velikosti hodnot asociaci.<br>
+	 * true - budou spojovany objekty s vyssi hodnotou asociaci<br>
+	 * false - budou spojovany objekty s nizsi hodnotou asociaci
+	 */
 	private boolean knowledge_decideToRelateCellsByHigherAssocCost = false;
+	
 	/** A new {@link Cell} will be created, when its parents has {@link Cell#type} less or equal to this parameter. */
 	private int cellsCreationDecider_createNewCellsToAllPairsDepth = 0;
-	/** Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani.
-	* Melke - hledat jen ve FastMemory.
-	* 	nehledat kdyz ve FastMemory nalezena aspon jedna Association.
-	* 	Kdyz aspon jedna chybi -
-	* 		dohledat associations u vsech prvku,
-	* 		nebo
-	* 		dohledat associations jen u chybejicich prvku.
-	* Hluboke - dohledat vzdy v SlowMemory.
-	**/
+	
+	/**
+	 * Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani.<br>
+	 * <ul>
+	 * 	<li>Melke - hledat jen ve FastMemory.
+	 * 		<ul>
+	 * 			<li>Nehledat kdyz ve FastMemory nalezena aspon jedna Association.</li>
+	 * 			<li>Kdyz aspon jedna chybi:
+	 * 				<ul>
+	 * 					<li>dohledat associations u vsech prvku,</li>
+	 * 					<li>nebo dohledat associations jen u chybejicich prvku</li>
+	 * 				</ul>
+	 * 			</li>
+	 *		</ul>
+	 * 	</li>
+	 * 	<li>Hluboke - dohledat vzdy v SlowMemory.</li>
+	 * </ul>
+	 **/
 	private boolean fastMemory_alwaysSearchToAssociationsDeepInTheMemory = false;
+	
 	/** Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam. Viz. {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} */
 	private boolean fastMemory_searchToAssociationsAtAllElements = false;
+	
 	/** Zda maji byt spojovany jen objekty stejneho typu. Jestli true, parametr decideToRelateByCellTypeOrAssocCost musi byt false. */
 	private boolean knowledge_relateOnlyCellsOfSameTypes = false;
+	
 	/** Ukladat do souboru pospojovane objekty behem cteni nebo ne */
 	private boolean knowledge_saveThoughtsToFile = false;
+	
 	/** Cesta a nazev souboru pro ulozeni idecek spojenzch objektu behem cteni vstupniho souboru */
 	private String thoughtsSaver_filePathToSaveThoughts;
-	/** While sleeping (see {@link MemoryCleaner}) will be remove {@link Associations} that has {@link Associations#cost} less than this parameter. Disconnected {@link Cell} objects will by removed too. */
+
+	/**
+	 * While sleeping (see {@link MemoryCleaner}) will be remove {@link Associations} that has {@link Associations#cost} less than this parameter.<br>
+	 * Disconnected {@link Cell} objects will by removed too.
+	 */
 	private int memoryCleaner_lowestCostForLeaving;
-	/** Length of a text saved to database when a new {@link Cell} creates. Text that longer then this parameter is ignored. This value must not be greater then {@link Cell#src} table column size */
+
+	/**
+	 * Length of a text saved to database when a new {@link Cell} creates.<br>
+	 * Text that longer then this parameter is ignored.<br>
+	 * This value must not be greater then {@link Cell#src} table column size
+	 */
 	private int dbViewer_maxTextLengthToSave;
+	
 	/** How many rows will be clean up during one loop of cleaning tables Cells and Associations from empty rows. */
 	private int dbViewer_numRowsForCleanupRotation;
+	
 	/** Number of IDs to return from {@link DBViewer#getAvailableCellsIdList()} when new {@link Cell} objects are creating */
 	private int dbViewer_numberOfAvailableCellsIdToReturn;
+	
 	/** Number of IDs to return from {@link DBViewer#getAvailableAssociationsIdList()} when new {@link Associations} objects are creating */
 	private int dbViewer_numberOfAvailableAssociationsIdToReturn;
 	
+	/**
+	 * Když je <b>true</b>, aplikovat pravidla spojení sousedních cell na základě konkurence. Když je <b>false</b>, spojovat všechny sousední cells<br>
+	 * If <b>true</b>, decide which cells has to be merged based on competition rules. If <b>false</b>, always merge neighboring cells.
+	 */
+	private boolean thoughtUnionDecider_competitionAllowed;
+	
 	private static XMLConfiguration conf;
+	
 	/** Constant <code>logger</code> */
 	public static Logger logger = Logger.getRootLogger();
 	
@@ -99,7 +150,7 @@ public class Config {
 				throw new ConfigurationException(msg);
 			}
 			setFastMemory_tablesAssociationsSize(conf.getInt("fastMemory.tablesAssociationsSize"));
-			setKnowledge_relateThoughtsUpToCellType(conf.getInt("knowledge.relateThoughtsUpToCellType"));
+//			setKnowledge_relateThoughtsUpToCellType(conf.getInt("knowledge.relateThoughtsUpToCellType"));
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
 			setKnowledge_decideToRelateByCellTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByCellTypeOrAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
@@ -115,6 +166,7 @@ public class Config {
 			setDbViewer_numRowsForCleanupRotation(conf.getInt("dbViewer.numRowsForCleanupRotation"));
 			setDbViewer_numberOfAvailableCellsIdToReturn(conf.getInt("dbViewer.numberOfAvailableCellsIdToReturn"));
 			setDbViewer_numberOfAvailableAssociationsIdToReturn(conf.getInt("dbViewer.numberOfAvailableAssociationsIdToReturn"));
+			setThoughtUnionDecider_competitionAllowed(conf.getBoolean("thoughtUnionDecider.competitionAllowed"));
 		} catch (ConfigurationException e) {
 			logger.error(e.getMessage(), e);
 			System.out.println(e.getMessage());
@@ -203,23 +255,23 @@ public class Config {
 		return fastMemory_tablesAssociationsSize;
 	}
 
-	/**
-	 * <p>Getter for the field {@link Config#knowledge_relateThoughtsUpToCellType}.</p>
-	 *
-	 * @return a int.
-	 */
-	public int getKnowledge_relateThoughtsUpToCellType() {
-		return knowledge_relateThoughtsUpToCellType;
-	}
-
-	/**
-	 * <p>Setter for the field {@link Config#knowledge_relateThoughtsUpToCellType} .</p>
-	 *
-	 * @param relateThoughtsUpToCellType a int.
-	 */
-	public void setKnowledge_relateThoughtsUpToCellType(int relateThoughtsUpToCellType) {
-		knowledge_relateThoughtsUpToCellType = relateThoughtsUpToCellType;
-	}
+//	/**
+//	 * <p>Getter for the field {@link Config#knowledge_relateThoughtsUpToCellType}.</p>
+//	 *
+//	 * @return a int.
+//	 */
+//	public int getKnowledge_relateThoughtsUpToCellType() {
+//		return knowledge_relateThoughtsUpToCellType;
+//	}
+//
+//	/**
+//	 * <p>Setter for the field {@link Config#knowledge_relateThoughtsUpToCellType} .</p>
+//	 *
+//	 * @param relateThoughtsUpToCellType a int.
+//	 */
+//	public void setKnowledge_relateThoughtsUpToCellType(int relateThoughtsUpToCellType) {
+//		knowledge_relateThoughtsUpToCellType = relateThoughtsUpToCellType;
+//	}
 
 	/**
 	 * <p>Getter for the field {@link Config#knowledge_knowledgeSize}.</p>
@@ -493,5 +545,21 @@ public class Config {
 	public void setDbViewer_numberOfAvailableAssociationsIdToReturn(
 			int dbViewer_numberOfAvailableAssociationsIdToReturn) {
 		this.dbViewer_numberOfAvailableAssociationsIdToReturn = dbViewer_numberOfAvailableAssociationsIdToReturn;
+	}
+
+	/**
+	 * @return the {@link boolean}<br>
+	 * See {@link Config#thoughtUnionDecider_competitionAllowed}
+	 */
+	public boolean isThoughtUnionDecider_competitionAllowed() {
+		return thoughtUnionDecider_competitionAllowed;
+	}
+
+	/**
+	 * @param thoughtUnionDecider_competitionAllowed the {@link boolean} to set<br>
+	 * See {@link Config#thoughtUnionDecider_competitionAllowed}
+	 */
+	public void setThoughtUnionDecider_competitionAllowed(boolean thoughtUnionDecider_competitionAllowed) {
+		this.thoughtUnionDecider_competitionAllowed = thoughtUnionDecider_competitionAllowed;
 	}
 }

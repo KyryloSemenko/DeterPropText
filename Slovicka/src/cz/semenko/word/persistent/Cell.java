@@ -36,33 +36,33 @@ public class Cell {
 		if (!(obj instanceof Cell)) return false;
 		Cell that = (Cell)obj;
 		// Pro zrychleni
-//		if (this.getId() == that.getId()) {
-//			return true;
-//		}
+		if (this.getId() == that.getId()) {
+			return true;
+		}
 		/** Muze dochazet k ruznym chybam. Cell se stejnym ID bude mit jine hodnoty,
 		 * nebo Cell s ruznymi ID budou mit stejne hodnoty.
 		 * Overim oba pripady, ale nevim jak rychle bude fungovat tato metoda.
 		 * TODO overit rychlost metody.
 		 * TODO az bude odladen beh, odstranit overovani duplicit pro vetsi rychlost.
 		 */
-		if (this.getId().equals(that.getId())) {
-			if (this.getSrc().compareTo(that.getSrc()) != 0 
-					|| this.getType().equals(that.getType()) == false) {
-				String error = ("Objecty maji stejne ID, ale ruzny obsah. ID:" + this.getId());
-				logger.error(error);
-				System.out.println(error);
-				System.exit(1);
-			}
-			return true;
-		} else {
-			/*if (this.getSrc().compareTo(that.getSrc()) == 0) {
-				String error = ("Objecty maji ruzne ID, ale stejny obsah. ID1: " + this.getId()
-						+ ", ID2: " + that.getId());
-				logger.error(error);
-				System.out.println(error);
-				System.exit(1);
-			}*/
-		}
+//		if (this.getId().equals(that.getId())) {
+//			if (this.getSrc().compareTo(that.getSrc()) != 0 
+//					|| this.getType().equals(that.getType()) == false) {
+//				String error = ("Objecty maji stejne ID, ale ruzny obsah. ID:" + this.getId());
+//				logger.error(error);
+//				System.out.println(error);
+//				System.exit(1);
+//			}
+//			return true;
+//		} else {
+//			/*if (this.getSrc().compareTo(that.getSrc()) == 0) {
+//				String error = ("Objecty maji ruzne ID, ale stejny obsah. ID1: " + this.getId()
+//						+ ", ID2: " + that.getId());
+//				logger.error(error);
+//				System.out.println(error);
+//				System.exit(1);
+//			}*/
+//		}
 		return false;
 	}
 	

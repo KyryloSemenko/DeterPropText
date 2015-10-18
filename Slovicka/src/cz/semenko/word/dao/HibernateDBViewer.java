@@ -53,7 +53,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Vector<Cell> createNewPrimitiveCells(Vector<Character> newChars)	throws Exception {
+	public Vector<Cell> createNewPrimitiveCells(Vector<Character> newChars) {
 		Vector<Cell> result = new Vector<Cell>();
 		Map<String, Cell> map = new TreeMap<String, Cell>();
 		
@@ -255,7 +255,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Long getMaxCellsId() throws SQLException {
+	public Long getMaxCellsId() {
 		Session s = getSession();
 		return (Long)s.createQuery("select max(id) from Cell").uniqueResult();
 	}
@@ -277,7 +277,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) throws SQLException {
+	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) {
 		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
 		Collection<Long> result = getCellsIdMarkedAsAvailable();
 		// If there are no enough free IDs
@@ -289,7 +289,7 @@ public class HibernateDBViewer implements DBViewer {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<Long> getCellsIdMarkedAsAvailable() throws SQLException {
+	public Collection<Long> getCellsIdMarkedAsAvailable() {
 		int numberOfAvailableCellsIdToReturn = getConfig().getDbViewer_numberOfAvailableCellsIdToReturn();
 		ArrayList<Long> result = new ArrayList<Long>(numberOfAvailableCellsIdToReturn);
 		// Select with limit

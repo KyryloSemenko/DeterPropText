@@ -1,32 +1,34 @@
 package cz.semenko.word.aware;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Vector;
 
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
 
 /**
- * Tato trida ma reprezentovat myslenku. Myslenky jsou v mysleni - Knowledge.
- * Myslenky maji priority.
- * Jsou propojeny s emocemi.
- * Tyto myslenky obcas aktivuji rozhodovani ktere spousti akce.
- * Myslenky jsou navzajem spojene pomoci konektoru. Tyto konektory vznikaji pri souvislostech myslenek.
- * Napriklad pr ma konektor s o, e, a, y, um, i, in, ие ...
- * V tomto pripade nejjednodussi myslenkou je treba pro nebo pra
- * Nebo slozitejsi pripad - princezna
- * Nebo jeste slozitejsi - princezna Turandot
- * Nebo myslenka hodna k zapomenuti - tttttttt - jestli jednou vznikne, nejspise nebude mit
- * zadne konektory, nebo bude mit jen jeden.
- * Meli by byt perzistentni a serializovatelne.
- * Vzor Standalone.
- *
- * @author k
- * @version $Id: $Id
+ * Tato trida ma reprezentovat myslenku. Myslenky jsou v mysleni - Knowledge.<br>
+ * Myslenky maji priority.<br>
+ * Jsou propojeny s emocemi.<br>
+ * Tyto myslenky obcas aktivuji rozhodovani ktere spousti akce.<br>
+ * Myslenky jsou navzajem spojene pomoci konektoru. Tyto konektory vznikaji pri souvislostech myslenek.<br>
+ * Napriklad pr ma konektor s o, e, a, y, um, i, in, ие ...<br>
+ * V tomto pripade nejjednodussi myslenkou je treba pro nebo pra<br>
+ * Nebo slozitejsi pripad - princezna<br>
+ * Nebo jeste slozitejsi - princezna Turandot<br>
+ * Nebo myslenka hodna k zapomenuti - tttttttt - jestli jednou vznikne, nejspise nebude mit<br>
+ * zadne konektory, nebo bude mit jen jeden.<br>
+ * Meli by byt perzistentni a serializovatelne.<br>
+ * Vzor Standalone.<br>
  */
 public class Thought implements Serializable {
-	private Cell activeCell; // Soucast myslenky
-	private Vector<Associations> consequenceAssociations; // Toto jsou ty konektory dusledku
+	/** Soucast myslenky */
+	private Cell activeCell;
+	
+	/** Konektory dusledku */
+	private Vector<Associations> consequenceAssociations;
+	
 	//private Vector<Thought> paralelThoughts; // Napriklad a-br a ab-r, nebo ko-cka, k-ocka, koc-ka, kock-a.
 		
 	/**
@@ -70,7 +72,7 @@ public class Thought implements Serializable {
 	 *
 	 * @return a {@link java.util.Vector} object.
 	 */
-	public Vector<Associations> getConsequenceAssociations() {
+	public Collection<Associations> getConsequenceAssociations() {
 		return consequenceAssociations;
 	}
 
@@ -98,7 +100,7 @@ public class Thought implements Serializable {
 	 * @return Association nebo null
 	 */
 	public Associations getAssociation(Thought th2) {
-		Vector<Associations> vector = getConsequenceAssociations();
+		Vector<Associations> vector = (Vector<Associations>) getConsequenceAssociations();
 		if (vector == null || vector.size() == 0) {
 			return null;
 		}

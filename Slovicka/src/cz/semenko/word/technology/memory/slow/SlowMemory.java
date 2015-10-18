@@ -78,9 +78,8 @@ public class SlowMemory {
 	 *
 	 * @param missingChars a {@link java.util.Vector} of {@link Character} objects.
 	 * @return Array of Long - IDs of found or created {@link Cell} objects.
-	 * @throws java.lang.Exception if any.
 	 */
-	public Long[] getCharsId(Vector<Character> missingChars) throws Exception {
+	public Long[] getCharsId(Vector<Character> missingChars) {
 		Long[] result = new Long[missingChars.size()];
 		List<Cell> primiteveCells = dbViewer.getPrimitiveCells((List<Character>)missingChars);
 		Map<String, Cell> primCellsMap = new TreeMap<String, Cell>();
@@ -183,7 +182,6 @@ public class SlowMemory {
 			Vector<Thought> thoughtsPairToUnion,
 			Vector<Integer> notFoundPositions) throws Exception {
 		Vector<Associations> result = new Vector<Associations>();
-		result.setSize(thoughtsPairToUnion.size() / 2);
 		StringBuffer buff = new StringBuffer();
 		for (int i = 0; i < notFoundPositions.size(); i++) {
 			int pos = notFoundPositions.get(i);
@@ -209,15 +207,14 @@ public class SlowMemory {
 				tempAssociations.add(nextAssoc);
 			}
 		}
-		// nastrkame nalezene associations do resultu
+		// vložit nalezené associations do resultu
 		for (int i = 0; i < thoughtsPairToUnion.size()-1; i = i+2) {
 			Thought th1 = thoughtsPairToUnion.get(i);
 			Thought th2 = thoughtsPairToUnion.get(i+1);
 			for (int k = 0; k < tempAssociations.size(); k++) {
 				Associations nextAssoc = tempAssociations.get(k);
-				if (nextAssoc.getSrcId() == th1.getActiveCell().getId() 
-						&& nextAssoc.getTgtId() == th2.getActiveCell().getId()) {
-					result.set(((i + 1) / 2), nextAssoc);
+				if (nextAssoc.getSrcId() == th1.getActiveCell().getId() && nextAssoc.getTgtId() == th2.getActiveCell().getId()) {
+					result.add(nextAssoc);
 				}
 			}			
 		}		

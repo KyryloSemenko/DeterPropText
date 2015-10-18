@@ -81,10 +81,8 @@ public interface DBViewer {
 	 *
 	 * @param nonExistChars a {@link java.util.Vector} of {@link Character} object.
 	 * @return a {@link java.util.Vector} of {@link Cell} objects with type {@link Cell#TYPE_PRIMITIVE}.
-	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Cell> createNewPrimitiveCells(
-			Vector<Character> nonExistChars) throws Exception;
+	public Vector<Cell> createNewPrimitiveCells(Vector<Character> nonExistChars);
 
 	/**
 	 * <p>insertAssociations.</p>
@@ -233,11 +231,9 @@ public interface DBViewer {
 	 * Get Cell from DB
 	 *
 	 * @return Set of Cell POJO
-	 * @throws java.sql.SQLException if any.
 	 * @param missingChars a {@link java.util.List} object.
 	 */
-	public List<Cell> getPrimitiveCells(
-			List<Character> missingChars) throws SQLException;
+	public List<Cell> getPrimitiveCells(List<Character> missingChars);
 
 			/**
 			 * Get Assotiations from list, that have cost smaller then parameter
@@ -308,8 +304,8 @@ public interface DBViewer {
 	public Long getCellsCount() throws SQLException;
 
 	/** @return max id of {@link Cells} object in table
-	 * @throws SQLException */
-	public Long getMaxCellsId() throws SQLException;
+	 */
+	public Long getMaxCellsId();
 
 	/** 
 	 * This method always returns constant number of IDs. <br>
@@ -317,8 +313,8 @@ public interface DBViewer {
 	 * In addition when its count is less then {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}, then extra IDs will be generated.
 	 * @param maxCellsId Max ID from CELLS table
 	 * @return available for reuse IDs from {@link Cell} table plus new generated IDs in total numbers of {@link Config#getDbViewer_numberOfAvailableCellsIdToReturn()}
-	 * @throws SQLException */
-	public Collection<Long> getAvailableCellsIdList(Long maxCellsId) throws SQLException;
+	 */
+	public Collection<Long> getAvailableCellsIdList(Long maxCellsId);
 	
 	/**
 	 * Don't use this method for obtain available IDs. Please use a {@link DBViewer#getAvailableCellsIdList()} method instead. 

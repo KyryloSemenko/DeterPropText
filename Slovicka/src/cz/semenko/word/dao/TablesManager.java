@@ -35,16 +35,15 @@ public class TablesManager {
 	 * See {@link TablesManager#maxCellsId}
 	 * @throws SQLException 
 	 */
-	public Long getMaxCellsId() throws SQLException {
+	public Long getMaxCellsId() {
 		if (maxCellsId == null) {
 			maxCellsId = dbViewer.getMaxCellsId();
 		}
 		return maxCellsId;
 	}
 
-	/** Find out a new available ID to insert 
-	 * @throws SQLException */
-	public Long getNextCellsId() throws SQLException {
+	/** Find out a new available ID to insert */
+	public Long getNextCellsId() {
 		if (availableCellsIdStack.empty()) {
 			availableCellsIdStack.addAll(dbViewer.getAvailableCellsIdList(getMaxCellsId()));
 		}

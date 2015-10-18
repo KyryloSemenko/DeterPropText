@@ -44,13 +44,9 @@ public class Associations {
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
 		if (!(obj instanceof Associations)) return false;
 		Associations that = (Associations)obj;
-		// To run faster
-		if (this.getId() == that.getId() && this.getSrcId() == that.getSrcId() && this.getTgtId() == that.getTgtId()) {
-			return true;
-		}
+		if (this.getId().equals(that.getId())) return true;
 		return false;
 	}
 	
