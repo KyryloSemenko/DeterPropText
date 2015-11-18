@@ -5,29 +5,30 @@
 		<name>DeterPropText</name>
 	</application>
 	<application>
-		<databaseHome>c:\\Users\\k\\DeterPropText</databaseHome>
+<!-- 		<databaseHome>c:\\Users\\k\\DeterPropText</databaseHome> -->
+		<databaseHome>c:\\Users\\k\\Deeplearning2</databaseHome>
 	</application>
 	<dataProvider>
 		<numCharsReadsFromInput>400</numCharsReadsFromInput><!-- Tested: 512 - 1 sek., 4 - 26 sek. --> 
 	</dataProvider>
 	<fastMemory>
 		<tablesTableSize>400</tablesTableSize>
-		<tablesCellsSize>400</tablesCellsSize>
-		<tablesAssociationsSize>400</tablesAssociationsSize>
-		<alwaysSearchToAssociationsDeepInTheMemory>true</alwaysSearchToAssociationsDeepInTheMemory>
+		<tablesCellsSize>1000</tablesCellsSize>
+		<tablesAssociationsSize>1000</tablesAssociationsSize>
+		<alwaysSearchToAssociationsDeepInTheMemory>false</alwaysSearchToAssociationsDeepInTheMemory>
 		<searchToAssociationsAtAllElements>true</searchToAssociationsAtAllElements>
 	</fastMemory>
 	<knowledge>
 <!-- 		<relateThoughtsUpToCellType>68</relateThoughtsUpToCellType> -->
 		<knowledgeSize>100</knowledgeSize>
-		<relateOnlyCellsOfSameTypes>true</relateOnlyCellsOfSameTypes>
-		<decideToRelateByCellTypeOrAssocCost>false</decideToRelateByCellTypeOrAssocCost>
-		<decideToRelateCellsByHigherCellType>true</decideToRelateCellsByHigherCellType>
+		<relateOnlyCellsOfTheSameTypes>false</relateOnlyCellsOfTheSameTypes>
+		<decideToRelateCellsByHigherCellType>false</decideToRelateCellsByHigherCellType>
 		<decideToRelateCellsByHigherAssocCost>true</decideToRelateCellsByHigherAssocCost>
+		<minAssocCostToRelate>10</minAssocCostToRelate>
 		<saveThoughtsToFile>true</saveThoughtsToFile>
 	</knowledge>
 	<cellsCreationDecider>
-		<createNewCellsToAllPairsDepth>1</createNewCellsToAllPairsDepth>
+		<createNewCellsToAllPairsDepth>30</createNewCellsToAllPairsDepth>
 	</cellsCreationDecider>
 	<thoughtsSaver>
 		<filePathToSaveThoughts>

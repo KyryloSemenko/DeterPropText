@@ -1,6 +1,7 @@
 package cz.semenko.word.aware;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -119,12 +120,12 @@ public class Knowledge {
 	private Vector<Thought> getThoughtsToSomeDepth(Vector<Thought> oldThoughts) throws Exception {
 		while (true) {
 			/** Ziskame seznam pozici prvku v thoughts2 pro spojeni.*/
-			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(oldThoughts);
+			List<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(oldThoughts);
+			/** Vytvorime nove Associations, vytvorime nove Cell ktere drive neexistovali a zvysime Cost u stavajicich*/
+			increaseAssociationsCost(oldThoughts, positionsToRelation); // Ted vsechny objekty a associace existuji
 			if (positionsToRelation.isEmpty()) {
 				return oldThoughts;
 			}
-			/** Vytvorime nove Associations, vytvorime nove Cell ktere drive neexistovali a zvysime Cost u stavajicich*/
-			increaseAssociationsCost(oldThoughts, positionsToRelation); // Ted vsechny objekty a associace existuji
 			/** Sestavime pary pro spojovani. */
 			Vector<Thought> thoughtsPairToUnion = new Vector<Thought>();
 			for (int i = 0; i < positionsToRelation.size(); i++) {
@@ -137,26 +138,23 @@ public class Knowledge {
 				throw new RuntimeException("Empty cells are not allowed in this place. " + unitedCellsId);
 			}
 			/** Ziskame vsechny asociace novych objektu. Nevytvarime nove. */
-			Vector<Associations> allAssociations = fastMemory.getAllAssociations(unitedCellsId);
+			Set<Associations> allAssociations = fastMemory.getAllAssociations(unitedCellsId);
 			/** Ziskame vsechny nove objekty. Nevytvarime nove. */
 			Vector<Cell> newCells = fastMemory.getCells(unitedCellsId);
 			/** sestavime Thoughts. */
 			Vector<Thought> newThoughts = new Vector<Thought>();
 			for (int n = 0; n < newCells.size(); n++) {
 				Cell ob = newCells.get(n);
-				Vector<Associations> assocVector = new Vector<Associations>();
-				for (int i = 0; i < allAssociations.size(); i++) {
-					Associations assoc = allAssociations.get(i);
+				Set<Associations> assocVector = new HashSet<Associations>();
+				for (Associations assoc : allAssociations) {
 					if (ob.getId() == assoc.getSrcId()) {
 						assocVector.add(assoc);
-						//continue; // TODO spravne musi skocit na for(int n = 0; n < allAssociations.size(); n++) {
 					}
 				}
 				Thought thought = new Thought(ob, assocVector);
 				newThoughts.add(thought);
 			}
 			// nahradime stare spojovane pary v thoughs2 na nove spojene newThoughts.
-//			oldThoughts = newThoughts;
 			for (int n = newThoughts.size()-1; n >= 0; n--) {
 				int pos = positionsToRelation.remove(positionsToRelation.size()-1);
 				oldThoughts.remove(pos+1);
@@ -174,7 +172,7 @@ public class Knowledge {
 	 * @throws Exception 
 	 */
 	private Vector<Long> getNewCellsId(Vector<Thought> thoughts2,
-			Vector<Integer> positionsToRelation) throws Exception {
+			List<Integer> positionsToRelation) throws Exception {
 		Vector<Long> unitedCellsId = new Vector<Long>();
 		for (int k = 0; k < positionsToRelation.size(); k++) {
 			Thought srcThought = thoughts2.get(positionsToRelation.get(k));
@@ -193,16 +191,16 @@ public class Knowledge {
 	 * Zvysi cost associaci spojovanych objektu. Jestli association neexistuje,
 	 * vytvori novou. Vytvari nove objety.
 	 * @param thoughts2
-	 * @param cellsToRelation
+	 * @param positionsToRelation
 	 * @return Vector<Associations> novych vytvorenych associations
 	 * @throws Exception
 	 */
 	private Vector<Associations> increaseAssociationsCost(Vector<Thought> thoughts2,
-			Vector<Integer> cellsToRelation) throws Exception {
+			List<Integer> positionsToRelation) throws Exception {
 		// doplnit chybejici associations
 		Vector<Thought> nonExistsPairs = new Vector<Thought>();
 		Vector<Associations> result = new Vector<Associations>();
-		for (Iterator<Integer> it = cellsToRelation.iterator(); it.hasNext(); ) {
+		for (Iterator<Integer> it = positionsToRelation.iterator(); it.hasNext(); ) {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
@@ -217,7 +215,7 @@ public class Knowledge {
 		}		
 		// zvysit cost associations ktere jiz existovaly v DB
 		Vector<Long> associationsToIncrease = new Vector<Long>();
-		for (Iterator<Integer> it = cellsToRelation.iterator(); it.hasNext(); ) {
+		for (Iterator<Integer> it = positionsToRelation.iterator(); it.hasNext(); ) {
 			Integer nextKey = it.next();
 			Thought srcThought = thoughts2.get(nextKey);
 			Thought tgtThought = thoughts2.get(nextKey+1);
@@ -244,6 +242,7 @@ public class Knowledge {
 		/* Nejdriv dohledat spicky pro rozhodovani, jake objekty spojovat 
 		 * a pospojovat tyto objekty. Pritom zvednout COST u asociaci,
 		 * ktere vytvareji tyto spickove objekty */
+		// TODO zrychlit
 		inputCells = thoughtUnionDecider.getTipsAndJoinCells(inputCells);
 		// Vytvorit vektor Thoughts
 		Vector<Thought> newThoughts = new Vector<Thought>();
@@ -253,6 +252,7 @@ public class Knowledge {
 			newThoughts.add(0, thoughts2.remove(thoughts2.size()-1));
 		}
 		// pospojovat jiz existujici pary
+		// TODO zrychlit
 		newThoughts = recognizeKnownThoughts(newThoughts);
 		thoughts2.addAll(newThoughts); 
 		// Rozhodnout ktere Thoughts sloucit na zaklade konfiguracnich parametru.
@@ -293,7 +293,7 @@ public class Knowledge {
 		Vector<Long> assocVector = new Vector<Long>();
 		while(true) {
 			// Nejdriv dostneme doporuceni ke spojeni
-			Vector<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(newThoughts);
+			List<Integer> positionsToRelation = thoughtUnionDecider.getPositionsToRelation(newThoughts);
 			// Pak zjistime ktere thoughts jiz maji spolecnou asociaci a zaroven doporucene ke spojeni z predchoziho filtru	
 			Map<Integer, Thought> existsMergedThoughts = new TreeMap<Integer, Thought>();
 			for (int i = 0; i < newThoughts.size()-1; i++) {
@@ -324,8 +324,8 @@ public class Knowledge {
 				newThoughts.insertElementAt(existsMergedThoughts.get(posToMerge), posToMerge);
 			}
 		}		
-		// Zvysime COST asociaci jak puvodnich, tak i spojenych Thoughts
-		fastMemory.increaseAssociationsCost(assocVector);
+//TODO Smazat		// Zvysime COST asociaci jak puvodnich, tak i spojenych Thoughts
+//		fastMemory.increaseAssociationsCost(assocVector);
 		return newThoughts;
 	}
 
@@ -340,19 +340,18 @@ public class Knowledge {
 		// Get cells
 		Vector<Cell> cells = fastMemory.getCells(inputCells);
 		// Get associations
-		Vector<Associations> associations = fastMemory.getAssociationsToCells(cells);
+		Set<Associations> associations = fastMemory.getAssociationsToCells(cells);
 		// Create thought
 		Vector<Thought> result = new Vector<Thought>();
 		for (int i = 0; i < cells.size(); i++) {
-			Cell ob = cells.get(i);
-			Vector<Associations> ass = new Vector<Associations>();
-			for (int k = 0; k < associations.size(); k++) {
-				Associations nextAss = associations.get(k);
-				if (nextAss.getSrcId().compareTo(ob.getId()) == 0) {
-					ass.add(nextAss);
+			Cell activeCell = cells.get(i);
+			Set<Associations> consequenceAssociations = new HashSet<Associations>();
+			for (Associations nextAss : associations) {
+				if (nextAss.getSrcId().compareTo(activeCell.getId()) == 0) {
+					consequenceAssociations.add(nextAss);
 				}
 			}
-			Thought th = new Thought(ob, ass);
+			Thought th = new Thought(activeCell, consequenceAssociations);
 			result.add(th);
 		}
 		return result;

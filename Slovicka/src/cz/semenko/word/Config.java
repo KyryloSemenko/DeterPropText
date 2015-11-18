@@ -4,7 +4,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-import cz.semenko.word.aware.Knowledge;
 import cz.semenko.word.dao.DBViewer;
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
@@ -34,22 +33,9 @@ public class Config {
 	/** Velikost tabulky Associations v cache FastMemory */
 	private int fastMemory_tablesAssociationsSize = 0;
 
-//	/**
-//	 * While {@link Knowledge} decides to create a new {@link Cell} from two close Cells, it compare these Cells {@link Cell#type} with this configuration property. <br>
-//	 * If one of Cell has Type higher then configuration parameter, then new Cell will not created.
-//	 */
-//	private int knowledge_relateThoughtsUpToCellType = 0;
-
 	/** Maximalni velikost aware - delka vektoru myslenek */
 	private int knowledge_knowledgeSize = 0;
 
-	/**
-	 * Zpusob pro rozhodovani, jak budou spojovany objekty behem cteni.<br>
-	 * true - Budou spojeny dle velikosti type objektu,<br>
-	 * false - budou spojeny dle velikosti cost associaci
-	 */
-	private boolean knowledge_decideToRelateByCellTypeOrAssocCost = false;
-	
 	/**
 	 * Jestli jsou tri objekty a b c, a existuji associace ab a bc, pritom c je objekt s vetsim cost nez b,<br>
 	 * potom bude prednostne pouzita ab, kdyz parameter je nastaven na true,<br>
@@ -65,7 +51,13 @@ public class Config {
 	 */
 	private boolean knowledge_decideToRelateCellsByHigherAssocCost = false;
 	
-	/** A new {@link Cell} will be created, when its parents has {@link Cell#type} less or equal to this parameter. */
+	/**
+	 * Relate only cells with {@link Associations#getCost()} equals or higher then this parameter.<br>
+	 * This parameter is accepted together with {@link Config#knowledge_decideToRelateCellsByHigherAssocCost} parameter only
+	 */
+	private int knowledge_minAssocCostToRelate = 0;
+	
+	/** A new {@link Cell} will be created, when its parents has {@link Cell#getType()} less or equal to this parameter. */
 	private int cellsCreationDecider_createNewCellsToAllPairsDepth = 0;
 	
 	/**
@@ -87,11 +79,14 @@ public class Config {
 	 **/
 	private boolean fastMemory_alwaysSearchToAssociationsDeepInTheMemory = false;
 	
-	/** Jestli alwaysSearchToAssociationsDeepInTheMemory je true, nema zadny vyznam. Viz. {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} */
+	/**
+	 * Když je false, hledat jen v cache. Jinak hledat i v DB.
+	 * Jestli {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} je true, parametr nemá žádný význam.
+	 * Viz. {@link Config#fastMemory_alwaysSearchToAssociationsDeepInTheMemory} */
 	private boolean fastMemory_searchToAssociationsAtAllElements = false;
 	
-	/** Zda maji byt spojovany jen objekty stejneho typu. Jestli true, parametr decideToRelateByCellTypeOrAssocCost musi byt false. */
-	private boolean knowledge_relateOnlyCellsOfSameTypes = false;
+	/** Zda maji byt spojovany jen objekty stejneho typu. */
+	private boolean knowledge_relateOnlyCellsOfTheSameTypes = false;
 	
 	/** Ukladat do souboru pospojovane objekty behem cteni nebo ne */
 	private boolean knowledge_saveThoughtsToFile = false;
@@ -100,7 +95,7 @@ public class Config {
 	private String thoughtsSaver_filePathToSaveThoughts;
 
 	/**
-	 * While sleeping (see {@link MemoryCleaner}) will be remove {@link Associations} that has {@link Associations#cost} less than this parameter.<br>
+	 * While sleeping (see {@link MemoryCleaner}) will be remove {@link Associations} that has {@link Associations#getCost()} less than this parameter.<br>
 	 * Disconnected {@link Cell} objects will by removed too.
 	 */
 	private int memoryCleaner_lowestCostForLeaving;
@@ -108,17 +103,17 @@ public class Config {
 	/**
 	 * Length of a text saved to database when a new {@link Cell} creates.<br>
 	 * Text that longer then this parameter is ignored.<br>
-	 * This value must not be greater then {@link Cell#src} table column size
+	 * This value must not be greater then {@link Cell#getSrc()} table column size
 	 */
 	private int dbViewer_maxTextLengthToSave;
 	
 	/** How many rows will be clean up during one loop of cleaning tables Cells and Associations from empty rows. */
 	private int dbViewer_numRowsForCleanupRotation;
 	
-	/** Number of IDs to return from {@link DBViewer#getAvailableCellsIdList()} when new {@link Cell} objects are creating */
+	/** Number of IDs to return from {@link DBViewer#getAvailableCellsIdList(Long)} when new {@link Cell} objects are creating */
 	private int dbViewer_numberOfAvailableCellsIdToReturn;
 	
-	/** Number of IDs to return from {@link DBViewer#getAvailableAssociationsIdList()} when new {@link Associations} objects are creating */
+	/** Number of IDs to return from {@link DBViewer#getAvailableAssociationsIdList(Long)} when new {@link Associations} objects are creating */
 	private int dbViewer_numberOfAvailableAssociationsIdToReturn;
 	
 	/**
@@ -150,12 +145,11 @@ public class Config {
 				throw new ConfigurationException(msg);
 			}
 			setFastMemory_tablesAssociationsSize(conf.getInt("fastMemory.tablesAssociationsSize"));
-//			setKnowledge_relateThoughtsUpToCellType(conf.getInt("knowledge.relateThoughtsUpToCellType"));
 			setKnowledge_knowledgeSize(conf.getInt("knowledge.knowledgeSize"));
-			setKnowledge_decideToRelateByCellTypeOrAssocCost(conf.getBoolean("knowledge.decideToRelateByCellTypeOrAssocCost"));
 			setKnowledge_decideToRelateCellsByHigherAssocCost(conf.getBoolean("knowledge.decideToRelateCellsByHigherAssocCost"));
+			setKnowledge_minAssocCostToRelate(conf.getInt("knowledge.minAssocCostToRelate"));
 			setKnowledge_decideToRelateCellsByHigherCellType(conf.getBoolean("knowledge.decideToRelateCellsByHigherCellType"));
-			setKnowledge_relateOnlyCellsOfSameTypes(conf.getBoolean("knowledge.relateOnlyCellsOfSameTypes"));
+			setKnowledge_relateOnlyCellsOfTheSameTypes(conf.getBoolean("knowledge.relateOnlyCellsOfTheSameTypes"));
 			setCellsCreationDecider_createNewCellsToAllPairsDepth(conf.getInt("cellsCreationDecider.createNewCellsToAllPairsDepth"));
 			setFastMemory_alwaysSearchToAssociationsDeepInTheMemory(conf.getBoolean("fastMemory.alwaysSearchToAssociationsDeepInTheMemory"));
 			setFastMemory_searchToAssociationsAtAllElements(conf.getBoolean("fastMemory.searchToAssociationsAtAllElements"));
@@ -292,25 +286,6 @@ public class Config {
 	}
 
 	/**
-	 * <p>See {@link Config#knowledge_decideToRelateByCellTypeOrAssocCost}.</p>
-	 *
-	 * @return a boolean.
-	 */
-	public boolean isKnowledge_decideToRelateByCellTypeOrAssocCost() {
-		return knowledge_decideToRelateByCellTypeOrAssocCost;
-	}
-
-	/**
-	 * <p>Setter for the field {@link Config#knowledge_decideToRelateByCellTypeOrAssocCost}.</p>
-	 *
-	 * @param knowledge_decideToRelateByCellTypeOrAssocCost a boolean.
-	 */
-	public void setKnowledge_decideToRelateByCellTypeOrAssocCost(
-			boolean knowledge_decideToRelateByCellTypeOrAssocCost) {
-		this.knowledge_decideToRelateByCellTypeOrAssocCost = knowledge_decideToRelateByCellTypeOrAssocCost;
-	}
-
-	/**
 	 * <p>See {@link Config#knowledge_decideToRelateCellsByHigherCellType}.</p>
 	 *
 	 * @return a boolean.
@@ -346,6 +321,22 @@ public class Config {
 	public void setKnowledge_decideToRelateCellsByHigherAssocCost(
 			boolean knowledge_decideToRelateCellsByHigherAssocCost) {
 		this.knowledge_decideToRelateCellsByHigherAssocCost = knowledge_decideToRelateCellsByHigherAssocCost;
+	}
+
+	/**
+	 * @return the {@link int}<br>
+	 * See {@link Config#knowledge_minAssocCostToRelate}
+	 */
+	public int getKnowledge_minAssocCostToRelate() {
+		return knowledge_minAssocCostToRelate;
+	}
+
+	/**
+	 * @param knowledge_minAssocCostToRelate the {@link int} to set<br>
+	 * See {@link Config#knowledge_minAssocCostToRelate}
+	 */
+	public void setKnowledge_minAssocCostToRelate(int knowledge_minAssocCostToRelate) {
+		this.knowledge_minAssocCostToRelate = knowledge_minAssocCostToRelate;
 	}
 
 	/**
@@ -397,8 +388,6 @@ public class Config {
 
 	/**
 	 * <p>Setter for the field {@link Config#fastMemory_searchToAssociationsAtAllElements}.</p>
-	 *
-	 * @param fastMemory_searchToAssociationsAtAllElements a boolean.
 	 */
 	public void setFastMemory_searchToAssociationsAtAllElements(
 			boolean fastMemory_searchToAssociationsAtAllElements) {
@@ -406,43 +395,28 @@ public class Config {
 	}
 
 	/**
-	 * <p>See {@link Config#knowledge_relateOnlyCellsOfSameTypes}.</p>
-	 *
-	 * @return a boolean.
+	 * <p>See {@link Config#knowledge_relateOnlyCellsOfTheSameTypes}.</p>
 	 */
-	public boolean isKnowledge_relateOnlyCellsOfSameTypes() {
-		return knowledge_relateOnlyCellsOfSameTypes;
+	public boolean isKnowledge_relateOnlyCellsOfTheSameTypes() {
+		return knowledge_relateOnlyCellsOfTheSameTypes;
 	}
 	
 	/**
-	 * <p>Setter for the field {@link Config#knowledge_relateOnlyCellsOfSameTypes}.</p>
-	 *
-	 * @param knowledge_relateOnlyCellsOfSameTypes a boolean.
-	 * @throws org.apache.commons.configuration.ConfigurationException if any.
+	 * <p>Setter for the field {@link Config#knowledge_relateOnlyCellsOfTheSameTypes}.</p>
 	 */
-	public void setKnowledge_relateOnlyCellsOfSameTypes (
+	public void setKnowledge_relateOnlyCellsOfTheSameTypes (
 			boolean knowledge_relateOnlyCellsOfSameTypes) throws ConfigurationException {
-		if (isKnowledge_decideToRelateByCellTypeOrAssocCost() == true & knowledge_relateOnlyCellsOfSameTypes == true) {
-			throw new ConfigurationException(
-					"Nemuze byt soucasne knowledge.decideToRelateByCellTypeOrAssocCost() == " +
-					"true & knowledge.relateOnlyCellsOfSameTypes == true"
-			);
-		}
-		this.knowledge_relateOnlyCellsOfSameTypes = knowledge_relateOnlyCellsOfSameTypes;
+		this.knowledge_relateOnlyCellsOfTheSameTypes = knowledge_relateOnlyCellsOfSameTypes;
 	}
 
 	/**
 	 * <p>See {@link Config#knowledge_saveThoughtsToFile}.</p>
-	 *
-	 * @return a boolean.
 	 */
 	public boolean isKnowledge_saveThoughtsToFile() {
 		return knowledge_saveThoughtsToFile;
 	}
 	/**
 	 * <p>Setter for the field {@link Config#knowledge_saveThoughtsToFile}.</p>
-	 *
-	 * @param knowledge_saveThoughtsToFile a boolean.
 	 */
 	public void setKnowledge_saveThoughtsToFile(boolean knowledge_saveThoughtsToFile) {
 		this.knowledge_saveThoughtsToFile  = knowledge_saveThoughtsToFile;
@@ -450,16 +424,12 @@ public class Config {
 
 	/**
 	 * <p>Getter for the field {@link Config#thoughtsSaver_filePathToSaveThoughts}.</p>
-	 *
-	 * @return a {@link java.lang.String} object.
 	 */
 	public String getThoughtsSaver_filePathToSaveThoughts() {
 		return thoughtsSaver_filePathToSaveThoughts;
 	}
 	/**
 	 * <p>Setter for the field {@link Config#thoughtsSaver_filePathToSaveThoughts}.</p>
-	 *
-	 * @param param a {@link java.lang.String} object.
 	 */
 	public void setThoughtsSaver_filePathToSaveThoughts(String param) {
 		this.thoughtsSaver_filePathToSaveThoughts = param.trim();
@@ -467,8 +437,6 @@ public class Config {
 
 	/**
 	 * <p>Getter for the field {@link Config#memoryCleaner_lowestCostForLeaving}.</p>
-	 *
-	 * @return a int.
 	 */
 	public int getMemoryCleaner_lowestCostForLeaving() {
 		return memoryCleaner_lowestCostForLeaving;
@@ -514,7 +482,6 @@ public class Config {
 	}
 
 	/**
-	 * @return the {@link int}<br>
 	 * See {@link Config#dbViewer_numberOfAvailableCellsIdToReturn}
 	 */
 	public int getDbViewer_numberOfAvailableCellsIdToReturn() {
@@ -522,7 +489,6 @@ public class Config {
 	}
 
 	/**
-	 * @param dbViewer_numberOfAvailableCellsIdToReturn the {@link int} to set<br>
 	 * See {@link Config#dbViewer_numberOfAvailableCellsIdToReturn}
 	 */
 	public void setDbViewer_numberOfAvailableCellsIdToReturn(
@@ -531,7 +497,6 @@ public class Config {
 	}
 
 	/**
-	 * @return the {@link int}<br>
 	 * See {@link Config#dbViewer_numberOfAvailableAssociationsIdToReturn}
 	 */
 	public int getDbViewer_numberOfAvailableAssociationsIdToReturn() {
@@ -539,7 +504,6 @@ public class Config {
 	}
 
 	/**
-	 * @param dbViewer_numberOfAvailableAssociationsIdToReturn the {@link int} to set<br>
 	 * See {@link Config#dbViewer_numberOfAvailableAssociationsIdToReturn}
 	 */
 	public void setDbViewer_numberOfAvailableAssociationsIdToReturn(
@@ -548,7 +512,6 @@ public class Config {
 	}
 
 	/**
-	 * @return the {@link boolean}<br>
 	 * See {@link Config#thoughtUnionDecider_competitionAllowed}
 	 */
 	public boolean isThoughtUnionDecider_competitionAllowed() {
@@ -556,7 +519,6 @@ public class Config {
 	}
 
 	/**
-	 * @param thoughtUnionDecider_competitionAllowed the {@link boolean} to set<br>
 	 * See {@link Config#thoughtUnionDecider_competitionAllowed}
 	 */
 	public void setThoughtUnionDecider_competitionAllowed(boolean thoughtUnionDecider_competitionAllowed) {

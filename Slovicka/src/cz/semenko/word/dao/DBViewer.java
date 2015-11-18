@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
@@ -51,12 +52,10 @@ public interface DBViewer {
 	/**
 	 * <p>getAllAssociations.</p>
 	 *
-	 * @param cellsId a {@link java.util.Vector} object.
-	 * @return a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Associations> getAllAssociations(
-			Vector<Long> cellsId) throws Exception;
+	public Set<Associations> getAllAssociations(
+			Collection<Long> cellsId) throws Exception;
 
 	/**
 	 * <p>increaseAssociationsCostToCellsId.</p>
@@ -282,10 +281,9 @@ public interface DBViewer {
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
-	 * @throws java.sql.SQLException if any.
 	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
-	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws SQLException;
+	public Associations getAssociation(Thought srcThought, Thought tgtThought);
 
 	/**
 	 * Warning!<br>

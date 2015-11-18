@@ -71,7 +71,7 @@ public class KnowledgeTest {
 		config.setDbViewer_maxTextLengthToSave(100);
 		
 		try {
-			config.setKnowledge_relateOnlyCellsOfSameTypes(false);
+			config.setKnowledge_relateOnlyCellsOfTheSameTypes(false);
 			knowledge.remember(memory.getCells("abrakadabra"));
 			knowledge.remember(memory.getCells("abrakadabry"));
 			knowledge.remember(memory.getCells("angora"));
@@ -97,7 +97,7 @@ public class KnowledgeTest {
 		config.setDbViewer_maxTextLengthToSave(100);
 		
 		try {
-			config.setKnowledge_relateOnlyCellsOfSameTypes(false);
+			config.setKnowledge_relateOnlyCellsOfTheSameTypes(false);
 			knowledge.remember(memory.getCells("abrakadabra"));
 			knowledge.remember(memory.getCells("abrakadabry"));
 			knowledge.remember(memory.getCells("angora"));
@@ -158,7 +158,7 @@ public class KnowledgeTest {
 		config.setDbViewer_maxTextLengthToSave(100);
 		
 		try {
-			config.setKnowledge_relateOnlyCellsOfSameTypes(false);
+			config.setKnowledge_relateOnlyCellsOfTheSameTypes(false);
 			
 			textReader.storeFile("Data\\text.txt");
 			

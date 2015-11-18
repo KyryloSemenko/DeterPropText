@@ -18,5 +18,12 @@
 			<value type="boolean">true</value>
 		</constructor-arg>
 	</bean>
+	
+	<!-- provides a H2 console to look into the db if necessary, http://localhost:11111 -->
+	<bean id="org.h2.tools.Server-WebServer" class="org.h2.tools.Server"
+		factory-method="createWebServer" depends-on="dbConnector" init-method="start"
+		lazy-init="false">
+		<constructor-arg value="-web,-webPort,11111" />
+	</bean>
  
 </beans>

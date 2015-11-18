@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -591,11 +593,11 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Vector<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
-		Vector<Associations> result = new Vector<Associations>();
+	public Set<Associations> getAllAssociations(Collection<Long> cellsId) throws Exception {
+		Set<Associations> result = new HashSet<Associations>();
 		StringBuilder buff = new StringBuilder();
-		for (int i = 0; i < cellsId.size(); i++) {
-			buff.append(cellsId.get(i) + ", ");
+		for (Long nextId : cellsId) {
+			buff.append(nextId + ", ");
 		}
 		if (buff.length() > 0) {
 			buff.delete(buff.length()-2, buff.length());
@@ -801,28 +803,31 @@ public class JdbcDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Associations getAssociation(Thought srcThought, Thought tgtThought)
-			throws SQLException {
-		Associations result = null;
-		String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveCell().getId()
-			+ " AND tgt_id = " + tgtThought.getActiveCell().getId();
-		ResultSet rs = connection.createStatement().executeQuery(sql);
-		int i = 0;
-		while (rs.next()) {
-			if (i > 0) {
-				throw new SQLException("V tabulce ASSOCIATIONS byly nalezeny dva vyskyty Associace se stejmymi src_id a tgt_id: " + result.toString());
+	public Associations getAssociation(Thought srcThought, Thought tgtThought) {
+		try {
+			Associations result = null;
+			String sql = "SELECT * FROM ASSOCIATIONS WHERE src_id = " + srcThought.getActiveCell().getId()
+				+ " AND tgt_id = " + tgtThought.getActiveCell().getId();
+			ResultSet rs = connection.createStatement().executeQuery(sql);
+			int i = 0;
+			while (rs.next()) {
+				if (i > 0) {
+					throw new SQLException("V tabulce ASSOCIATIONS byly nalezeny dva vyskyty Associace se stejmymi src_id a tgt_id: " + result.toString());
+				}
+				long id = rs.getLong("id");
+				long srcId = rs.getLong("src_id");
+				long srcTable = rs.getLong("src_tbl");
+				long tgtId = rs.getLong("tgt_id");
+				long tgtTable = rs.getLong("tgt_tbl");
+				long cost = rs.getLong("cost");
+				Long cellId = rs.getLong("cell_id");
+				result = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
+				i++;
 			}
-			long id = rs.getLong("id");
-			long srcId = rs.getLong("src_id");
-			long srcTable = rs.getLong("src_tbl");
-			long tgtId = rs.getLong("tgt_id");
-			long tgtTable = rs.getLong("tgt_tbl");
-			long cost = rs.getLong("cost");
-			Long cellId = rs.getLong("cell_id");
-			result = new Associations(id, cellId, srcId, srcTable, tgtId, tgtTable, cost);
-			i++;
+			return result;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
-		return result;
 	}
 
 	@Override

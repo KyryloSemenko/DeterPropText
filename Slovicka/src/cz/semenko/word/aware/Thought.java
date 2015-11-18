@@ -2,7 +2,7 @@ package cz.semenko.word.aware;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.Set;
 
 import cz.semenko.word.persistent.Associations;
 import cz.semenko.word.persistent.Cell;
@@ -26,13 +26,11 @@ public class Thought implements Serializable {
 	/** Soucast myslenky */
 	private Cell activeCell;
 	
-	/** Konektory dusledku */
-	private Vector<Associations> consequenceAssociations;
+	/** {@link Associations}, které mají stejné {@link Associations#getSrcId()}, jako {@link Cell#getId()} tohoto objektu */
+	private Set<Associations> consequenceAssociations;
 	
-	//private Vector<Thought> paralelThoughts; // Napriklad a-br a ab-r, nebo ko-cka, k-ocka, koc-ka, kock-a.
-		
 	/**
-	 * <p>Constructor for Thought.</p>
+	 * <p>Empty constructor for Thought.</p>
 	 */
 	public Thought() {}
 	
@@ -43,7 +41,7 @@ public class Thought implements Serializable {
 	 * @param consequenceAssociations a {@link java.util.Vector} Cell.
 	 */
 	public Thought(Cell activeCell,
-			Vector<Associations> consequenceAssociations) {
+			Set<Associations> consequenceAssociations) {
 		super();
 		this.activeCell = activeCell;
 		this.consequenceAssociations = consequenceAssociations;
@@ -82,7 +80,7 @@ public class Thought implements Serializable {
 	 * @param consequenceAssociations a {@link java.util.Vector} object.
 	 */
 	public void setConsequenceAssociations(
-			Vector<Associations> consequenceAssociations) {
+			Set<Associations> consequenceAssociations) {
 		this.consequenceAssociations = consequenceAssociations;
 	}
 	
@@ -96,18 +94,16 @@ public class Thought implements Serializable {
 	/**
 	 * Dohleda u tohoto thought association na objekt v parametru
 	 *
-	 * @param th2 a {@link cz.semenko.word.aware.Thought} object.
-	 * @return Association nebo null
+	 * @param nextThought a {@link cz.semenko.word.aware.Thought} object.
+	 * @return Association or null
 	 */
-	public Associations getAssociation(Thought th2) {
-		Vector<Associations> vector = (Vector<Associations>) getConsequenceAssociations();
-		if (vector == null || vector.size() == 0) {
+	public Associations getAssociation(Thought nextThought) {
+		if (nextThought == null || getConsequenceAssociations() == null) {
 			return null;
 		}
-		for (int i = 0; i < vector.size(); i++) {
-			Associations nextAss = vector.get(i);
-			if (nextAss.getTgtId().compareTo(th2.getActiveCell().getId()) == 0) {
-				return nextAss;
+		for (Associations association : getConsequenceAssociations()) {
+			if (association.getTgtId().equals(nextThought.getActiveCell().getId())) {
+				return association;
 			}
 		}
 		return null;

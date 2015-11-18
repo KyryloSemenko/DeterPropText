@@ -1,11 +1,14 @@
 package cz.semenko.word.aware.policy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import cz.semenko.word.Config;
 import cz.semenko.word.aware.LayersManager;
 import cz.semenko.word.aware.Thought;
 import cz.semenko.word.persistent.Associations;
+import cz.semenko.word.persistent.Cell;
 import cz.semenko.word.technology.memory.fast.FastMemory;
 
 /**
@@ -75,133 +78,135 @@ public class ThoughtUnionDecider {
 	 * @return - Vector pozici v thoughts2, ktere musi byt spojeny.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Integer> getPositionsToRelation(Vector<Thought> thoughts) throws Exception {
+	public List<Integer> getPositionsToRelation(Vector<Thought> thoughts) throws Exception {
 		// Find pairs of Thoughts to create new Cells
-		Vector<Integer> result = getAllPositionsToRelation(thoughts);
+		List<Integer> resultPositions = getCanditatesToRelation(thoughts);
 		// Zde osetrime pripad kdyz nekolik objektu za sebou konkuruji ve vytvoreni asociace.
-		Vector<Integer> doNotRelate = getDoNotRelate(thoughts, result);
+		List<Integer> doNotRelatePositions = new ArrayList<Integer>();
+		getDoNotRelatePositions(doNotRelatePositions, thoughts, resultPositions);
 		// odstranime asociace ktere prohraly v konkurenci se sousednimi asociacemi
-		result.removeAll(doNotRelate);
-		return result;
+		resultPositions.removeAll(doNotRelatePositions);
+		return resultPositions;
 	}
 	
 
 	/**
-	 * Find out {@link Thought} which could create relation with its right neighbours
+	 * Find out {@link Thought} with {@link Cell#getType()} less or equals to {@link Config#getCellsCreationDecider_createNewCellsToAllPairsDepth()}
 	 * @param thoughts - Vector of {@link Thought} objects
 	 * @return positions of elements in thoughts Vector which could create relation
 	 */
-	private Vector<Integer> getAllPositionsToRelation(Vector<Thought> thoughts) {
+	private List<Integer> getCanditatesToRelation(Vector<Thought> thoughts) {
 		int relateThoughtsUpToCellType = config.getCellsCreationDecider_createNewCellsToAllPairsDepth();
-		Vector<Integer> cellsToRelation = new Vector<Integer>();
+		List<Integer> positionsToRelation = new ArrayList<Integer>();
 		for (int i = 0; i < thoughts.size()-1; i++) {
 			Thought nextThought = thoughts.get(i);
 			Thought nextFollThought = thoughts.get(i+1);
 			if (nextThought.getActiveCell().getType() <= relateThoughtsUpToCellType && nextFollThought.getActiveCell().getType() <= relateThoughtsUpToCellType) {
-				cellsToRelation.add(i);
+				positionsToRelation.add(i);
 			}
 		}
-		return cellsToRelation;
+		return positionsToRelation;
 	}
 
 	/**
-	 * Rozhodnout ktere objekty nespojovat. Konkurence. Tato metoda je rekurzivni, 
-	 * aby nepustila ke spojeni blizke pary objektu.
-	 * @param thoughts
-	 * @param decideToRelateByCellTypeOrAssocCost true = objectType, false = associationCost
-	 * @param decideToRelateCellsByHigherAssocCost
-	 * @param decideToRelateCellsByHigherCellType
-	 * @param cellsToRelation
-	 * @return
-	 * @throws Exception
+	 * Recursive method. Decide which elements must not be associated. Competition.<br>
+	 * Rozhodnout které objekty nespojovat. Konkurence.
+	 * @param doNotRelatePositions result, can not be null
+	 * @param thoughts context
+	 * @param positionsToRelation positions of {@link Thought} to decide
 	 */
-	private Vector<Integer> getDoNotRelate(Vector<Thought> thoughts,
-			Vector<Integer> cellsToRelation) throws Exception {
-		Vector<Integer> doNotRelate = new Vector<Integer>(); // zde budou polozky z cellsToRelation ktere se nemaji spojovat.
+	private void getDoNotRelatePositions(List<Integer> doNotRelatePositions, Vector<Thought> thoughts, List<Integer> positionsToRelation) {
+		List<Integer> copyOfPositionsToRelation = new ArrayList<Integer>(positionsToRelation);
+		copyOfPositionsToRelation.removeAll(doNotRelatePositions);
+		if (!hasNeighbours(copyOfPositionsToRelation)) {
+			return;
+		}
 		if (config.isThoughtUnionDecider_competitionAllowed()) {
-			boolean relateOnlyCellsOfSameTypes = config.isKnowledge_relateOnlyCellsOfSameTypes();
-			boolean decideToRelateByCellTypeOrAssocCost = config.isKnowledge_decideToRelateByCellTypeOrAssocCost();
-			boolean decideToRelateCellsByHigherAssocCost = config.isKnowledge_decideToRelateCellsByHigherAssocCost();
-			boolean decideToRelateCellsByHigherCellType = config.isKnowledge_decideToRelateCellsByHigherCellType();
-			for (int i = 0; i < cellsToRelation.size()-1; i=i+2) {
-				Integer nextThoughtKey = cellsToRelation.get(i);
-				Integer nextThoughtFollowingKey = cellsToRelation.get(i+1);
-				// Oznacit pro spojeni vsechny ktere maji assoc na nasled. objekt, nacist nove vznikle Thought a opakovat pokud budou nalezeny.
-				// Budou spojene dle pravidla definovaneho v promenne bud s vetsim anebo s mensim objektem.
-				if (nextThoughtFollowingKey - nextThoughtKey == 1) {
-					Thought th1 = thoughts.get(nextThoughtKey);
-					Thought th2 = thoughts.get(nextThoughtFollowingKey);
-					Thought th3 = thoughts.get(nextThoughtFollowingKey+1);
-					/* Jestli parametr narizuje spojeni jen objektu, ktere maji stejny typ (jsou ve stejne vrstve),
-					 * nebudeme spojovat objekty s ruznym TYPE */
-					if (relateOnlyCellsOfSameTypes) {
-						boolean filteredByType = false; /* Jestli bude rozhodnuto dle parametru
-						relateOnlyCellsOfSameTypes, neni co dale resit */ 
-						if (th1.getActiveCell().getType() != th2.getActiveCell().getType()) {
-							doNotRelate.add(nextThoughtKey);
-							filteredByType = true;
+			boolean theSameTypesOnly = config.isKnowledge_relateOnlyCellsOfTheSameTypes();
+			boolean byHigherAssocCost = config.isKnowledge_decideToRelateCellsByHigherAssocCost();
+			boolean byHigherCellType = config.isKnowledge_decideToRelateCellsByHigherCellType();
+			int minAssocCostToRelate = config.getKnowledge_minAssocCostToRelate();
+			for (int i = 0; i < copyOfPositionsToRelation.size(); i++) {
+				int first = copyOfPositionsToRelation.get(i);
+				Thought th1 = thoughts.get(first);
+				// Chars without relation always relate to next cell
+				if (th1.getActiveCell().getType() == 1 && th1.getConsequenceAssociations().size() == 0) {
+					doNotRelatePositions.add(first+1);
+					i++;
+					continue;
+				}
+				Thought th2 = thoughts.get(first+1);
+				if (theSameTypesOnly) {
+					if (!th1.getActiveCell().getType().equals(th2.getActiveCell().getType())) {
+						doNotRelatePositions.add(first);
+						continue;
+					}
+				}
+				if (copyOfPositionsToRelation.size() == i+1) {
+					break;
+				}
+				int second = copyOfPositionsToRelation.get(i+1);
+				if (first == (second - 1)) {
+					long firstImportance = 0;
+					long secondImportance = 0;
+					if (byHigherAssocCost) {
+						Associations association = th1.getAssociation(th2);
+						if (association != null) {
+							firstImportance += association.getCost();
 						}
-						if (th2.getActiveCell().getType() != th3.getActiveCell().getType()) {
-							doNotRelate.add(nextThoughtFollowingKey);
-							filteredByType = true;
+						Associations association2 = th2.getAssociation(thoughts.get(second+1));
+						if (association2 != null) {
+							secondImportance += association2.getCost();
 						}
-						if (filteredByType) {
+					}
+					if (byHigherCellType) {
+						firstImportance += th1.getActiveCell().getType();
+						secondImportance += th2.getActiveCell().getType();
+					}
+					if (firstImportance >= minAssocCostToRelate || secondImportance >= minAssocCostToRelate) {
+						if (firstImportance < secondImportance) {
+							doNotRelatePositions.add(first);
+							i++;
+							continue;
+						}
+						if (firstImportance > secondImportance) {
+							doNotRelatePositions.add(second);
+							i++;
 							continue;
 						}
 					}
-					// musime zvolit, zda spojovat s mensim nebo vetsim objektem, nebo podle hodnoty cost v assoc.
-					if (decideToRelateByCellTypeOrAssocCost) { // Rozhodovat dle typu objektu
-						long firstObType = th1.getActiveCell().getType();
-						long secondObType = th2.getActiveCell().getType();
-						long thirdObType = th3.getActiveCell().getType();
-						if (firstObType+secondObType == secondObType+thirdObType) {
-							doNotRelate.add(nextThoughtFollowingKey);
-						}
-						if (decideToRelateCellsByHigherCellType) { 
-							// TODO zkontrolovat zda skutecne spojuje dle uvedeneho parametru
-							int key = firstObType+secondObType < secondObType+thirdObType?nextThoughtKey:nextThoughtFollowingKey;
-							doNotRelate.add(key);
-						} else {
-							int key = firstObType+secondObType > secondObType+thirdObType?nextThoughtKey:nextThoughtFollowingKey;
-							doNotRelate.add(key);
-						}
-					} else {
-						// rozhodovat dle cost asociace. Jestli obe associace maji stejnou Cost, spoji dva prvni objekty.
-						Associations assFirst = fastMemory.getAssociation(th1, th2);
-						long firstAssocCost = (assFirst == null ? 0 : assFirst.getCost());
-						Associations assSecond = fastMemory.getAssociation(th2, th3);
-						long secondAssocCost = (assSecond == null ? 0 : assSecond.getCost());
-						if (secondAssocCost == firstAssocCost) {
-							doNotRelate.add(nextThoughtFollowingKey); 
-							// TODO muze i takhle: jestli COST u associaci stejna, pak rozhodovat na zaklade TYPE objektu
-							continue; // TODO v pripade jestli predchozi objectToRelation je vedle nasledujiciho, dat prednost jinemu spojeni.
-						}
-						if (decideToRelateCellsByHigherAssocCost) {
-							int key = firstAssocCost < secondAssocCost ? nextThoughtKey : nextThoughtFollowingKey;
-							doNotRelate.add(key);
-						} else {
-							int key = firstAssocCost > secondAssocCost ? nextThoughtKey : nextThoughtFollowingKey;
-							doNotRelate.add(key);
-						}
-					}
+					doNotRelatePositions.add(first);
+					doNotRelatePositions.add(second);
+					i++;
+				}
+			}
+		} else {
+			// Nedovolit spojení jedné pozice dvakrát, například nelze: 1+2, 2+3, 3+4 ale lze: 1+2, 3+4
+			for (int i = 0; i < copyOfPositionsToRelation.size()-1; i++) {
+				int first = copyOfPositionsToRelation.get(i);
+				int second = copyOfPositionsToRelation.get(i+1);
+				if (first == (second - 1)) {
+					doNotRelatePositions.add(second);
+					i++;
 				}
 			}
 		}
-		/** Nepusti ke spojeni pary objektu, ktere jsou za sebou v thoughts2 */
-		@SuppressWarnings("unchecked")
-		Vector<Integer> relatedPositions = (Vector<Integer>)cellsToRelation.clone();
-		for (int i = 0; i < doNotRelate.size(); i++) {
-			relatedPositions.remove(doNotRelate.get(i));
-		}
-		for (int i = 0; i < relatedPositions.size()-1; i++) {
-			int firstPos = relatedPositions.get(i);
-			int secondPos = relatedPositions.get(i+1);
-			if (secondPos - firstPos == 1) {
-				doNotRelate.add(secondPos);
-				i++;
+		getDoNotRelatePositions(doNotRelatePositions, thoughts, copyOfPositionsToRelation);
+		return;
+	}
+	
+	/**
+	 * @return true if there is at least one neighbour position, for example 2,3
+	 */
+	private boolean hasNeighbours(List<Integer> positionsToRelation) {
+		for (int i = 0; i < positionsToRelation.size()-1; i++) {
+			int first = positionsToRelation.get(i);
+			int second = positionsToRelation.get(i+1);
+			if (first + 1 == second) {
+				return true;
 			}
 		}
-		return doNotRelate;
+		return false;
 	}
 
 	/**
@@ -225,7 +230,7 @@ public class ThoughtUnionDecider {
 		}
 		// Sestavime objekty od spicek dolu
 		Long[] result = layers.getBottomCells();
-		fastMemory.increaseAssociationsCostToCellsId(result);
+		fastMemory.increaseAssociationsCost(result);
 		return result;
 	}
 

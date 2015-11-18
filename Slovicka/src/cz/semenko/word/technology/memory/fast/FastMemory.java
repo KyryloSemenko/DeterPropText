@@ -2,6 +2,9 @@ package cz.semenko.word.technology.memory.fast;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.collections.list.TreeList;
@@ -227,10 +230,9 @@ public class FastMemory {
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
-	 * @throws java.lang.Exception if any.
 	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
-	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
+	public Associations getAssociation(Thought srcThought, Thought tgtThought) {
 		// Jestli srcThought je spojena associaci s tgtThought, nalezne a vrati tuto Association
 		Collection<Associations> assocVector = srcThought.getConsequenceAssociations();
 		Associations result = null;
@@ -265,27 +267,27 @@ public class FastMemory {
 		return result;
 	}
 
-	/**
-	 * Zvysi COST u asociaci, ktere maji cell_id z parametru jak v DB,
-	 * tak i v cache
-	 *
-	 * increase the associations COST, which are cell_id parameter of both DB
-	 * as well as in cash
-	 *
-	 * @param arrayOfCellsId - array of Cell ID
-	 * @throws java.sql.SQLException if any.
-	 */
-	public void increaseAssociationsCostToCellsId(Long[] arrayOfCellsId) throws SQLException {
-		for (int i = 0; i < associationsCollection.size(); i++) {
-			Associations nextAssoc = (Associations) associationsCollection.get(i);
-			for (int k = 0; k < arrayOfCellsId.length; k++) {
-				if (nextAssoc.getCellId() == arrayOfCellsId[k]) {
-					nextAssoc.setCost(nextAssoc.getCost() + 1);
-				}
-			}
-		}
-		slowMemory.increaseAssociationsCostToCellsId(arrayOfCellsId);
-	}
+//	/**
+//	 * Zvysi COST u asociaci, ktere maji cell_id z parametru jak v DB,
+//	 * tak i v cache
+//	 *
+//	 * increase the associations COST, which are cell_id parameter of both DB
+//	 * as well as in cash
+//	 *
+//	 * @param arrayOfCellsId - array of Cell ID
+//	 * @throws java.sql.SQLException if any.
+//	 */
+//	public void increaseAssociationsCostToCellsId(Long[] arrayOfCellsId) throws SQLException {
+//		for (int i = 0; i < associationsCollection.size(); i++) {
+//			Associations nextAssoc = (Associations) associationsCollection.get(i);
+//			for (int k = 0; k < arrayOfCellsId.length; k++) {
+//				if (nextAssoc.getCellId() == arrayOfCellsId[k]) {
+//					nextAssoc.setCost(nextAssoc.getCost() + 1);
+//				}
+//			}
+//		}
+//		slowMemory.increaseAssociationsCostToCellsId(arrayOfCellsId);
+//	}
 
 	/**
 	 * Zvysi COST associaci o jednicku jak v DB, tak i v cache
@@ -399,7 +401,7 @@ public class FastMemory {
 		/** Vytvori Thoughts z objektu */
 		for (int i = 0; i < newCells.size(); i++) {
 			Cell nextOb = newCells.get(i);
-			Thought th = new Thought(nextOb, new Vector<Associations>());
+			Thought th = new Thought(nextOb, new HashSet<Associations>());
 			newThoughts.add(th);
 		}
 		
@@ -448,49 +450,100 @@ public class FastMemory {
 	 * @return - Vector<Associations> bud melke, stredni nebo hluboke dle nastavenych parametru
 	 * @throws java.lang.Exception if any.
 	 */
-	public Vector<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
+	public Set<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
 		boolean deepSearch = config.isFastMemory_alwaysSearchToAssociationsDeepInTheMemory();
-		Vector<Associations> result = new Vector<Associations>();
-		if (deepSearch) { // TODO porovnat s Melkym vyhledavanim v ruznych rezimech.
+		Set<Associations> result = new HashSet<Associations>();
+		if (deepSearch) {
 			result = slowMemory.getAllAssociations(cellsId);
 		} else {
 			boolean searchAtAllElements = config.isFastMemory_searchToAssociationsAtAllElements();
-			Vector<Long> notFoundCellsId = (Vector<Long>)cellsId.clone();
+			Vector<Long> notFoundCellsId = new Vector<Long>(cellsId);
+			boolean found = false;
 			for(int i = 0; i < cellsId.size(); i++) {
 				Long nextId = cellsId.get(i);
-				boolean found = false;
 				for (int k = 0; k < associationsCollection.size(); k++) {
 					Associations ass = (Associations) associationsCollection.get(k);
 					if (nextId == ass.getSrcId()) {
-						while (notFoundCellsId.contains(nextId)) {
-							notFoundCellsId.removeElement(nextId);
-						}
+						notFoundCellsId.removeAll(Collections.singleton(nextId));
 						result.add(ass);
 						found = true;
 					}
 				}
-				if (found == false) {
-					/*kdyz aspon jedna chybi - 
-					 * 		dohledat associations u vsech prvku,
-					 * 		nebo
-					 * 		dohledat associations jen u chybejicich prvku.*/
-					if (searchAtAllElements) {
-						// Zahodit nalezene a vyhledat vse v SlowMemory
-						result = slowMemory.getAllAssociations(cellsId);
-					} else {
-						// Pokracovat ve filtrovani notFoundCellsId, dohledat jen chybejici a pridat k resultu
-						continue;
-					}
-				}
-				Vector<Associations> missingAssociations = slowMemory.getAllAssociations(notFoundCellsId);
-				result.addAll(missingAssociations);
 			}
+			if (found == true && searchAtAllElements == false) {
+				return result;
+			}
+			if (notFoundCellsId.size() == 0) {
+				return result;
+			}
+			Set<Associations> missingAssociations = slowMemory.getAllAssociations(notFoundCellsId);
+			result.addAll(missingAssociations);
 		}
 		/** Pridat associations do associationsCollection */
 		addAssociations(result);
 		return result;
 	}
 
+//	/**
+//	 * Dohleda vsechny associations, ve kterych src_id == objectId z parametru.
+//	 * Jestli pro aspon jeden z objektu nic nenajde, sahne na SlowMemory.
+//	 * Zde zavadim neco jako Hluboke vyhledavani a Melke vyhledavani,
+//	 * Melke - hledat jen ve FastMemory.
+//	 * 	uspokojit se, kdyz ve FastMemory nalezena aspon jedna Association,
+//	 * 	kdyz aspon jedna chybi -
+//	 * 		dohledat associations u vsech prvku,
+//	 * 		nebo
+//	 * 		dohledat associations jen u chybejicich prvku.
+//	 * Hluboke - dohledat vzdy v SlowMemory.
+//	 *
+//	 * @param cellsId - Vector idecek Objektu.
+//	 * @return - Vector<Associations> bud melke, stredni nebo hluboke dle nastavenych parametru
+//	 * @throws java.lang.Exception if any.
+//	 * @deprecated
+//	 */
+//	public Vector<Associations> getAllAssociationsBak(Vector<Long> cellsId) throws Exception {
+//		boolean deepSearch = config.isFastMemory_alwaysSearchToAssociationsDeepInTheMemory();
+//		Vector<Associations> result = new Vector<Associations>();
+//		if (deepSearch) {
+//			result = slowMemory.getAllAssociations(cellsId);
+//		} else {
+//			boolean searchAtAllElements = config.isFastMemory_searchToAssociationsAtAllElements();
+//			Vector<Long> notFoundCellsId = (Vector<Long>)cellsId.clone();
+//			for(int i = 0; i < cellsId.size(); i++) {
+//				Long nextId = cellsId.get(i);
+//				boolean found = false;
+//				for (int k = 0; k < associationsCollection.size(); k++) {
+//					Associations ass = (Associations) associationsCollection.get(k);
+//					if (nextId == ass.getSrcId()) {
+//						while (notFoundCellsId.contains(nextId)) {
+//							notFoundCellsId.removeElement(nextId);
+//						}
+//						result.add(ass);
+//						found = true;
+//					}
+//				}
+//				if (found == false) {
+//					/*kdyz aspon jedna chybi - 
+//					 * 		dohledat associations u vsech prvku,
+//					 * 		nebo
+//					 * 		dohledat associations jen u chybejicich prvku.*/
+//					if (searchAtAllElements) {
+//						// Zahodit nalezene a vyhledat vse v SlowMemory
+//						result = slowMemory.getAllAssociations(cellsId);
+//					} else {
+//						// Pokracovat ve filtrovani notFoundCellsId, dohledat jen chybejici a pridat k resultu
+//						continue;
+//					}
+//				}
+//				Vector<Associations> missingAssociations = slowMemory.getAllAssociations(notFoundCellsId);
+//				result.addAll(missingAssociations);
+//			}
+//		}
+//		/** Pridat associations do associationsCollection */
+//		addAssociations(result);
+//		return result;
+//	}
+	
 	/**
 	 * Prida associations na zacatek associationsCollection.
 	 * Jestli assocoation existuje - zvedne ji o jednu pozici nahoru.
@@ -569,7 +622,7 @@ public class FastMemory {
 		if (cellsVector.size() > 0) {
 			activeCell = cellsVector.firstElement();
 		}
-		Vector<Associations> consequenceAssociations = getAllAssociations(vector);
+		Set<Associations> consequenceAssociations = getAllAssociations(vector);
 		return new Thought(activeCell, consequenceAssociations);
 	}
 	
@@ -613,14 +666,13 @@ public class FastMemory {
 	 *
 	 * @param cells a {@link java.util.Vector} object.
 	 * @throws java.lang.Exception if any.
-	 * @return a {@link java.util.Vector} object.
 	 */
-	public Vector<Associations> getAssociationsToCells(Vector<Cell> cells) throws Exception {
+	public Set<Associations> getAssociationsToCells(Vector<Cell> cells) throws Exception {
 		Vector<Long> cellsId = new Vector<Long>();
 		for (int i = 0; i < cells.size(); i++) {
 			cellsId.add(cells.get(i).getId());
 		}
-		Vector<Associations> result = getAllAssociations(cellsId);		
+		Set<Associations> result = getAllAssociations(cellsId);		
 		return result;
 	}
 	

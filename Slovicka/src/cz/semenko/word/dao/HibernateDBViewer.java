@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -35,7 +37,7 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Vector<Associations> getAllAssociations(Vector<Long> cellsId)
+	public Set<Associations> getAllAssociations(Collection<Long> cellsId)
 			throws Exception {
 		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
@@ -230,9 +232,8 @@ public class HibernateDBViewer implements DBViewer {
 	}
 
 	@Override
-	public Associations getAssociation(Thought srcThought, Thought tgtThought)
-			throws SQLException {
-		throw new SQLException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
+	public Associations getAssociation(Thought srcThought, Thought tgtThought) {
+		throw new NotImplementedException("TODO implement me please. Method: " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 
 	@Override

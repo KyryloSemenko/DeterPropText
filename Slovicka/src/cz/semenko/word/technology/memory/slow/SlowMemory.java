@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -142,10 +143,9 @@ public class SlowMemory {
 	 *
 	 * @param srcThought a {@link cz.semenko.word.aware.Thought} object.
 	 * @param tgtThought a {@link cz.semenko.word.aware.Thought} object.
-	 * @throws java.lang.Exception if any.
 	 * @return a {@link cz.semenko.word.persistent.Associations} object.
 	 */
-	public Associations getAssociation(Thought srcThought, Thought tgtThought) throws Exception {
+	public Associations getAssociation(Thought srcThought, Thought tgtThought) {
 		return dbViewer.getAssociation(srcThought, tgtThought);
 	}
 
@@ -257,8 +257,8 @@ public class SlowMemory {
 	 * @throws java.lang.Exception if any.
 	 * @return a {@link java.util.Vector} object.
 	 */
-	public Vector<Associations> getAllAssociations(Vector<Long> cellsId) throws Exception {
-		Vector<Associations> result = dbViewer.getAllAssociations(cellsId);		
+	public Set<Associations> getAllAssociations(Collection<Long> cellsId) throws Exception {
+		Set<Associations> result = dbViewer.getAllAssociations(cellsId);		
 		return result;
 	}
 
